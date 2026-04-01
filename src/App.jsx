@@ -19,6 +19,7 @@ import UnitDetailPage from './page/UnitDetailPage'
 import UnitsPage from './page/UnitsPage'
 import {
   hasManageAccess,
+  MANAGE_ADMIN_PANELS,
   PATHS,
   getClubUnitIdFromPath,
   getManageRoleForUnit,
@@ -105,13 +106,13 @@ function App() {
         />
       )
     } else if (isManagePath(pathname)) {
-      const { unitId: selectedUnitId, panel } = parseManageQuery(search)
+      const { unitId: selectedUnitId, panel } = parseManageQuery(search, pathname)
       const scopedRole = getManageRoleForUnit(user, selectedUnitId)
       const canAccessManage = hasManageAccess(user)
 
       if (!canAccessManage) {
         page = <ForbiddenPage requiredRoleLabel="Admin, Manager hoặc Staff" />
-      } else if (pathname === PATHS.manage || pathname === PATHS.manageAdmin) {
+      } else if (pathname === PATHS.manage || (pathname === PATHS.manageAdmin && !selectedUnitId)) {
         page = (
           <section className="page-card">
             <h1>Vui lòng chọn đơn vị để bắt đầu quản trị</h1>
@@ -131,14 +132,12 @@ function App() {
             staffPanel={panel}
           />
         )
-      } else if (
-        [PATHS.manageAdminUsers, PATHS.manageAdminUnits, PATHS.manageAdminSemesters].includes(pathname)
-      ) {
+      } else if (pathname === PATHS.manageAdmin) {
         const canAccessAdminManage = scopedRole === 'admin' || scopedRole === 'manager'
 
         if (!canAccessAdminManage) {
           page = <ForbiddenPage requiredRoleLabel="Admin hoặc Manager tại đơn vị đã chọn" />
-        } else if (pathname === PATHS.manageAdminUsers) {
+        } else if (panel === MANAGE_ADMIN_PANELS.users) {
           page = (
             <AdminPage
               accessToken={accessToken}
@@ -148,7 +147,7 @@ function App() {
               onSessionExpired={handleSessionExpired}
             />
           )
-        } else if (pathname === PATHS.manageAdminUnits) {
+        } else if (panel === MANAGE_ADMIN_PANELS.units) {
           page = (
             <UnitsPage
               accessToken={accessToken}
@@ -161,7 +160,7 @@ function App() {
               mode="admin-manage"
             />
           )
-        } else {
+        } else if (panel === MANAGE_ADMIN_PANELS.semesters) {
           page = (
             <SemestersPage
               accessToken={accessToken}
@@ -170,6 +169,8 @@ function App() {
               onSessionExpired={handleSessionExpired}
             />
           )
+        } else {
+          page = <NotFoundPage />
         }
       } else {
         page = <NotFoundPage />
@@ -199,7 +200,6 @@ function App() {
         currentPath={pathname}
         isAuthenticated={isAuthenticated}
         dashboardPath={dashboardPath}
-        user={user}
         navigate={navigate}
       />
       {isAdminLayout ? (

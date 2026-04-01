@@ -9,11 +9,18 @@ export const PATHS = {
   manage: '/manage',
   manageUnits: '/manage/units',
   manageAdmin: '/manage/admin',
-  manageAdminUnits: '/manage/admin/units',
-  manageAdminUsers: '/manage/admin/user',
-  manageAdminSemesters: '/manage/admin/semester',
   logout: '/logout',
 }
+
+/** Panel query cho /manage/admin — thay cho các path /manage/admin/user|units|semester cũ */
+export const MANAGE_ADMIN_PANELS = {
+  users: 'users',
+  units: 'units',
+  semesters: 'semesters',
+}
+
+const ADMIN_PANEL_IDS = new Set(Object.values(MANAGE_ADMIN_PANELS))
+const STAFF_UNIT_PANEL_IDS = new Set(['members', 'reports', 'events'])
 
 export const USER_ROLES = {
   admin: 'admin',
@@ -43,14 +50,7 @@ export const UNIT_TYPES = {
 
 const MANAGE_USER_ROLES = [USER_ROLES.admin, USER_ROLES.manager]
 const MANAGE_UNIT_ROLES = [USER_ROLES.admin, USER_ROLES.manager, USER_ROLES.staff]
-const MANAGE_PATHS = new Set([
-  PATHS.manage,
-  PATHS.manageUnits,
-  PATHS.manageAdmin,
-  PATHS.manageAdminUnits,
-  PATHS.manageAdminUsers,
-  PATHS.manageAdminSemesters,
-])
+const MANAGE_PATHS = new Set([PATHS.manage, PATHS.manageUnits, PATHS.manageAdmin])
 const UNIT_DETAIL_PATTERN = /^\/units\/([^/]+)$/
 const CLUB_DETAIL_PATTERN = /^\/club\/([^/]+)$/
 
@@ -83,18 +83,6 @@ const routeMeta = {
   },
   [PATHS.manageAdmin]: {
     title: 'Quản trị hệ thống',
-    requiresAuth: true,
-  },
-  [PATHS.manageAdminUsers]: {
-    title: 'Quản lý người dùng',
-    requiresAuth: true,
-  },
-  [PATHS.manageAdminUnits]: {
-    title: 'Quản lý đơn vị',
-    requiresAuth: true,
-  },
-  [PATHS.manageAdminSemesters]: {
-    title: 'Quản lý học kỳ',
     requiresAuth: true,
   },
   [PATHS.logout]: { title: 'Đăng xuất', requiresAuth: true },
@@ -152,11 +140,25 @@ export function isManagePath(pathname) {
   return MANAGE_PATHS.has(pathname)
 }
 
-export function parseManageQuery(search = '') {
+export function parseManageQuery(search = '', pathname = '') {
   const params = new URLSearchParams(search || '')
+  const unitId = params.get('unit') || ''
+  const rawPanel = params.get('panel')
+
+  if (pathname === PATHS.manageAdmin) {
+    const panel =
+      rawPanel && ADMIN_PANEL_IDS.has(rawPanel) ? rawPanel : MANAGE_ADMIN_PANELS.users
+    return { unitId, panel }
+  }
+
+  if (pathname === PATHS.manageUnits) {
+    const panel = rawPanel && STAFF_UNIT_PANEL_IDS.has(rawPanel) ? rawPanel : 'members'
+    return { unitId, panel }
+  }
+
   return {
-    unitId: params.get('unit') || '',
-    panel: params.get('panel') || 'members',
+    unitId,
+    panel: rawPanel || 'members',
   }
 }
 
