@@ -16,7 +16,6 @@ import {
   USER_ROLES,
   getManageOptionsFromUser,
   getManageRoleForUnit,
-  parseManageQuery,
 } from '../utils/routes'
 
 function unitTypePrefixLabel(type) {
@@ -70,17 +69,27 @@ function unitLogoSrc(unitId, unitLogoById, manageableUnits) {
 }
 
 function buildStaffPath(unitId, panel = 'members') {
-  const params = new URLSearchParams()
-  params.set('unit', unitId)
-  params.set('panel', panel)
-  return `${PATHS.manageUnits}?${params.toString()}`
+  if (!unitId) {
+    return PATHS.admin
+  }
+
+  return `${PATHS.admin}/${unitId}/${panel}`
 }
 
 function buildAdminPath(unitId, panel = MANAGE_ADMIN_PANELS.users) {
-  const params = new URLSearchParams()
-  params.set('unit', unitId)
-  params.set('panel', panel)
-  return `${PATHS.manageAdmin}?${params.toString()}`
+  if (!unitId) {
+    return PATHS.admin
+  }
+
+  return `${PATHS.admin}/${unitId}/${panel}`
+}
+
+function parseAdminPath(pathname = '') {
+  const matched = pathname.match(/^\/admin(?:\/([^/]+)(?:\/([^/]+))?)?$/)
+  return {
+    unitId: matched?.[1] || '',
+    panel: matched?.[2] || '',
+  }
 }
 
 function AdminShell({
@@ -88,7 +97,6 @@ function AdminShell({
   navigate,
   user,
   accessToken,
-  search,
   children,
 }) {
   const [manageableUnits, setManageableUnits] = useState([])
@@ -102,8 +110,10 @@ function AdminShell({
     ids.sort()
     return ids.join('|')
   }, [manageOptions])
-  const { unitId: selectedUnitId, panel: selectedPanel } = parseManageQuery(search, currentPath)
+  const { unitId: selectedUnitId, panel: selectedPanelRaw } = parseAdminPath(currentPath)
   const selectedUnitRole = getManageRoleForUnit(user, selectedUnitId)
+  const selectedPanel =
+    selectedPanelRaw || (selectedUnitRole === USER_ROLES.staff ? 'members' : MANAGE_ADMIN_PANELS.users)
   const selectedUnit = manageableUnits.find((unitItem) => unitItem.id === selectedUnitId)
   const canRenderSidebar = Boolean(selectedUnitId && selectedUnitRole)
   const isStaffSelected = selectedUnitRole === USER_ROLES.staff
@@ -195,8 +205,17 @@ function AdminShell({
       return
     }
 
-    const selectedOption = manageOptions.find((optionItem) => optionItem.unitId === selectedUnitId)
+    if (currentPath === PATHS.admin) {
+      const defaultOption = manageOptions[0]
+      if (defaultOption.role === USER_ROLES.staff) {
+        navigate(buildStaffPath(defaultOption.unitId, 'members'))
+      } else {
+        navigate(buildAdminPath(defaultOption.unitId, MANAGE_ADMIN_PANELS.users))
+      }
+      return
+    }
 
+    const selectedOption = manageOptions.find((optionItem) => optionItem.unitId === selectedUnitId)
     if (!selectedOption) {
       const defaultOption = manageOptions[0]
       if (defaultOption.role === USER_ROLES.staff) {
@@ -205,7 +224,7 @@ function AdminShell({
         navigate(buildAdminPath(defaultOption.unitId, MANAGE_ADMIN_PANELS.users))
       }
     }
-  }, [manageOptions, manageableUnits, navigate, selectedUnitId])
+  }, [currentPath, manageOptions, manageableUnits, navigate, selectedUnitId])
 
   useEffect(() => {
     if (!isDropdownOpen) {
@@ -234,13 +253,14 @@ function AdminShell({
   const staffActions = [
     { key: 'members', label: 'Quản lý thành viên', Icon: UsersThree },
     { key: 'reports', label: 'Quản lý báo cáo', Icon: ChartBar },
-    { key: 'events', label: 'Quản lý sự kiện được giao', Icon: CalendarBlank },
+    { key: 'tasks', label: 'Quản lý sự kiện được giao', Icon: CalendarBlank },
   ]
 
   const adminActions = [
     { panel: MANAGE_ADMIN_PANELS.users, label: 'Quản lý người dùng', Icon: Users },
     { panel: MANAGE_ADMIN_PANELS.units, label: 'Quản lý đơn vị', Icon: Buildings },
     { panel: MANAGE_ADMIN_PANELS.semesters, label: 'Quản lý học kì', Icon: CalendarDots },
+    { panel: MANAGE_ADMIN_PANELS.events, label: 'Quản lý sự kiện', Icon: CalendarBlank },
   ]
 
   return (
@@ -368,7 +388,7 @@ function AdminShell({
                       key={actionItem.panel}
                       type="button"
                       className={
-                        currentPath === PATHS.manageAdmin && selectedPanel === actionItem.panel
+                        currentPath.startsWith(PATHS.admin) && selectedPanel === actionItem.panel
                           ? 'admin-shell-action-button active'
                           : 'admin-shell-action-button'
                       }

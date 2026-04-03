@@ -84,6 +84,18 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, navigate }) {
 
         {isAuthenticated && (
           <>
+            <button
+              type="button"
+              className={
+                currentPath === PATHS.qrScan
+                  ? 'nav-action-button nav-action-button-light active'
+                  : 'nav-action-button nav-action-button-light'
+              }
+              onClick={() => navigate(PATHS.qrScan)}
+            >
+              Quet QR
+            </button>
+
             <button type="button" className="topnav-icon-button" aria-label="Thông báo">
               <BellIcon />
             </button>

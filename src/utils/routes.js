@@ -1,14 +1,16 @@
 export const PATHS = {
   home: '/',
-  event: '/event',
+  event: '/events',
+  qrScan: '/qr-scan',
   about: '/about',
   club: '/club',
   login: '/login',
   register: '/register',
   profile: '/profile',
-  manage: '/manage',
-  manageUnits: '/manage/units',
-  manageAdmin: '/manage/admin',
+  admin: '/admin',
+  manage: '/admin',
+  manageUnits: '/admin',
+  manageAdmin: '/admin',
   logout: '/logout',
 }
 
@@ -17,6 +19,7 @@ export const MANAGE_ADMIN_PANELS = {
   users: 'users',
   units: 'units',
   semesters: 'semesters',
+  events: 'events',
 }
 
 const ADMIN_PANEL_IDS = new Set(Object.values(MANAGE_ADMIN_PANELS))
@@ -37,9 +40,9 @@ export const ROLE_LABELS = {
 }
 
 export const ROLE_DASHBOARD_PATHS = {
-  [USER_ROLES.admin]: PATHS.manage,
-  [USER_ROLES.manager]: PATHS.manage,
-  [USER_ROLES.staff]: PATHS.manage,
+  [USER_ROLES.admin]: PATHS.admin,
+  [USER_ROLES.manager]: PATHS.admin,
+  [USER_ROLES.staff]: PATHS.admin,
 }
 
 export const UNIT_TYPES = {
@@ -64,6 +67,7 @@ export const primaryNavigation = [
 const routeMeta = {
   [PATHS.home]: { title: 'Trang chủ' },
   [PATHS.event]: { title: 'Sự kiện' },
+  [PATHS.qrScan]: { title: 'Quét QR', requiresAuth: true },
   [PATHS.about]: { title: 'Cổng thông tin' },
   [PATHS.club]: { title: 'Câu lạc bộ' },
   [PATHS.login]: { title: 'Đăng nhập' },
