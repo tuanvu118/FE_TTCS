@@ -3,7 +3,10 @@
   grid-template-areas: 'sidebar content';
   grid-template-columns: 352px minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
-  min-height: calc(100svh - 79px);
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
   background: #eef2f8;
 }
 
@@ -15,6 +18,9 @@
   align-content: start;
   gap: 1.15rem;
   padding: 1.1rem;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   color: #1f2d4e;
   background: linear-gradient(180deg, #fdfeff 0%, #f5f8fd 100%);
   border-right: 1px solid #c8d4e8;
@@ -308,13 +314,48 @@
 
 .content {
   grid-area: content;
-  display: grid;
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .main {
-  padding: 1.5rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1rem;
+  background: #eef2f8;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 77, 147, 0.4) #eef2f8;
+}
+
+.main::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.main::-webkit-scrollbar-track {
+  background: #eef2f8;
+  border-radius: 999px;
+}
+
+.main::-webkit-scrollbar-thumb {
+  background: rgba(15, 77, 147, 0.32);
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.main::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 77, 147, 0.48);
+  background-clip: padding-box;
+}
+
+.main::-webkit-scrollbar-corner {
+  background: #eef2f8;
 }
 
 @media (max-width: 768px) {
@@ -323,12 +364,15 @@
       'sidebar'
       'content';
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
   }
 
-  .sidebar,
-  .main {
+  .sidebar {
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+
+  .main {
+    padding: 0.75rem 1rem;
   }
 }

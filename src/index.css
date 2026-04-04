@@ -42,6 +42,25 @@ select:disabled {
   min-height: 100svh;
 }
 
+/* TopNav + khu admin = đúng 100svh; nội dung cuộn trong main (AdminLayout) */
+.app-shell--admin {
+  display: flex;
+  flex-direction: column;
+  height: 100svh;
+  max-height: 100svh;
+  overflow: hidden;
+}
+
+.app-shell--admin > .topnav {
+  flex-shrink: 0;
+}
+
+.app-shell--admin > section {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
 .topnav {
   position: sticky;
   top: 0;

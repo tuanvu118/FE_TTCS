@@ -1,114 +1,248 @@
+import { Route, Routes, useParams } from 'react-router-dom'
 import ForbiddenPage from '../page/ForbiddenPage'
 import NotFoundPage from '../page/NotFoundPage'
-import AdminPage from './users/AdminPage'
+import UserManagementPage from './users/UserManagementPage'
 import EventPage from './events/EventPage'
+import AdminEventDetailPage from './events/AdminEventDetailPage'
 import SemestersPage from './semesters/SemestersPage'
-import UnitsPage from './UnitsPage'
-import {
-  hasManageAccess,
-  MANAGE_ADMIN_PANELS,
-  getManageRoleForUnit,
-  USER_ROLES,
-} from '../utils/routes'
-import { parseAdminPath } from './adminPaths'
+import UnitsManagementPage from './units/UnitsManagementPage'
+
+import StaffUnitsWorkspace from './members/StaffUnitsWorkspace'
+import StaffReportsPanel from './reports/StaffReportsPanel'
+import StaffAssignedEventsPanel from './tasks/StaffAssignedEventsPanel'
+import { hasManageAccess, getManageRoleForUnit, USER_ROLES } from '../utils/routes'
 import routerStyles from './adminRouter.module.css'
 
+const FORBIDDEN_UNIT = 'Admin hoặc Manager tại đơn vị đã chọn'
+
+function AdminUserManagementView({ accessToken, role, roleLabel, onSessionExpired }) {
+  return (
+    <UserManagementPage
+      accessToken={accessToken}
+      role={role}
+      roleLabel={roleLabel}
+      pageTitle="Quản trị người dùng"
+      pageDescription="ADMIN có thể xem toàn bộ user, tạo user mới, chỉnh sửa user khác và phân quyền RBAC."
+      onSessionExpired={onSessionExpired}
+    />
+  )
+}
+
+function PickUnitCard() {
+  return (
+    <section className={`page-card ${routerStyles.pickUnitCard}`}>
+      <h1>Vui lòng chọn đơn vị để bắt đầu quản trị</h1>
+    </section>
+  )
+}
+
+function StaffUnitsPanelView({ accessToken, selectedUnitId, staffPanel, onSessionExpired }) {
+  const activePanel = ['members', 'reports', 'events'].includes(staffPanel) ? staffPanel : 'members'
+  if (activePanel === 'reports') {
+    return <StaffReportsPanel />
+  }
+  if (activePanel === 'events') {
+    return <StaffAssignedEventsPanel />
+  }
+  return (
+    <StaffUnitsWorkspace
+      accessToken={accessToken}
+      selectedUnitId={selectedUnitId}
+      activePanel={activePanel}
+      onSessionExpired={onSessionExpired}
+    />
+  )
+}
+
+function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired }) {
+  const { unitId } = useParams()
+  const scopedRole = getManageRoleForUnit(user, unitId)
+  if (scopedRole !== USER_ROLES.staff) {
+    if (!scopedRole) {
+      return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+    }
+    return <NotFoundPage />
+  }
+  return (
+    <StaffUnitsPanelView
+      accessToken={accessToken}
+      selectedUnitId={unitId}
+      staffPanel={staffPanel}
+      onSessionExpired={onSessionExpired}
+    />
+  )
+}
+
+function AdminManagerUsersRoute({ user, roleLabel, accessToken, onSessionExpired }) {
+  const { unitId } = useParams()
+  const scopedRole = getManageRoleForUnit(user, unitId)
+  if (scopedRole === USER_ROLES.staff) {
+    return <NotFoundPage />
+  }
+  if (scopedRole !== USER_ROLES.admin && scopedRole !== USER_ROLES.manager) {
+    return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+  }
+  return (
+    <AdminUserManagementView
+      accessToken={accessToken}
+      roleLabel={roleLabel}
+      role={scopedRole}
+      onSessionExpired={onSessionExpired}
+    />
+  )
+}
+
+function AdminManagerUnitsRoute({ navigate, user, roleLabel, accessToken, onSessionExpired }) {
+  const { unitId } = useParams()
+  const scopedRole = getManageRoleForUnit(user, unitId)
+  if (scopedRole === USER_ROLES.staff) {
+    return <NotFoundPage />
+  }
+  if (scopedRole !== USER_ROLES.admin && scopedRole !== USER_ROLES.manager) {
+    return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+  }
+  return (
+    <UnitsManagementPage
+      accessToken={accessToken}
+      role={scopedRole}
+      roleLabel={roleLabel}
+      user={user}
+      navigate={navigate}
+      onSessionExpired={onSessionExpired}
+    />
+  )
+}
+
+function AdminManagerEventsRoute({ navigate, user }) {
+  const { unitId } = useParams()
+  const scopedRole = getManageRoleForUnit(user, unitId)
+  if (scopedRole === USER_ROLES.staff) {
+    return <NotFoundPage />
+  }
+  if (scopedRole !== USER_ROLES.admin && scopedRole !== USER_ROLES.manager) {
+    return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+  }
+  return <EventPage navigate={navigate} adminUnitId={unitId} />
+}
+
+function AdminManagerEventDetailRoute({ user }) {
+  const { unitId, eventScope, eventId } = useParams()
+  if (eventScope !== 'p' && eventScope !== 'u') {
+    return <NotFoundPage />
+  }
+  const scopedRole = getManageRoleForUnit(user, unitId)
+  if (scopedRole === USER_ROLES.staff) {
+    return <NotFoundPage />
+  }
+  if (scopedRole !== USER_ROLES.admin && scopedRole !== USER_ROLES.manager) {
+    return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+  }
+  return (
+    <AdminEventDetailPage
+      adminUnitId={unitId}
+      eventId={eventId}
+      eventScope={eventScope}
+    />
+  )
+}
+
+function AdminManagerSemestersRoute({ user, roleLabel, accessToken, onSessionExpired }) {
+  const { unitId } = useParams()
+  const scopedRole = getManageRoleForUnit(user, unitId)
+  if (scopedRole === USER_ROLES.staff) {
+    return <NotFoundPage />
+  }
+  if (scopedRole !== USER_ROLES.admin && scopedRole !== USER_ROLES.manager) {
+    return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+  }
+  return (
+    <SemestersPage
+      accessToken={accessToken}
+      role={scopedRole}
+      roleLabel={roleLabel}
+      onSessionExpired={onSessionExpired}
+    />
+  )
+}
+
+/** /admin/:unitId — URL chỉ có đơn vị: panel mặc định theo role */
+function AdminUnitHomeRoute({ user, roleLabel, accessToken, onSessionExpired }) {
+  const { unitId } = useParams()
+  const scopedRole = getManageRoleForUnit(user, unitId)
+  if (!scopedRole) {
+    return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+  }
+  if (scopedRole === USER_ROLES.staff) {
+    return (
+      <StaffUnitsPanelView
+        accessToken={accessToken}
+        selectedUnitId={unitId}
+        staffPanel="members"
+        onSessionExpired={onSessionExpired}
+      />
+    )
+  }
+  if (scopedRole === USER_ROLES.admin || scopedRole === USER_ROLES.manager) {
+    return (
+      <AdminUserManagementView
+        accessToken={accessToken}
+        roleLabel={roleLabel}
+        role={scopedRole}
+        onSessionExpired={onSessionExpired}
+      />
+    )
+  }
+  return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+}
+
 export default function AdminRouter({
-  pathname,
-  search,
   navigate,
   user,
   roleLabel,
   accessToken,
   onSessionExpired,
 }) {
-  const { unitId: adminUnitId, panel: adminPanelRaw } = parseAdminPath(pathname)
-  const canAccessManage = hasManageAccess(user)
-  const scopedRole = getManageRoleForUnit(user, adminUnitId)
-  const defaultPanelForRole =
-    scopedRole === USER_ROLES.staff ? 'members' : MANAGE_ADMIN_PANELS.users
-  const adminPanel = adminPanelRaw || defaultPanelForRole
-
-  const staffPanels = new Set(['members', 'reports', 'tasks'])
-  const adminPanels = new Set([
-    MANAGE_ADMIN_PANELS.users,
-    MANAGE_ADMIN_PANELS.units,
-    MANAGE_ADMIN_PANELS.events,
-    MANAGE_ADMIN_PANELS.semesters,
-  ])
-
-  if (!canAccessManage) {
+  if (!hasManageAccess(user)) {
     return <ForbiddenPage requiredRoleLabel="Admin, Manager hoặc Staff" />
   }
 
-  if (!adminUnitId) {
-    return (
-      <section className={`page-card ${routerStyles.pickUnitCard}`}>
-        <h1>Vui lòng chọn đơn vị để bắt đầu quản trị</h1>
-      </section>
-    )
+  const shared = {
+    navigate,
+    user,
+    roleLabel,
+    accessToken,
+    onSessionExpired,
   }
 
-  if (scopedRole === USER_ROLES.staff) {
-    if (!staffPanels.has(adminPanel)) {
-      return <NotFoundPage />
-    }
-    return (
-      <UnitsPage
-        accessToken={accessToken}
-        role={scopedRole}
-        roleLabel={roleLabel}
-        user={user}
-        navigate={navigate}
-        search={`?unit=${adminUnitId}`}
-        onSessionExpired={onSessionExpired}
-        mode="staff-manage"
-        staffPanel={adminPanel === 'tasks' ? 'events' : adminPanel}
+  return (
+    <Routes>
+      <Route path="/admin" element={<PickUnitCard />} />
+
+      <Route
+        path="/admin/:unitId/events/:eventScope/:eventId"
+        element={<AdminManagerEventDetailRoute {...shared} />}
       />
-    )
-  }
+      <Route path="/admin/:unitId/events" element={<AdminManagerEventsRoute {...shared} />} />
 
-  if (scopedRole === USER_ROLES.admin || scopedRole === USER_ROLES.manager) {
-    if (!adminPanels.has(adminPanel)) {
-      return <NotFoundPage />
-    }
-    if (adminPanel === MANAGE_ADMIN_PANELS.users) {
-      return (
-        <AdminPage
-          accessToken={accessToken}
-          roleLabel={roleLabel}
-          role={scopedRole}
-          user={user}
-          onSessionExpired={onSessionExpired}
-        />
-      )
-    }
-    if (adminPanel === MANAGE_ADMIN_PANELS.units) {
-      return (
-        <UnitsPage
-          accessToken={accessToken}
-          role={scopedRole}
-          roleLabel={roleLabel}
-          user={user}
-          navigate={navigate}
-          search={search}
-          onSessionExpired={onSessionExpired}
-          mode="admin-manage"
-        />
-      )
-    }
-    if (adminPanel === MANAGE_ADMIN_PANELS.events) {
-      return <EventPage />
-    }
-    return (
-      <SemestersPage
-        accessToken={accessToken}
-        role={scopedRole}
-        roleLabel={roleLabel}
-        onSessionExpired={onSessionExpired}
+      <Route path="/admin/:unitId/users" element={<AdminManagerUsersRoute {...shared} />} />
+      <Route path="/admin/:unitId/units" element={<AdminManagerUnitsRoute {...shared} />} />
+      <Route path="/admin/:unitId/semesters" element={<AdminManagerSemestersRoute {...shared} />} />
+
+      <Route
+        path="/admin/:unitId/members"
+        element={<AdminStaffRoute {...shared} staffPanel="members" />}
       />
-    )
-  }
+      <Route
+        path="/admin/:unitId/reports"
+        element={<AdminStaffRoute {...shared} staffPanel="reports" />}
+      />
+      <Route
+        path="/admin/:unitId/tasks"
+        element={<AdminStaffRoute {...shared} staffPanel="events" />}
+      />
 
-  return <ForbiddenPage requiredRoleLabel="Admin hoặc Manager tại đơn vị đã chọn" />
+      <Route path="/admin/:unitId" element={<AdminUnitHomeRoute {...shared} />} />
+      <Route path="/admin/:unitId/*" element={<NotFoundPage />} />
+    </Routes>
+  )
 }

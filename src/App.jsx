@@ -8,7 +8,7 @@ import AboutPage from './page/AboutPage'
 import ClubDetailPage from './page/ClubDetailPage'
 import ClubPage from './page/ClubPage'
 import EventDetailPage from './page/EventDetailPage'
-import EventPage from './admin/events/EventPage'
+import EventsPage from './page/EventsPage'
 import ForbiddenPage from './page/ForbiddenPage'
 import HomePage from './page/HomePage'
 import LoginPage from './page/LoginPage'
@@ -58,10 +58,8 @@ function App() {
     page = <section className="page-card">Đang tải thông tin người dùng...</section>
   } else if (pathname === PATHS.home) {
     page = <HomePage />
-  } else if (pathname === '/event') {
-    page = <EventPage />
   } else if (pathname === PATHS.event) {
-    page = <EventPage />
+    page = <EventsPage />
   } else if (eventId) {
     page = <EventDetailPage eventId={eventId} />
   } else if (pathname === PATHS.qrScan) {
@@ -94,8 +92,6 @@ function App() {
   } else if (isAdminArea) {
     page = (
       <AdminRouter
-        pathname={pathname}
-        search={search}
         navigate={navigate}
         user={user}
         roleLabel={roleLabel}
@@ -126,7 +122,7 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${isAdminLayout ? ' app-shell--admin' : ''}`}>
       <TopNav
         currentPath={pathname}
         isAuthenticated={isAuthenticated}

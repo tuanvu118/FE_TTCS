@@ -1,0 +1,23 @@
+.wrap {
+  max-width: 960px;
+}
+
+.back {
+  margin: 0 0 1rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.back:hover {
+  border-color: #4096ff;
+  color: #1677ff;
+}
+
+.blank {
+  min-height: 240px;
+  margin-top: 0.5rem;
+}
