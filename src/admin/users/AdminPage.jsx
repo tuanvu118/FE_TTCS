@@ -1,4 +1,4 @@
-import UserManagementPage from '../components/users/UserManagementPage'
+import UserManagementPage from './UserManagementPage'
 
 function AdminPage({ accessToken, role, roleLabel, onSessionExpired }) {
   return (

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import NotificationPopup from '../NotificationPopup'
+import NotificationPopup from '../../components/NotificationPopup'
 import { createSemester, getSemesters, updateSemester } from '../../service/semesterService'
 import { USER_ROLES } from '../../utils/routes'
 import { getValidationMessage } from '../../utils/userUtils'
 import { formatSemesterDate } from '../../utils/semesterUtils'
 import SemesterFormModal from './SemesterFormModal'
 import SemesterStatusBadge from './SemesterStatusBadge'
+import styles from './adminSemesters.module.css'
 
 const DEFAULT_LIMIT = 10
 
@@ -152,7 +153,7 @@ function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired
   }
 
   return (
-    <section className="semester-page">
+    <section className={styles.page}>
       <NotificationPopup
         isOpen={Boolean(notice?.message)}
         title={notice?.title}
@@ -181,7 +182,7 @@ function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired
         onSubmit={handleEditSemester}
       />
 
-      <div className="page-card semester-page-header">
+      <div className={`page-card ${styles.pageHeader}`}>
         <div>
           <span className="dashboard-badge">{roleLabel}</span>
           <h1>Quản lý học kỳ</h1>
@@ -195,7 +196,7 @@ function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired
         )}
       </div>
 
-      <div className="semester-summary">
+      <div className={styles.summary}>
         <span>
           Hiển thị {showingFrom} - {showingTo} trên tổng số {result.total} học kỳ
         </span>
@@ -206,8 +207,8 @@ function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired
           <p>Đang tải danh sách học kỳ...</p>
         </section>
       ) : result.items.length ? (
-        <section className="page-card semester-table-shell">
-          <table className="semester-table">
+        <section className={`page-card ${styles.tableShell}`}>
+          <table className={styles.table}>
             <thead>
               <tr>
                 <th>Tên học kỳ</th>
@@ -221,9 +222,9 @@ function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired
             </thead>
             <tbody>
               {result.items.map((semester) => (
-                <tr key={semester.id} className={semester.is_active ? 'semester-row-active' : ''}>
+                <tr key={semester.id} className={semester.is_active ? styles.rowActive : ''}>
                   <td>
-                    <div className="semester-name-cell">
+                    <div className={styles.nameCell}>
                       <strong>{semester.name || 'Chưa cập nhật'}</strong>
                     </div>
                   </td>
@@ -273,7 +274,7 @@ function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired
           </div>
         </section>
       ) : (
-        <section className="page-card semester-empty-state">
+        <section className={`page-card ${styles.emptyState}`}>
           <h3>Chưa có học kỳ</h3>
           <p>Danh sách học kỳ hiện đang trống.</p>
         </section>

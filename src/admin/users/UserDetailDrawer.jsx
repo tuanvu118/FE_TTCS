@@ -1,8 +1,9 @@
-import UserRoleManagementSection from './UserRoleManagementSection'
-import UserAvatar from './UserAvatar'
-import UserRoleList from './UserRoleList'
+import UserAvatar from '../../components/users/UserAvatar'
+import UserRoleList from '../../components/users/UserRoleList'
 import { USER_ROLES } from '../../utils/routes'
 import { formatDateOfBirth } from '../../utils/userUtils'
+import styles from './adminUsers.module.css'
+import UserRoleManagementSection from './UserRoleManagementSection'
 
 function UserDetailDrawer({
   isOpen,
@@ -23,15 +24,15 @@ function UserDetailDrawer({
   const isAdmin = role === USER_ROLES.admin
 
   return (
-    <div className="user-drawer-backdrop" role="presentation" onClick={onClose}>
+    <div className={styles.drawerBackdrop} role="presentation" onClick={onClose}>
       <aside
-        className="user-drawer"
+        className={styles.drawer}
         role="dialog"
         aria-modal="true"
         aria-labelledby="user-detail-title"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="user-drawer-header">
+        <div className={styles.drawerHeader}>
           <h2 id="user-detail-title">Chi tiết người dùng</h2>
           <button
             type="button"
@@ -44,10 +45,10 @@ function UserDetailDrawer({
         </div>
 
         {isLoading ? (
-          <p className="user-muted-copy">Đang tải chi tiết người dùng...</p>
+          <p className={styles.mutedCopy}>Đang tải chi tiết người dùng...</p>
         ) : user ? (
-          <div className="user-detail-content">
-            <div className="user-detail-hero">
+          <div className={styles.detailContent}>
+            <div className={styles.detailHero}>
               <UserAvatar avatarUrl={user.avatar_url} fullName={user.full_name} size="large" />
               <div>
                 <h3>{user.full_name || 'Chưa cập nhật'}</h3>
@@ -55,7 +56,7 @@ function UserDetailDrawer({
               </div>
             </div>
 
-            <div className="user-detail-grid">
+            <div className={styles.detailGrid}>
               <div>
                 <span>Mã sinh viên</span>
                 <strong>{user.student_id || 'Chưa cập nhật'}</strong>
@@ -74,7 +75,7 @@ function UserDetailDrawer({
               </div>
             </div>
 
-            <div className="user-role-section">
+            <div className={styles.roleSection}>
               <h4>Quyền gộp theo đơn vị</h4>
               <UserRoleList roles={user.roles} />
             </div>
@@ -95,7 +96,7 @@ function UserDetailDrawer({
             )}
           </div>
         ) : (
-          <p className="user-muted-copy">Không tìm thấy người dùng.</p>
+          <p className={styles.mutedCopy}>Không tìm thấy người dùng.</p>
         )}
       </aside>
     </div>

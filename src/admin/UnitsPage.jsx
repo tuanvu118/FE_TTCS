@@ -1,5 +1,7 @@
-import StaffUnitsWorkspace from '../components/units/StaffUnitsWorkspace'
-import UnitsManagementPage from '../components/units/UnitsManagementPage'
+import StaffUnitsWorkspace from './members/StaffUnitsWorkspace'
+import StaffReportsPanel from './reports/StaffReportsPanel'
+import StaffAssignedEventsPanel from './tasks/StaffAssignedEventsPanel'
+import UnitsManagementPage from './units/UnitsManagementPage'
 
 function UnitsPage({
   accessToken,
@@ -18,19 +20,11 @@ function UnitsPage({
     const activePanel = ['members', 'reports', 'events'].includes(staffPanel) ? staffPanel : 'members'
 
     if (activePanel === 'reports') {
-      return (
-        <section className="page-card">
-          <h1>Quản lý báo cáo</h1>
-        </section>
-      )
+      return <StaffReportsPanel />
     }
 
     if (activePanel === 'events') {
-      return (
-        <section className="page-card">
-          <h1>Quản lý sự kiện được giao</h1>
-        </section>
-      )
+      return <StaffAssignedEventsPanel />
     }
 
     return (

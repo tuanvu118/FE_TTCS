@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import ConfirmDialog from '../ConfirmDialog'
-import NotificationPopup from '../NotificationPopup'
+import ConfirmDialog from '../../components/ConfirmDialog'
+import NotificationPopup from '../../components/NotificationPopup'
+import UnitFormModal from '../../components/units/UnitFormModal'
+import UnitLogo from '../../components/units/UnitLogo'
+import UnitTypeBadge from '../../components/units/UnitTypeBadge'
 import {
   createUnit,
   deleteUnit,
@@ -10,9 +13,7 @@ import {
 } from '../../service/unitService'
 import { buildUnitDetailPath, UNIT_TYPES, USER_ROLES } from '../../utils/routes'
 import { getValidationMessage } from '../../utils/userUtils'
-import UnitFormModal from './UnitFormModal'
-import UnitLogo from './UnitLogo'
-import UnitTypeBadge from './UnitTypeBadge'
+import styles from './adminUnits.module.css'
 
 const DEFAULT_LIMIT = 10
 const STAFF_FETCH_LIMIT = 100
@@ -21,7 +22,7 @@ function IconButton({ title, onClick, danger = false, children }) {
   return (
     <button
       type="button"
-      className={danger ? 'unit-icon-button danger' : 'unit-icon-button'}
+      className={danger ? `${styles.iconButton} danger` : styles.iconButton}
       onClick={onClick}
       title={title}
       aria-label={title}
@@ -362,7 +363,7 @@ function UnitsManagementPage({
   }
 
   return (
-    <section className="units-page">
+    <section className={styles.unitsPage}>
       <NotificationPopup
         isOpen={Boolean(notice?.message)}
         title={notice?.title}
@@ -406,7 +407,7 @@ function UnitsManagementPage({
         onConfirm={handleDeleteUnit}
       />
 
-      <div className="page-card unit-console-header">
+      <div className={`page-card ${styles.consoleHeader}`}>
         <div>
           <span className="dashboard-badge">{roleLabel}</span>
           <h1>{pageTitle}</h1>
@@ -416,7 +417,7 @@ function UnitsManagementPage({
         {isAdmin && (
           <button
             type="button"
-            className="primary-button unit-console-create-button"
+            className={`primary-button ${styles.consoleCreateButton}`}
             onClick={() => setIsCreateOpen(true)}
           >
             + Thêm đơn vị
@@ -425,10 +426,10 @@ function UnitsManagementPage({
       </div>
 
       <form
-        className="page-card unit-console-toolbar unit-console-toolbar-compact"
+        className={`page-card ${styles.consoleToolbar} ${styles.consoleToolbarCompact}`}
         onSubmit={handleSearchSubmit}
       >
-        <label className="field unit-console-search">
+        <label className={`field ${styles.consoleSearch}`}>
           <span>Tìm kiếm theo tên</span>
           <input
             type="search"
@@ -455,7 +456,7 @@ function UnitsManagementPage({
           </select>
         </label>
 
-        <div className="unit-console-toolbar-actions">
+        <div className={styles.consoleToolbarActions}>
           <button type="submit" className="secondary-button">
             Áp dụng
           </button>
@@ -465,7 +466,7 @@ function UnitsManagementPage({
         </div>
       </form>
 
-      <div className="unit-console-summary">
+      <div className={styles.consoleSummary}>
         <span>Loại hình: {activeTypeLabel}</span>
         <span>
           Hiển thị {showingFrom} - {showingTo} trên tổng số {result.total} đơn vị
@@ -477,8 +478,8 @@ function UnitsManagementPage({
           <p>Đang tải danh sách đơn vị...</p>
         </section>
       ) : result.items.length ? (
-        <section className="page-card unit-table-shell">
-          <table className="unit-table unit-console-table">
+        <section className={`page-card ${styles.managementTableShell}`}>
+          <table className={styles.managementTable}>
             <thead>
               <tr>
                 <th>Logo</th>
@@ -495,10 +496,10 @@ function UnitsManagementPage({
                     <UnitLogo logo={unit.logo} name={unit.name} size="small" />
                   </td>
                   <td>
-                    <div className="unit-table-name">
+                    <div className={styles.tableName}>
                       <button
                         type="button"
-                        className="unit-name-link"
+                        className={styles.nameLink}
                         onClick={() => navigate(buildUnitDetailPath(unit.id))}
                       >
                         {unit.name || 'Chưa cập nhật'}
@@ -508,13 +509,13 @@ function UnitsManagementPage({
                   <td>
                     <UnitTypeBadge type={unit.type} />
                   </td>
-                  <td className="unit-total-cell">
+                  <td className={styles.totalCell}>
                     {memberTotals[unit.id] === null || memberTotals[unit.id] === undefined
                       ? '-'
                       : memberTotals[unit.id]}
                   </td>
                   <td>
-                    <div className="unit-table-actions unit-table-actions-icon">
+                    <div className={`${styles.tableActions} ${styles.tableActionsIcon}`}>
                       {isAdmin ? (
                         <>
                           <IconButton

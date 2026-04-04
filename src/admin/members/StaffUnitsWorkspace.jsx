@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
-import ConfirmDialog from '../ConfirmDialog'
-import NotificationPopup from '../NotificationPopup'
-import UserAvatar from '../users/UserAvatar'
+import ConfirmDialog from '../../components/ConfirmDialog'
+import NotificationPopup from '../../components/NotificationPopup'
+import UnitLogo from '../../components/units/UnitLogo'
+import UnitMemberModal from '../../components/units/UnitMemberModal'
+import UnitTypeBadge from '../../components/units/UnitTypeBadge'
+import UserAvatar from '../../components/users/UserAvatar'
 import {
   addUnitMember,
   getUnitById,
@@ -9,9 +12,7 @@ import {
   removeUnitMember,
 } from '../../service/unitService'
 import { formatJoinedAt, getUnitIntroduction } from '../../utils/unitUtils'
-import UnitLogo from './UnitLogo'
-import UnitMemberModal from './UnitMemberModal'
-import UnitTypeBadge from './UnitTypeBadge'
+import styles from '../units/adminUnits.module.css'
 
 const DEFAULT_MEMBER_LIMIT = 10
 
@@ -329,7 +330,7 @@ function StaffUnitsWorkspace({
           </button>
         </div>
 
-        <form className="unit-member-filter-grid staff-member-filter-grid" onSubmit={handleMemberFilterSubmit}>
+        <form className={styles.staffMemberFilterGrid} onSubmit={handleMemberFilterSubmit}>
           <label className="field">
             <span>Họ tên</span>
             <input
@@ -478,7 +479,7 @@ function StaffUnitsWorkspace({
   }
 
   return (
-    <section className="staff-units-main">
+    <section className={styles.staffMain}>
       <NotificationPopup
         isOpen={Boolean(notice?.message)}
         title={notice?.title}

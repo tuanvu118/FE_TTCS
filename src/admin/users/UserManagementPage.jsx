@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import NotificationPopup from '../NotificationPopup'
-import UserAvatar from './UserAvatar'
-import UserDetailDrawer from './UserDetailDrawer'
-import UserFormModal from './UserFormModal'
+import NotificationPopup from '../../components/NotificationPopup'
+import UserAvatar from '../../components/users/UserAvatar'
+import UserFormModal from '../../components/users/UserFormModal'
 import { createUser, getUserDetail, getUsers, updateUser } from '../../service/userService'
 import { USER_ROLES } from '../../utils/routes'
 import { getValidationMessage } from '../../utils/userUtils'
+import UserDetailDrawer from './UserDetailDrawer'
+import styles from './adminUsers.module.css'
 
 const DEFAULT_LIMIT = 10
 
@@ -253,7 +254,7 @@ function UserManagementPage({
   }
 
   return (
-    <section className="user-management-page">
+    <section className={styles.managementPage}>
       <NotificationPopup
         isOpen={Boolean(notice?.message)}
         title={notice?.title}
@@ -305,7 +306,7 @@ function UserManagementPage({
         onRoleChanged={handleRoleChanged}
       />
 
-      <section className="page-card user-console-header">
+      <section className={`page-card ${styles.consoleHeader}`}>
         <div>
           <span className="dashboard-badge">{roleLabel}</span>
           <h1>{pageTitle}</h1>
@@ -314,7 +315,7 @@ function UserManagementPage({
         {canCreateUser && (
           <button
             type="button"
-            className="primary-button user-console-create-button"
+            className={`primary-button ${styles.consoleCreateButton}`}
             onClick={() => setIsCreateOpen(true)}
           >
             + Thêm người dùng
@@ -322,8 +323,8 @@ function UserManagementPage({
         )}
       </section>
 
-      <form className="page-card user-console-toolbar" onSubmit={handleFilterSubmit}>
-        <div className="user-console-filter-grid">
+      <form className={`page-card ${styles.consoleToolbar}`} onSubmit={handleFilterSubmit}>
+        <div className={styles.consoleFilterGrid}>
           <label className="field">
             <span>Họ và tên</span>
             <input
@@ -373,7 +374,7 @@ function UserManagementPage({
           </label>
         </div>
 
-        <div className="user-console-toolbar-actions">
+        <div className={styles.consoleToolbarActions}>
           <button type="submit" className="secondary-button">
             Áp dụng
           </button>
@@ -383,7 +384,7 @@ function UserManagementPage({
         </div>
       </form>
 
-      <div className="user-console-summary">
+      <div className={styles.consoleSummary}>
         <span>
           Hiển thị {showingFrom} - {showingTo} trên tổng số {result.total} người dùng
         </span>
@@ -394,8 +395,8 @@ function UserManagementPage({
           <p>Đang tải danh sách người dùng...</p>
         </section>
       ) : result.items.length ? (
-        <section className="page-card user-table-shell">
-          <table className="user-table user-console-table">
+        <section className={`page-card ${styles.tableShell}`}>
+          <table className={styles.dataTable}>
             <thead>
               <tr>
                 <th>Avatar</th>
@@ -417,10 +418,10 @@ function UserManagementPage({
                   <td>{userItem.student_id || 'Chưa cập nhật'}</td>
                   <td>{userItem.class_name || 'Chưa cập nhật'}</td>
                   <td>
-                    <div className="user-table-actions">
+                    <div className={styles.tableActions}>
                       <button
                         type="button"
-                        className="secondary-button user-table-action-button"
+                        className={`secondary-button ${styles.tableActionButton}`}
                         onClick={() => handleViewDetail(userItem.id)}
                       >
                         Xem chi tiết
@@ -432,10 +433,10 @@ function UserManagementPage({
             </tbody>
           </table>
 
-          <div className="user-table-footer">
+          <div className={styles.tableFooter}>
             <button
               type="button"
-              className="secondary-button user-page-button"
+              className={`secondary-button ${styles.pageButton}`}
               onClick={() => handlePageChange('previous')}
               disabled={!canGoPrevious}
             >
@@ -446,7 +447,7 @@ function UserManagementPage({
             </span>
             <button
               type="button"
-              className="secondary-button user-page-button"
+              className={`secondary-button ${styles.pageButton}`}
               onClick={() => handlePageChange('next')}
               disabled={!canGoNext}
             >

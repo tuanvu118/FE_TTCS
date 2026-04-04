@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import NotificationPopup from '../NotificationPopup'
+import NotificationPopup from '../../components/NotificationPopup'
 import { toApiDateTimeValue, toDateTimeLocalValue } from '../../utils/semesterUtils'
+import styles from './adminSemesters.module.css'
 
 const initialFormState = {
   name: '',
@@ -122,7 +123,7 @@ function SemesterFormModal({ isOpen, mode, initialValues, isSubmitting, onClose,
           </button>
         </div>
 
-        <form className="semester-form-grid" onSubmit={handleSubmit}>
+        <form className={styles.formGrid} onSubmit={handleSubmit}>
           <label className="field field-full">
             <span>Tên học kỳ</span>
             <input
@@ -165,7 +166,7 @@ function SemesterFormModal({ isOpen, mode, initialValues, isSubmitting, onClose,
             />
           </label>
 
-          <label className="semester-checkbox field-full">
+          <label className={`${styles.checkbox} field-full`}>
             <input
               name="is_active"
               type="checkbox"

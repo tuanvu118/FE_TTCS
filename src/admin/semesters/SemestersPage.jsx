@@ -1,4 +1,4 @@
-import SemesterManagementPage from '../components/semesters/SemesterManagementPage'
+import SemesterManagementPage from './SemesterManagementPage'
 
 function SemestersPage({ accessToken, role, roleLabel, onSessionExpired }) {
   return (

@@ -5,7 +5,6 @@ export const PATHS = {
   about: '/about',
   club: '/club',
   login: '/login',
-  register: '/register',
   profile: '/profile',
   admin: '/admin',
   manage: '/admin',
@@ -71,11 +70,6 @@ const routeMeta = {
   [PATHS.about]: { title: 'Cổng thông tin' },
   [PATHS.club]: { title: 'Câu lạc bộ' },
   [PATHS.login]: { title: 'Đăng nhập' },
-  [PATHS.register]: {
-    title: 'Tạo người dùng',
-    requiresAuth: true,
-    allowedRoles: MANAGE_USER_ROLES,
-  },
   [PATHS.profile]: { title: 'Hồ sơ', requiresAuth: true },
   [PATHS.manage]: {
     title: 'Quản trị',

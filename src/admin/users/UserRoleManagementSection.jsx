@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import ConfirmDialog from '../ConfirmDialog'
+import ConfirmDialog from '../../components/ConfirmDialog'
 import {
   assignRole,
   getRoles,
@@ -9,6 +9,7 @@ import {
 import { getSemesters } from '../../service/semesterService'
 import { getUnits } from '../../service/unitService'
 import { formatDateTime, getValidationMessage } from '../../utils/userUtils'
+import styles from './adminUsers.module.css'
 
 const INITIAL_ASSIGN_FORM = {
   role_id: '',
@@ -159,7 +160,7 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
   }
 
   return (
-    <section className="user-role-management">
+    <section className={styles.roleManagement}>
       <ConfirmDialog
         isOpen={Boolean(assignmentToRemove)}
         title="Gỡ quyền"
@@ -171,9 +172,9 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
         onConfirm={handleRemoveAssignment}
       />
 
-      <div className="user-role-management-header">
+      <div className={styles.roleManagementHeader}>
         <h4>Quản lý phân quyền (RBAC)</h4>
-        <label className="field user-role-filter-field">
+        <label className={`field ${styles.roleFilterField}`}>
           <span>Lọc assignment theo học kỳ</span>
           <select
             value={assignmentSemesterFilter}
@@ -189,7 +190,7 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
         </label>
       </div>
 
-      <form className="user-role-assign-form" onSubmit={handleAssignRole}>
+      <form className={styles.roleAssignForm} onSubmit={handleAssignRole}>
         <label className="field">
           <span>Vai trò</span>
           <select
@@ -247,10 +248,10 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
       </form>
 
       {isLoading ? (
-        <p className="user-muted-copy">Đang tải assignment quyền...</p>
+        <p className={styles.mutedCopy}>Đang tải assignment quyền...</p>
       ) : assignments.length ? (
-        <div className="user-role-assignment-shell">
-          <table className="user-role-assignment-table">
+        <div className={styles.assignmentShell}>
+          <table className={styles.assignmentTable}>
             <thead>
               <tr>
                 <th>Role</th>
@@ -272,7 +273,7 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
                   <td>
                     <button
                       type="button"
-                      className="danger-button user-role-remove-button"
+                      className={`danger-button ${styles.roleRemoveButton}`}
                       onClick={() => setAssignmentToRemove(assignmentItem)}
                     >
                       Gỡ
@@ -282,10 +283,10 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
               ))}
             </tbody>
           </table>
-          <span className="user-role-assignment-total">Tổng assignment: {totalAssignments}</span>
+          <span className={styles.assignmentTotal}>Tổng assignment: {totalAssignments}</span>
         </div>
       ) : (
-        <p className="user-muted-copy">Không có assignment quyền.</p>
+        <p className={styles.mutedCopy}>Không có assignment quyền.</p>
       )}
     </section>
   )

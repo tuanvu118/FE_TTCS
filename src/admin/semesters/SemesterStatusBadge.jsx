@@ -1,8 +1,9 @@
 import { mapSemesterStatusLabel } from '../../utils/semesterUtils'
+import styles from './adminSemesters.module.css'
 
 function SemesterStatusBadge({ isActive }) {
   return (
-    <span className={isActive ? 'semester-status-badge active' : 'semester-status-badge inactive'}>
+    <span className={`${styles.badge} ${isActive ? styles.active : styles.inactive}`}>
       {mapSemesterStatusLabel(isActive)}
     </span>
   )
