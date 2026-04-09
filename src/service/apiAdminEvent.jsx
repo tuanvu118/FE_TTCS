@@ -79,15 +79,11 @@ function parseCreatedTime(createAt) {
 }
 
 export async function getAllUnitEventsForAdmin(semesterId) {
-  if (!semesterId) {
-    message.warning('Thiếu học kỳ để tải sự kiện đơn vị.')
-    return []
-  }
-
+  const sid = semesterId ? String(semesterId).trim() : null
   const accessToken = getStoredAuthSession()?.accessToken || ''
   try {
-    const params = new URLSearchParams({ semesterId: String(semesterId).trim() })
-    const response = await apiRequest(`/unit-events/all?${params.toString()}`, {
+    const query = sid && sid !== 'all' ? `?semesterId=${sid}` : ''
+    const response = await apiRequest(`/unit-events/all${query}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -131,7 +127,7 @@ export async function getAllEventBySemesterIdForAdmin(semesterId) {
 
   const sid = String(semesterId).trim()
   const [unitList, publicList] = await Promise.all([
-    getAllUnitEventsForAdmin(sid),
+    sid === 'all' ? getAllUnitEventsForAdmin(null) : getAllUnitEventsForAdmin(sid),
     getAllPublicEventsForAdmin(),
   ])
 
@@ -139,11 +135,127 @@ export async function getAllEventBySemesterIdForAdmin(semesterId) {
     toAdminEventRow(item, String(item?.type ?? 'HTSK')),
   )
 
-  const publicInSemester = publicList.filter((item) => publicEventSemesterId(item) === sid)
+  const publicInSemester = sid === 'all' 
+    ? publicList 
+    : publicList.filter((item) => publicEventSemesterId(item) === sid)
+    
   const publicRows = publicInSemester.map((item) => toAdminEventRow(item, 'SK'))
 
   const merged = [...unitRows, ...publicRows]
   merged.sort((b, a) => parseCreatedTime(a.create_at) - parseCreatedTime(b.create_at))
 
-  return merged
+  // Map thêm thông tin semester_id vào row để hiển thị ở bảng nếu cần
+  return merged.map(row => ({
+    ...row,
+    semester_id: row.type === 'SK' 
+      ? publicList.find(p => p.id === row.id)?.semester_id 
+      : unitList.find(u => u.id === row.id)?.semester_id
+  }))
+}
+
+export async function createPublicEvent(formData) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  try {
+    const response = await apiRequest('/events/', {
+      method: 'POST',
+      body: formData, // FormData doesn't need Content-Type header, fetch will set it with boundary
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+    return response
+  } catch (error) {
+    if (error instanceof ApiError) {
+      message.error(error.message || 'Tạo sự kiện chung thất bại.')
+    } else {
+      message.error('Không thể kết nối đến máy chủ.')
+    }
+    throw error
+  }
+}
+
+export async function createUnitEvent(formData) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  try {
+    const response = await apiRequest('/unit-events/', {
+      method: 'POST',
+      body: formData,
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+    return response
+  } catch (error) {
+    if (error instanceof ApiError) {
+      message.error(error.message || 'Tạo sự kiện đơn vị thất bại.')
+    } else {
+      message.error('Không thể kết nối đến máy chủ.')
+    }
+    throw error
+  }
+}
+
+export async function getPublicEventById(eventId) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  try {
+    const response = await apiRequest(`/events/${eventId}`, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+    return response
+  } catch (error) {
+    notifyPublicEventsError(error)
+    throw error
+  }
+}
+
+export async function getUnitEventById(eventId, unitId = null) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  try {
+    const headers = { Accept: 'application/json' }
+    if (unitId) {
+      headers['X-Unit-Id'] = unitId
+    }
+
+    const response = await apiRequest(`/unit-events/${eventId}`, {
+      method: 'GET',
+      headers,
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+    return response
+  } catch (error) {
+    notifyUnitEventsListError(error)
+    throw error
+  }
+}
+
+export async function updatePublicEvent(eventId, formData) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  try {
+    const response = await apiRequest(`/events/${eventId}`, {
+      method: 'PUT',
+      body: formData,
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+    return response
+  } catch (error) {
+    if (error instanceof ApiError) {
+      message.error(error.message || 'Cập nhật sự kiện chung thất bại.')
+    }
+    throw error
+  }
+}
+
+export async function updateUnitEvent(eventId, formData) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  try {
+    const response = await apiRequest(`/unit-events/${eventId}`, {
+      method: 'PUT',
+      body: formData,
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+    return response
+  } catch (error) {
+    if (error instanceof ApiError) {
+      message.error(error.message || 'Cập nhật sự kiện đơn vị thất bại.')
+    }
+    throw error
+  }
 }

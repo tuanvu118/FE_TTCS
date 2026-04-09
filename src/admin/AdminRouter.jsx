@@ -4,6 +4,8 @@ import NotFoundPage from '../page/NotFoundPage'
 import UserManagementPage from './users/UserManagementPage'
 import EventPage from './events/EventPage'
 import AdminEventDetailPage from './events/AdminEventDetailPage'
+import CreateEventPage from './events/CreateEventPage'
+import EditEventPage from './events/EditEventPage'
 import SemestersPage from './semesters/SemestersPage'
 import UnitsManagementPage from './units/UnitsManagementPage'
 
@@ -224,6 +226,14 @@ export default function AdminRouter({
       />
       <Route path="/admin/:unitId/events" element={<AdminManagerEventsRoute {...shared} />} />
 
+      <Route
+        path="/admin/:unitId/events/create"
+        element={<CreateEventPage {...shared} />}
+      />
+      <Route
+        path="/admin/:unitId/events/:eventScope/:eventId/edit"
+        element={<EditEventPage {...shared} />}
+      />
       <Route path="/admin/:unitId/users" element={<AdminManagerUsersRoute {...shared} />} />
       <Route path="/admin/:unitId/units" element={<AdminManagerUnitsRoute {...shared} />} />
       <Route path="/admin/:unitId/semesters" element={<AdminManagerSemestersRoute {...shared} />} />

@@ -29,9 +29,24 @@ export function isAdminPath(pathname) {
     return true
   }
   if (
+    segments.length === 3 &&
+    segments[1] === MANAGE_ADMIN_PANELS.events &&
+    segments[2] === 'create'
+  ) {
+    return true
+  }
+  if (
     segments.length === 4 &&
     segments[1] === MANAGE_ADMIN_PANELS.events &&
     (segments[2] === 'p' || segments[2] === 'u')
+  ) {
+    return true
+  }
+  if (
+    segments.length === 5 &&
+    segments[1] === MANAGE_ADMIN_PANELS.events &&
+    (segments[2] === 'p' || segments[2] === 'u') &&
+    segments[4] === 'edit'
   ) {
     return true
   }

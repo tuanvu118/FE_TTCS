@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Broadcast, Globe, Handshake, Tag } from '@phosphor-icons/react'
+import { Select, Badge } from 'antd'
 import { getAllEventBySemesterIdForAdmin } from '../../service/apiAdminEvent'
+import { getStoredAuthSession } from '../../service/authSession'
+import { getSemesters } from '../../service/semesterService'
 import {
   CURRENT_SEMESTER_STORAGE_KEY,
   getStoredCurrentSemester,
@@ -46,84 +50,47 @@ function EventTypeBadge({ eventType }) {
   )
 }
 
-function formatSemesterNameFromStorage(semester) {
-  if (!semester?.id) {
-    return 'Chưa chọn học kỳ'
-  }
-  const name = String(semester.name || '').trim()
-  if (name) {
-    return name
-  }
-  const year = String(semester.academic_year || '').trim()
-  if (year) {
-    return year
-  }
-  return 'Học kỳ đã lưu'
-}
-
 export default function EventPage({ navigate, adminUnitId }) {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [currentSemester, setCurrentSemester] = useState(() => getStoredCurrentSemester())
+  const [semesters, setSemesters] = useState([])
+  const [selectedSemesterId, setSelectedSemesterId] = useState(() => {
+     const stored = getStoredCurrentSemester()
+     return stored?.id || 'all'
+  })
 
   useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      const semester = getStoredCurrentSemester()
-      if (!cancelled) {
-        setCurrentSemester(semester)
-      }
-
-      const semesterId = semester?.id
-      if (!semesterId) {
-        if (!cancelled) {
-          setRows([])
-          setLoading(false)
-          setError('Chưa chọn học kỳ.')
-        }
-        return
-      }
-
-      setLoading(true)
-      setError('')
-
-      try {
-        const events = await getAllEventBySemesterIdForAdmin(semesterId)
-        if (!cancelled) {
-          setRows(events)
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setError('Không tải được danh sách sự kiện.')
-          setRows([])
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
-    }
-
-    load()
-
-    return () => {
-      cancelled = true
-    }
+    fetchSemesters()
   }, [])
+
+  const fetchSemesters = async () => {
+    try {
+      const token = getStoredAuthSession()?.accessToken
+      const res = await getSemesters(token)
+      setSemesters(res.items || [])
+    } catch (err) {
+      console.error('Failed to fetch semesters', err)
+    }
+  }
 
   useEffect(() => {
-    function onStorage(e) {
-      if (e.key !== CURRENT_SEMESTER_STORAGE_KEY) {
-        return
-      }
-      setCurrentSemester(getStoredCurrentSemester())
-    }
+    loadEvents()
+  }, [selectedSemesterId])
 
-    window.addEventListener('storage', onStorage)
-    return () => window.removeEventListener('storage', onStorage)
-  }, [])
+  async function loadEvents() {
+    setLoading(true)
+    setError('')
+    try {
+      const events = await getAllEventBySemesterIdForAdmin(selectedSemesterId)
+      setRows(events)
+    } catch (e) {
+      setError('Không tải được danh sách sự kiện.')
+      setRows([])
+    } finally {
+      setLoading(false)
+    }
+  }
 
   function goDetail(row) {
     if (!adminUnitId) {
@@ -132,29 +99,49 @@ export default function EventPage({ navigate, adminUnitId }) {
     navigate(buildAdminEventDetailPath(adminUnitId, row.id, row.type))
   }
 
-  const semesterDisplayName = formatSemesterNameFromStorage(currentSemester)
+  const semesterOptions = [
+    { value: 'all', label: 'Tất cả học kỳ' },
+    ...semesters.map(s => ({
+      value: s.id,
+      label: (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          <span>{s.name} - {s.academic_year}</span>
+          {s.is_active && <Badge count="Đang diễn ra" style={{ backgroundColor: '#10b981', marginLeft: '10px', fontSize: '10px' }} />}
+        </div>
+      ),
+      searchValue: `${s.name} ${s.academic_year}`
+    }))
+  ]
 
   return (
     <section className={`page-card ${styles.eventsRoot}`}>
       <div className={styles.header}>
         <h1 className={styles.title}>Sự kiện</h1>
         <div className={styles.actions}>
-          <button type="button" className={styles.filterBtn}>
-            <span className={styles.filterBtnLabel} title={semesterDisplayName}>
-              {semesterDisplayName}
-            </span>
-          </button>
-          <button type="button" className={styles.createBtn}>
+          <Select
+            className={styles.semesterSelect}
+            style={{ width: 300 }}
+            placeholder="Chọn học kỳ"
+            value={selectedSemesterId}
+            onChange={setSelectedSemesterId}
+            options={semesterOptions}
+          />
+          <Link 
+            to={`/admin/${adminUnitId}/events/create`} 
+            className={styles.createBtn}
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+          >
             Tạo sự kiện mới
-          </button>
+          </Link>
         </div>
       </div>
+      
       {loading ? (
-        <p className={styles.hint}>Đang tải…</p>
+        <div className={styles.hint}>Đang tải…</div>
       ) : error ? (
-        <p className={styles.error}>{error}</p>
+        <div className={styles.error}>{error}</div>
       ) : rows.length === 0 ? (
-        <p className={styles.empty}>Không có sự kiện trong học kỳ này.</p>
+        <div className={styles.empty}>Không có sự kiện nào.</div>
       ) : (
         <div className={styles.tableWrap}>
           <table className={styles.table}>
@@ -163,6 +150,7 @@ export default function EventPage({ navigate, adminUnitId }) {
                 <th>Tên</th>
                 <th>Điểm</th>
                 <th>Loại</th>
+                {selectedSemesterId === 'all' && <th>Học kỳ</th>}
                 <th aria-label="Thao tác" />
               </tr>
             </thead>
@@ -181,6 +169,11 @@ export default function EventPage({ navigate, adminUnitId }) {
                   <td>
                     <EventTypeBadge eventType={row.type} />
                   </td>
+                  {selectedSemesterId === 'all' && (
+                    <td style={{ fontSize: '12px', color: '#64748b' }}>
+                      {semesters.find(s => s.id === row.semester_id)?.name || 'N/A'}
+                    </td>
+                  )}
                   <td>
                     <button
                       type="button"
