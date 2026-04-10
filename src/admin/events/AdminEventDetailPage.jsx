@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, PencilSimple, Trash, WarningCircle } from '@phosphor-icons/react'
-import { Spin } from 'antd'
-import { getPublicEventById, getUnitEventById } from '../../service/apiAdminEvent'
+import { Spin, Popconfirm } from 'antd'
+import { 
+  getPublicEventById, 
+  getUnitEventById,
+  deletePublicEvent,
+  deleteUnitEvent
+} from '../../service/apiAdminEvent'
 import { getSemesters } from '../../service/semesterService'
 import { getStoredAuthSession } from '../../service/authSession'
+
 import EventPublicDetail from './EventPublicDetail'
 import EventUnitDetail from './EventUnitDetail'
 import styles from './adminEventDetail.module.css'
@@ -48,6 +54,20 @@ export default function AdminEventDetailPage() {
 
   const handleEdit = () => navigate(`/admin/${unitId}/events/${eventScope}/${eventId}/edit`)
 
+  const handleDelete = async () => {
+    try {
+      if (eventScope === 'p') {
+        await deletePublicEvent(eventId)
+      } else {
+        await deleteUnitEvent(eventId)
+      }
+      handleBack() // Redirect to list
+    } catch (e) {
+      // Error handled by service
+    }
+  }
+
+
   if (isLoading) {
     return (
       <div className={styles.loadingBox}>
@@ -85,10 +105,20 @@ export default function AdminEventDetailPage() {
             <PencilSimple size={18} />
             Chỉnh sửa
           </button>
-          <button className={`${styles.actionBtn} ${styles.deleteBtn}`}>
-            <Trash size={18} />
-            Xóa sự kiện
-          </button>
+          <Popconfirm
+            title="Xóa sự kiện"
+            description="Bạn có chắc muốn xóa vĩnh viễn sự kiện này không? Hành động này không thể khôi phục."
+            onConfirm={handleDelete}
+            okText="Xóa"
+            cancelText="Hủy"
+            okButtonProps={{ danger: true }}
+          >
+            <button className={`${styles.actionBtn} ${styles.deleteBtn}`}>
+              <Trash size={18} />
+              Xóa sự kiện
+            </button>
+          </Popconfirm>
+
         </div>
       </header>
 

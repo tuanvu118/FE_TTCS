@@ -399,6 +399,13 @@ select:disabled {
   width: min(1320px, calc(100% - 2rem));
 }
 
+.page-content-full {
+  width: min(1520px, 95%);
+  margin: 0 auto;
+  padding: 0;
+}
+
+
 .page-card {
   padding: 2rem;
   border: 1px solid #dbe3f0;

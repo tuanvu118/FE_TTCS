@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Broadcast, Globe, Handshake, Tag } from '@phosphor-icons/react'
-import { Select, Badge } from 'antd'
-import { getAllEventBySemesterIdForAdmin } from '../../service/apiAdminEvent'
+import { Select, Badge, Popconfirm, Button } from 'antd'
+import { Broadcast, Globe, Handshake, Tag, Trash } from '@phosphor-icons/react'
+import { 
+  getAllEventBySemesterIdForAdmin,
+  deletePublicEvent,
+  deleteUnitEvent
+} from '../../service/apiAdminEvent'
 import { getStoredAuthSession } from '../../service/authSession'
 import { getSemesters } from '../../service/semesterService'
+
 import {
   CURRENT_SEMESTER_STORAGE_KEY,
   getStoredCurrentSemester,
@@ -92,6 +97,20 @@ export default function EventPage({ navigate, adminUnitId }) {
     }
   }
 
+  const handleDelete = async (row) => {
+    try {
+      if (row.type === 'SK') {
+        await deletePublicEvent(row.id)
+      } else {
+        await deleteUnitEvent(row.id)
+      }
+      loadEvents() // Refresh list
+    } catch (e) {
+      // Error handled by service message
+    }
+  }
+
+
   function goDetail(row) {
     if (!adminUnitId) {
       return
@@ -175,15 +194,34 @@ export default function EventPage({ navigate, adminUnitId }) {
                     </td>
                   )}
                   <td>
-                    <button
-                      type="button"
-                      className={styles.linkBtn}
-                      onClick={() => goDetail(row)}
-                      disabled={!adminUnitId}
-                    >
-                      Xem chi tiết
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <button
+                        type="button"
+                        className={styles.linkBtn}
+                        onClick={() => goDetail(row)}
+                        disabled={!adminUnitId}
+                      >
+                        Xem chi tiết
+                      </button>
+                      
+                      <Popconfirm
+                        title="Xóa sự kiện"
+                        description="Bạn có chắc muốn xóa vĩnh viễn sự kiện này không? Hành động này không thể khôi phục."
+                        onConfirm={() => handleDelete(row)}
+                        okText="Xóa"
+                        cancelText="Hủy"
+                        okButtonProps={{ danger: true }}
+                      >
+                        <Button 
+                          type="text" 
+                          danger 
+                          icon={<Trash size={18} />} 
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        />
+                      </Popconfirm>
+                    </div>
                   </td>
+
                 </tr>
               ))}
             </tbody>

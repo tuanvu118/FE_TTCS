@@ -24,8 +24,11 @@ export default function CreateEventPage() {
     eventPeriod: [null, null],
     imageFile: null,
     imagePreview: null,
+    location: '',
+    max_participants: 200,
     form_fields: [],
     listUnitId: [] // For Unit Events
+
   })
 
   const handleClose = () => {
@@ -60,7 +63,10 @@ export default function CreateEventPage() {
           formData.append('semester_id', eventData.semesterId)
         }
 
+        formData.append('location', eventData.location || '')
+        formData.append('max_participants', eventData.max_participants)
         formData.append('form_fields', JSON.stringify(eventData.form_fields))
+
         await createPublicEvent(formData)
       } else {
         // Unit Event (HTTT/HTSK) specific

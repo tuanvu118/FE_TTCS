@@ -1,4 +1,4 @@
-import { message } from 'antd/es'
+import { message } from 'antd'
 import { apiRequest, ApiError } from './apiClient'
 import { getStoredAuthSession } from './authSession'
 
@@ -264,3 +264,36 @@ export async function updateUnitEvent(eventId, formData) {
     throw error
   }
 }
+
+export async function deletePublicEvent(eventId) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  try {
+    await apiRequest(`/events/${eventId}`, {
+      method: 'DELETE',
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+    message.success('Xóa sự kiện chung thành công.')
+  } catch (error) {
+    if (error instanceof ApiError) {
+      message.error(error.message || 'Xóa sự kiện chung thất bại.')
+    }
+    throw error
+  }
+}
+
+export async function deleteUnitEvent(eventId) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  try {
+    await apiRequest(`/unit-events/${eventId}`, {
+      method: 'DELETE',
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+    message.success('Xóa sự kiện đơn vị thành công.')
+  } catch (error) {
+    if (error instanceof ApiError) {
+      message.error(error.message || 'Xóa sự kiện đơn vị thất bại.')
+    }
+    throw error
+  }
+}
+

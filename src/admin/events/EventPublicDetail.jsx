@@ -29,10 +29,18 @@ export default function EventPublicDetail({ data, semester }) {
           </div>
 
           <div className={styles.cardBody}>
-            <div className={styles.infoGrid} style={{ marginBottom: '2.5rem' }}>
+            <div className={styles.infoGrid}>
               <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>LOẠI SỰ KIỆN</span>
-                <span className={styles.infoValue}>SỰ KIỆN CHUNG</span>
+                <span className={styles.infoLabel}>TRẠNG THÁI</span>
+                <span className={styles.infoValue} style={{ color: '#10b981' }}>CÔNG KHAI</span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>ĐỊA ĐIỂM</span>
+                <span className={styles.infoValue}>{data.location || 'Chưa xác định'}</span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>SỨC CHỨA</span>
+                <span className={styles.infoValue}>{data.max_participants || 0} CHỖ</span>
               </div>
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>ĐIỂM RÈN LUYỆN</span>
@@ -40,14 +48,17 @@ export default function EventPublicDetail({ data, semester }) {
               </div>
             </div>
 
+            <div style={{ margin: '2.5rem 0', borderTop: '1px solid #f1f5f9' }} />
+
             <div className={styles.descriptionSection}>
-              <h3 className={styles.cardTitle} style={{ marginBottom: '1.25rem' }}>Mô tả sự kiện</h3>
+              <h3 className={styles.cardTitle} style={{ marginBottom: '1.5rem', color: '#64748b' }}>Mô tả chi tiết</h3>
               <div 
                 className="rich-text-content"
                 dangerouslySetInnerHTML={{ __html: data.description }} 
               />
             </div>
           </div>
+
         </div>
 
         {/* CÂU HỎI ĐĂNG KÝ */}

@@ -16,7 +16,9 @@ import dayjs from 'dayjs'
 import { updatePublicEvent } from '../../service/apiAdminEvent'
 import { getSemesters } from '../../service/semesterService'
 import { getStoredAuthSession } from '../../service/authSession'
+import RichTextEditor from '../../components/RichTextEditor'
 import styles from './step2PublicEventInfo.module.css' // Reusing styles
+
 
 const { RangePicker } = DatePicker
 
@@ -297,20 +299,13 @@ export default function EditPublicEventForm({ eventData, unitId }) {
             </div>
         </div>
         <div className={styles.sectionContent}>
-          <div className={styles.richTextContainer}>
-            <div className={styles.toolbar}>
-               <button className={styles.toolbarBtn}>B</button>
-               <button className={styles.toolbarBtn}>I</button>
-               <button className={styles.toolbarBtn}>U</button>
-            </div>
-            <textarea 
-              className={styles.textarea} 
-              placeholder="Nhập nội dung sự kiện tại đây..."
-              value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-            />
-          </div>
+          <RichTextEditor 
+            value={formData.description}
+            onChange={val => handleChange('description', val)}
+            placeholder="Nhập nội dung sự kiện tại đây..."
+          />
         </div>
+
       </section>
 
       {/* 4. BIỂU MẪU ĐĂNG KÝ (DYNAMIC) */}

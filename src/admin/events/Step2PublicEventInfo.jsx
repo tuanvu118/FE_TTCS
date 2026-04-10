@@ -16,7 +16,9 @@ import {
 import { DatePicker, Select, InputNumber, Switch, Badge } from 'antd'
 import { getSemesters } from '../../service/semesterService'
 import { getStoredAuthSession } from '../../service/authSession'
+import RichTextEditor from '../../components/RichTextEditor'
 import styles from './step2PublicEventInfo.module.css'
+
 
 const { RangePicker } = DatePicker
 
@@ -218,19 +220,36 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
         <div className={styles.sectionContent}>
           <div className={styles.fieldGroup}>
             <label className={styles.label}>MÔ TẢ CHI TIẾT</label>
-            <div className={styles.richTextContainer}>
-              <div className={styles.toolbar}>
-                <button className={styles.toolbarBtn}>B</button>
-                <button className={styles.toolbarBtn}>I</button>
-                <button className={styles.toolbarBtn}>U</button>
-                <button className={styles.toolbarBtn}>🔗</button>
-              </div>
-              <textarea 
-                className={styles.textarea}
-                placeholder="Nhập nội dung sự kiện tại đây..."
-                value={data.description}
-                onChange={e => setData(prev => ({ ...prev, description: e.target.value }))}
+            <RichTextEditor 
+              value={data.description}
+              onChange={val => setData(prev => ({ ...prev, description: val }))}
+              placeholder="Nhập nội dung sự kiện tại đây..."
+            />
+          </div>
+
+
+
+          <div className={styles.row}>
+            <div className={styles.fieldGroup} style={{ flex: 2 }}>
+              <label className={styles.label}>ĐỊA ĐIỂM TỔ CHỨC</label>
+              <input 
+                className={styles.input}
+                placeholder="Ví dụ: Hội trường A, Tầng 2"
+                value={data.location}
+                onChange={e => setData(prev => ({ ...prev, location: e.target.value }))}
               />
+            </div>
+            <div className={styles.fieldGroup} style={{ flex: 1 }}>
+              <label className={styles.label}>SỨC CHỨA (MAX)</label>
+              <div className={styles.inputWithSuffix}>
+                <InputNumber 
+                  className={styles.numberInput}
+                  min={1}
+                  value={data.max_participants}
+                  onChange={val => setData(prev => ({ ...prev, max_participants: val }))}
+                />
+                <span className={styles.suffix}>CHỖ</span>
+              </div>
             </div>
           </div>
 
@@ -268,6 +287,7 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
               </div>
             </div>
           </div>
+
         </div>
       </section>
 

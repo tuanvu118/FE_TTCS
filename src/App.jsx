@@ -49,8 +49,22 @@ function App() {
 
   let page = <NotFoundPage />
 
-  const requiresAuthPaths = new Set([PATHS.profile, PATHS.logout, PATHS.qrScan])
-  const mustCheckAuth = requiresAuthPaths.has(pathname) || isAdminArea || Boolean(unitId)
+  const requiresAuthPaths = new Set([
+    PATHS.home,
+    PATHS.event,
+    PATHS.about,
+    PATHS.club,
+    PATHS.profile,
+    PATHS.logout,
+    PATHS.qrScan,
+  ])
+  const mustCheckAuth =
+    requiresAuthPaths.has(pathname) ||
+    isAdminArea ||
+    Boolean(unitId) ||
+    pathname.startsWith('/club/') ||
+    pathname.startsWith('/units/')
+
 
   if (mustCheckAuth && !isAuthenticated) {
     page = <LoginPage onLogin={login} navigate={navigate} />
@@ -59,8 +73,9 @@ function App() {
   } else if (pathname === PATHS.home) {
     page = <HomePage />
   } else if (pathname === PATHS.event) {
-    page = <EventsPage />
+    page = <EventsPage navigate={navigate} />
   } else if (eventId) {
+
     page = <EventDetailPage eventId={eventId} />
   } else if (pathname === PATHS.qrScan) {
     page = <QrScanPage />
@@ -134,8 +149,13 @@ function App() {
           {page}
         </AdminLayout>
       ) : (
-        <main className="page-content">{page}</main>
+        <main className={`page-content ${pathname === PATHS.event ? 'page-content-wide' : (eventId ? 'page-content-full' : '')}`}>
+          {page}
+        </main>
+
+
       )}
+
     </div>
   )
 }
