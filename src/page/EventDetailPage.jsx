@@ -108,16 +108,26 @@ export default function EventDetailPage({ eventId }) {
   }
 
   const handleCancel = async () => {
-    if (!window.confirm('Bạn có chắc chắn muốn hủy đăng ký tham gia sự kiện này?')) return
-    setSubmitting(true)
-    try {
-      await cancelRegistration(eventId)
-      await loadData() // Refresh status
-    } catch (err) {
-      alert(err.message || 'Hủy đăng ký thất bại.')
-    } finally {
-      setSubmitting(false)
-    }
+    Modal.confirm({
+      title: 'Xác nhận hủy đăng ký',
+      content: 'Bạn có chắc chắn muốn hủy đăng ký tham gia sự kiện này không? Hành động này không thể hoàn tác.',
+      okText: 'Xác nhận hủy',
+      okType: 'danger',
+      cancelText: 'Quay lại',
+      centered: true,
+      onOk: async () => {
+        setSubmitting(true)
+        try {
+          await cancelRegistration(eventId)
+          message.success('Đã hủy đăng ký tham gia sự kiện.')
+          await loadData() // Refresh status
+        } catch (err) {
+          message.error(err.message || 'Hủy đăng ký thất bại.')
+        } finally {
+          setSubmitting(false)
+        }
+      }
+    })
   }
 
   if (loading) {
@@ -147,6 +157,17 @@ export default function EventDetailPage({ eventId }) {
   const regEnd = new Date(eventData.registration_end || eventData.event_start)
   const now = new Date()
   const canRegister = now >= regStart && now <= regEnd && !isExpired
+  const formatDateTime = (date) => {
+    return date.toLocaleString('vi-VN', {
+      weekday: 'long',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    })
+  }
 
   return (
     <div className="event-detail-page">
@@ -162,7 +183,7 @@ export default function EventDetailPage({ eventId }) {
             <button className="back-btn-minimal" onClick={() => navigate(-1)}>
               <ArrowLeft size={18} /> QUAY LẠI
             </button>
-            <span className="event-tag-premium">HỘI THẢO CÔNG NGHỆ 2024</span>
+            <span className="event-tag-premium">SỰ KIỆN SINH VIÊN</span>
           </div>
           
           <h1 className="event-hero-title-premium">{eventData.title}</h1>
@@ -170,15 +191,11 @@ export default function EventDetailPage({ eventId }) {
           <div className="event-meta-horizontal">
             <div className="meta-item-inline">
               <CalendarBlank size={20} weight="fill" />
-              <span>{startDate.toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
-            </div>
-            <div className="meta-item-inline">
-              <Clock size={20} weight="fill" />
-              <span>{startDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} - {endDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>
+              <span>{startDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
             </div>
             <div className="meta-item-inline">
               <MapPin size={20} weight="fill" />
-              <span>{eventData.location || 'Trung tâm Hội nghị Quốc gia, Hà Nội'}</span>
+              <span>{eventData.location || 'Địa điểm xem chi tiết bên dưới'}</span>
             </div>
           </div>
         </div>
@@ -188,6 +205,23 @@ export default function EventDetailPage({ eventId }) {
       {/* Body Section */}
       <main className="event-detail-body">
         <section className="event-main-content">
+          {/* Section: Tổng quan */}
+          <div className="detail-section">
+            <h2 className="detail-section-title">Tổng quan</h2>
+            <div className="time-item-row">
+              <span className="time-item-label">BẮT ĐẦU</span>
+              <span className="time-item-value">{formatDateTime(startDate)}</span>
+            </div>
+            <div className="time-item-row">
+              <span className="time-item-label">KẾT THÚC</span>
+              <span className="time-item-value">{formatDateTime(endDate)}</span>
+            </div>
+            <div className="time-item-row">
+              <span className="time-item-label">ĐỊA ĐIỂM</span>
+              <span className="time-item-value">{eventData.location || "Chưa cập nhật địa điểm cụ thể"}</span>
+            </div>
+          </div>
+
           <div className="detail-section">
             <h2 className="detail-section-title">Thông tin sự kiện</h2>
             <div 
@@ -238,6 +272,11 @@ export default function EventDetailPage({ eventId }) {
                   <span>Đã đóng đăng ký</span>
                 </div>
               ) }
+
+              <div className="reg-deadline-small">
+                <Clock size={16} />
+                <span>Hạn: {regEnd.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false })} - {regEnd.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}</span>
+              </div>
             </div>
 
             {isRegistered ? (
@@ -258,27 +297,27 @@ export default function EventDetailPage({ eventId }) {
               </button>
             )}
 
+            <div className="sidebar-point-reward">
+              <div className="point-reward-icon">
+                <Trophy size={24} weight="fill" />
+              </div>
+              <div className="point-reward-text">
+                <span className="point-reward-label">Quyền lợi</span>
+                <span className="point-reward-value">+{eventData.point || 0} Điểm rèn luyện</span>
+              </div>
+            </div>
+
             {eventData.max_participants > 0 && (
               <div className="capacity-info">
                 <div className="capacity-label">
-                  <span>Số lượng còn lại:</span>
+                  <span>Sức chứa:</span>
                   <span>{eventData.max_participants} chỗ</span>
                 </div>
                 <div className="progress-bar-bg">
-                  <div className="progress-bar-fill" style={{ width: '10%' }}></div>
+                  <div className="progress-bar-fill" style={{ width: '0%' }}></div>
                 </div>
               </div>
             )}
-
-            <div className="sidebar-actions">
-              <button className="action-icon-btn">
-                <ShareNetwork size={20} />
-              </button>
-              <button className="action-icon-btn">
-                <BookmarkSimple size={20} />
-              </button>
-            </div>
-
           </div>
         </aside>
       </main>

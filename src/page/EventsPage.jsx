@@ -224,7 +224,11 @@ export default function EventsPage({ navigate }) {
             {filteredEvents.map(event => {
               const status = getStatusLabel(event)
               return (
-                <article key={event.id} className="event-card">
+                <article 
+                  key={event.id} 
+                  className="event-card"
+                  onClick={() => navigate(`${PATHS.event}/${event.id}`)}
+                >
                   <div className="event-card-image">
                     <span className={`status-badge ${status.class}`}>
                       {status.label}
@@ -252,10 +256,7 @@ export default function EventsPage({ navigate }) {
                         <Star weight="fill" />
                         <span>{event.point} điểm RL</span>
                       </div>
-                      <span 
-                        className="learn-more"
-                        onClick={() => navigate(`${PATHS.event}/${event.id}`)}
-                      >
+                      <span className="learn-more">
                         Chi tiết →
                       </span>
                     </div>

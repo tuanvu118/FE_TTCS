@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, PencilSimple, Trash, WarningCircle } from '@phosphor-icons/react'
-import { Spin, Popconfirm } from 'antd'
+import { ArrowLeft, PencilSimple, Trash, WarningCircle, Link } from '@phosphor-icons/react'
+import { Spin, Popconfirm, message } from 'antd'
 import { 
   getPublicEventById, 
   getUnitEventById,
@@ -67,6 +67,17 @@ export default function AdminEventDetailPage() {
     }
   }
 
+  const handleCopyUrl = () => {
+    const publicUrl = `${window.location.origin}/events/${eventId}`
+    navigator.clipboard.writeText(publicUrl)
+      .then(() => {
+        message.success('Đã sao chép đường dẫn sự kiện!')
+      })
+      .catch(() => {
+        message.error('Không thể sao chép đường dẫn.')
+      })
+  }
+
 
   if (isLoading) {
     return (
@@ -98,6 +109,14 @@ export default function AdminEventDetailPage() {
           <h1 className={styles.title}>{data.title}</h1>
         </div>
         <div className={styles.actions}>
+          <button 
+            className={`${styles.actionBtn} ${styles.copyBtn}`}
+            onClick={handleCopyUrl}
+            title="Sao chép link xem của sinh viên"
+          >
+            <Link size={18} />
+            Copy Link
+          </button>
           <button 
             className={`${styles.actionBtn} ${styles.editBtn}`}
             onClick={handleEdit}

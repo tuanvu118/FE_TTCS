@@ -297,3 +297,19 @@ export async function deleteUnitEvent(eventId) {
   }
 }
 
+export async function getEventRegistrations(eventId) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  try {
+    return await apiRequest(`/events/${eventId}/registrations`, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      authToken: accessToken,
+    })
+  } catch (error) {
+    if (error instanceof ApiError) {
+      message.error(error.message || 'Không thể tải danh sách đăng ký.')
+    }
+    throw error
+  }
+}
+
