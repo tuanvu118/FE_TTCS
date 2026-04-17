@@ -276,3 +276,110 @@
   color: #1e293b;
 }
 
+.coopError {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  color: #dc2626;
+}
+
+.coopTableWrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.coopTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.coopTable th,
+.coopTable td {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.coopTable th {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #fafafa;
+}
+
+.coopTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.coopUnitCell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.coopActionCell {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.coopDetailBtn {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.coopDetailBtn:hover:not(:disabled) {
+  background: #f8fafc;
+}
+
+.coopDetailBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+}
+
+.badgeNone {
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fdba74;
+}
+
+.badgePending {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
+
+.badgeCompleted {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #6ee7b7;
+}
+
+.badgeReject {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+

@@ -45,7 +45,11 @@ export function isAdminPath(pathname) {
   }
   if (
     segments.length === 3 &&
-    (segments[1] === MANAGE_ADMIN_PANELS.events || segments[1] === MANAGE_ADMIN_PANELS.reports)
+    (
+      segments[1] === MANAGE_ADMIN_PANELS.events ||
+      segments[1] === MANAGE_ADMIN_PANELS.reports ||
+      segments[1] === 'tasks'
+    )
   ) {
     return true
   }

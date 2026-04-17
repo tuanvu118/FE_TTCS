@@ -231,6 +231,29 @@ export async function getUnitEventById(eventId, unitId = null) {
   }
 }
 
+/** Danh sách phản hồi HTTT theo sự kiện (admin/manager). */
+export async function getHtttSubmissionsAllByUnitEvent(unitEventId) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  const eid = unitEventId ? String(unitEventId).trim() : ''
+  if (!eid) {
+    return []
+  }
+  try {
+    const response = await apiRequest(
+      `/unit-event-submissions/HTTT/all?unit_event_id=${encodeURIComponent(eid)}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        ...(accessToken ? { authToken: accessToken } : {}),
+      },
+    )
+    return Array.isArray(response) ? response : []
+  } catch (error) {
+    notifyUnitEventsListError(error)
+    throw error
+  }
+}
+
 export async function updatePublicEvent(eventId, formData) {
   const accessToken = getStoredAuthSession()?.accessToken || ''
   try {

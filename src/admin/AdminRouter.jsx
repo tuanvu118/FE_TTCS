@@ -1,4 +1,4 @@
-import { Route, Routes, useParams } from 'react-router-dom'
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import ForbiddenPage from '../page/ForbiddenPage'
 import NotFoundPage from '../page/NotFoundPage'
 import UserManagementPage from './users/UserManagementPage'
@@ -16,6 +16,7 @@ import StaffReportsPanel from './reports/StaffReportsPanel'
 import ReportManagement from './reports/ReportManagement'
 import ReportDetailView from './reports/ReportDetailView'
 import StaffAssignedEventsPanel from './tasks/StaffAssignedEventsPanel'
+import StaffTaskDetailPage from './tasks/Detail'
 import { hasManageAccess, getManageRoleForUnit, USER_ROLES } from '../utils/routes'
 import routerStyles from './adminRouter.module.css'
 
@@ -40,6 +41,12 @@ function PickUnitCard() {
       <h1>Vui lòng chọn đơn vị để bắt đầu quản trị</h1>
     </section>
   )
+}
+
+function LegacyUnitContextRedirect() {
+  const { unitId, '*': restPath = '' } = useParams()
+  const nextPath = restPath ? `/staff/${unitId}/${restPath}` : `/staff/${unitId}`
+  return <Navigate to={nextPath} replace />
 }
 
 function StaffUnitsPanelView({ accessToken, selectedUnitId, staffPanel, onSessionExpired }) {
@@ -89,6 +96,9 @@ function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired, role
           onSessionExpired={onSessionExpired}
         />
       )
+    }
+    if (staffPanel === 'task-detail') {
+      return <StaffTaskDetailPage />
     }
     return (
       <StaffUnitsPanelView
@@ -315,6 +325,8 @@ export default function AdminRouter({
     <Routes>
       <Route path="/admin" element={<PickUnitCard />} />
       <Route path="/staff" element={<PickUnitCard />} />
+      <Route path="/unit" element={<Navigate to="/staff" replace />} />
+      <Route path="/unit/:unitId/*" element={<LegacyUnitContextRedirect />} />
 
       {/* Admin Context Routes */}
       <Route
@@ -360,6 +372,10 @@ export default function AdminRouter({
       <Route
         path="/staff/:unitId/tasks"
         element={<AdminStaffRoute {...shared} staffPanel="events" />}
+      />
+      <Route
+        path="/staff/:unitId/tasks/:taskId"
+        element={<AdminStaffRoute {...shared} staffPanel="task-detail" />}
       />
 
       {/* Home Routes */}

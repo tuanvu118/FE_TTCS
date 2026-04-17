@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -11,8 +11,10 @@ import {
   WarningCircle,
 } from '@phosphor-icons/react'
 import { Popconfirm, Spin, message } from 'antd'
-import { deleteUnitEvent, getUnitEventById } from '../../../service/apiAdminEvent'
+import { deleteUnitEvent, getHtttSubmissionsAllByUnitEvent, getUnitEventById } from '../../../service/apiAdminEvent'
 import { getStoredCurrentSemester } from '../../../utils/currentSemesterStorage'
+import { buildUnitEventCooperationRows } from '../../../utils/unitEventCooperationRows'
+import UnitEventSubmissionDetailModal from './UnitEventSubmissionDetailModal'
 import styles from './EventUnitDetail.module.css'
 
 export default function UnitEventDetailPage() {
@@ -21,10 +23,51 @@ export default function UnitEventDetailPage() {
   const [data, setData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [htttSubmissions, setHtttSubmissions] = useState([])
+  const [htttSubmissionsLoading, setHtttSubmissionsLoading] = useState(false)
+  const [htttSubmissionsError, setHtttSubmissionsError] = useState('')
+  const [submissionModalOpen, setSubmissionModalOpen] = useState(false)
+  const [submissionModalRow, setSubmissionModalRow] = useState(null)
 
   useEffect(() => {
     fetchData()
   }, [unitId, eventId])
+
+  useEffect(() => {
+    if (!eventId || data?.type !== 'HTTT') {
+      setHtttSubmissions([])
+      setHtttSubmissionsError('')
+      setHtttSubmissionsLoading(false)
+      return
+    }
+
+    let cancelled = false
+
+    async function loadSubmissions() {
+      setHtttSubmissionsLoading(true)
+      setHtttSubmissionsError('')
+      try {
+        const list = await getHtttSubmissionsAllByUnitEvent(eventId)
+        if (!cancelled) {
+          setHtttSubmissions(list)
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setHtttSubmissions([])
+          setHtttSubmissionsError('Không thể tải danh sách phản hồi.')
+        }
+      } finally {
+        if (!cancelled) {
+          setHtttSubmissionsLoading(false)
+        }
+      }
+    }
+
+    loadSubmissions()
+    return () => {
+      cancelled = true
+    }
+  }, [eventId, data?.type])
 
   async function fetchData() {
     setIsLoading(true)
@@ -43,6 +86,37 @@ export default function UnitEventDetailPage() {
   const currentSemester = getStoredCurrentSemester()
   const semesterObj =
     data && currentSemester?.id === (data.semester_id || data.semesterId) ? currentSemester : null
+
+  const cooperationRows = useMemo(
+    () => buildUnitEventCooperationRows(data?.assigned_units, htttSubmissions),
+    [data?.assigned_units, htttSubmissions],
+  )
+
+  function openSubmissionModal(row) {
+    if (!row?.hasSubmission) {
+      return
+    }
+    setSubmissionModalRow(row)
+    setSubmissionModalOpen(true)
+  }
+
+  function closeSubmissionModal() {
+    setSubmissionModalOpen(false)
+    setSubmissionModalRow(null)
+  }
+
+  function statusBadgeClass(status) {
+    if (status === 'PENDING') {
+      return styles.badgePending
+    }
+    if (status === 'COMPLETED') {
+      return styles.badgeCompleted
+    }
+    if (status === 'REJECT') {
+      return styles.badgeReject
+    }
+    return styles.badgeNone
+  }
 
   const handleBack = () => navigate(`/admin/${unitId}/events`)
   const handleEdit = () => navigate(`/admin/${unitId}/events/u/${eventId}/edit`)
@@ -162,25 +236,88 @@ export default function UnitEventDetailPage() {
               Danh sách các CLB/Khoa tham gia thực hiện yêu cầu này.
             </p>
 
-            <div className={styles.unitList}>
-              {data.assigned_units?.length > 0 ? (
-                data.assigned_units.map((unit, idx) => (
-                  <div key={idx} className={styles.unitItem}>
-                    <img
-                      src={unit.logo || 'https://via.placeholder.com/40'}
-                      alt={unit.name}
-                      className={styles.unitLogo}
-                    />
-                    <div className={styles.unitInfo}>
-                      <span className={styles.unitName}>{unit.name}</span>
-                      <p className={styles.unitType}>{unit.type}</p>
-                    </div>
+            {data.type === 'HTTT' ? (
+              <>
+                {htttSubmissionsLoading ? (
+                  <p className={styles.emptyText}>Đang tải phản hồi đơn vị…</p>
+                ) : null}
+                {htttSubmissionsError ? (
+                  <p className={styles.coopError}>{htttSubmissionsError}</p>
+                ) : null}
+                {!htttSubmissionsLoading && cooperationRows.length > 0 ? (
+                  <div className={styles.coopTableWrap}>
+                    <table className={styles.coopTable}>
+                      <thead>
+                        <tr>
+                          <th>Đơn vị</th>
+                          <th>Trạng thái phản hồi</th>
+                          <th aria-label="Thao tác" />
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cooperationRows.map((row) => (
+                          <tr key={row.key}>
+                            <td>
+                              <div className={styles.coopUnitCell}>
+                                <img
+                                  src={row.unit.logo || 'https://via.placeholder.com/40'}
+                                  alt=""
+                                  className={styles.unitLogo}
+                                />
+                                <div className={styles.unitInfo}>
+                                  <span className={styles.unitName}>{row.unit.name}</span>
+                                  <p className={styles.unitType}>{row.unit.type}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span
+                                className={`${styles.statusBadge} ${statusBadgeClass(row.status)}`}
+                              >
+                                {row.statusLabel}
+                              </span>
+                            </td>
+                            <td className={styles.coopActionCell}>
+                              <button
+                                type="button"
+                                className={styles.coopDetailBtn}
+                                disabled={!row.hasSubmission}
+                                onClick={() => openSubmissionModal(row)}
+                              >
+                                Chi tiết
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                ))
-              ) : (
+                ) : null}
+                {!htttSubmissionsLoading && cooperationRows.length === 0 ? (
                   <p className={styles.emptyText}>Chưa gán đơn vị nào.</p>
-              )}
-            </div>
+                ) : null}
+              </>
+            ) : (
+              <div className={styles.unitList}>
+                {data.assigned_units?.length > 0 ? (
+                  data.assigned_units.map((unit, idx) => (
+                    <div key={unit.id || idx} className={styles.unitItem}>
+                      <img
+                        src={unit.logo || 'https://via.placeholder.com/40'}
+                        alt={unit.name}
+                        className={styles.unitLogo}
+                      />
+                      <div className={styles.unitInfo}>
+                        <span className={styles.unitName}>{unit.name}</span>
+                        <p className={styles.unitType}>{unit.type}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className={styles.emptyText}>Chưa gán đơn vị nào.</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -215,6 +352,12 @@ export default function UnitEventDetailPage() {
           </div>
         </div>
       </div>
+
+      <UnitEventSubmissionDetailModal
+        open={submissionModalOpen}
+        onClose={closeSubmissionModal}
+        row={submissionModalRow}
+      />
     </div>
   )
 }

@@ -1,0 +1,185 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.title {
+  margin: 0;
+}
+
+.paragraph {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.line {
+  margin: 0;
+}
+
+.subTitle {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.statusLabel {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #0f172a;
+  letter-spacing: 0.02em;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  border: 1px solid transparent;
+}
+
+.statusBadge_empty {
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fdba74;
+  box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.12);
+}
+
+.statusBadge_pending {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
+
+.statusBadge_approved {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #6ee7b7;
+}
+
+.statusBadge_reject {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.statusBadge_neutral {
+  background: #f1f5f9;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+.statusBadge_loading {
+  background: #e0e7ff;
+  color: #3730a3;
+  border-color: #a5b4fc;
+}
+
+.loadingHint {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.instructionCallout {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1px dashed #94a3b8;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.inviteActions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.primaryInviteBtn {
+  border: none;
+  background: #0f172a;
+  color: #fff;
+  padding: 0.65rem 1.15rem;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primaryInviteBtn:hover {
+  background: #1e293b;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.textarea,
+.input {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 0.625rem;
+}
+
+.saveBtn {
+  border: none;
+  background: #0f172a;
+  color: #fff;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.saveBtn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  gap: 0.625rem;
+  justify-content: flex-end;
+}
+
+.secondaryBtn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondaryBtn:hover {
+  background: #f8fafc;
+}

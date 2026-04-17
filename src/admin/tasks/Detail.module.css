@@ -1,0 +1,9 @@
+.loadingBox {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.errorText {
+  margin: 0;
+}

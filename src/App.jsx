@@ -49,9 +49,9 @@ function App() {
 
   useEffect(() => {
     if (taskId && isAuthenticated && !isLoadingUser) {
-      handleTaskRouteAuthView(taskId)
+      handleTaskRouteAuthView(taskId, navigate)
     }
-  }, [taskId, isAuthenticated, isLoadingUser])
+  }, [taskId, isAuthenticated, isLoadingUser, navigate])
 
   let page = <NotFoundPage />
 
