@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Spin } from 'antd'
 import { WarningCircle, ArrowLeft } from '@phosphor-icons/react'
-import { getPublicEventById, getUnitEventById } from '../../service/apiAdminEvent'
+import { getPublicEventById } from '../../service/apiAdminEvent'
+import NotFoundPage from '../../page/NotFoundPage'
 import EditPublicEventForm from './EditPublicEventForm'
-import EditUnitEventForm from './EditUnitEventForm'
 import styles from './createEventWizard.module.css' // Reusing wizard root styles
 
 export default function EditEventPage() {
   const { unitId, eventScope, eventId } = useParams()
   const navigate = useNavigate()
+  if (eventScope !== 'p') {
+    return <NotFoundPage />
+  }
   
   const [data, setData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -23,12 +26,7 @@ export default function EditEventPage() {
     setIsLoading(true)
     setError(null)
     try {
-      let response
-      if (eventScope === 'p') {
-        response = await getPublicEventById(eventId)
-      } else {
-        response = await getUnitEventById(eventId, unitId)
-      }
+      const response = await getPublicEventById(eventId)
       setData(response)
     } catch (err) {
       console.error('Fetch event detail failed', err)
@@ -77,11 +75,7 @@ export default function EditEventPage() {
       </header>
 
       <main className={styles.wizardContent}>
-        {eventScope === 'p' ? (
-          <EditPublicEventForm eventData={data} unitId={unitId} />
-        ) : (
-          <EditUnitEventForm eventData={data} unitId={unitId} />
-        )}
+        <EditPublicEventForm eventData={data} unitId={unitId} />
       </main>
     </div>
   )

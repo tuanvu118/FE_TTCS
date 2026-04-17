@@ -6,6 +6,8 @@ import EventPage from './events/EventPage'
 import AdminEventDetailPage from './events/AdminEventDetailPage'
 import CreateEventPage from './events/CreateEventPage'
 import EditEventPage from './events/EditEventPage'
+import UnitEventDetailPage from './events/UnitEvent.jsx/EventUnitDetail'
+import UnitEventEditPage from './events/UnitEvent.jsx/Edit'
 import SemestersPage from './semesters/SemestersPage'
 import UnitsManagementPage from './units/UnitsManagementPage'
 
@@ -198,7 +200,7 @@ function AdminManagerEventsRoute({ navigate, user }) {
 
 function AdminManagerEventDetailRoute({ user }) {
   const { unitId, eventScope, eventId } = useParams()
-  if (eventScope !== 'p' && eventScope !== 'u') {
+  if (eventScope !== 'p') {
     return <NotFoundPage />
   }
   const scopedRole = getManageRoleForUnit(user, unitId)
@@ -215,6 +217,30 @@ function AdminManagerEventDetailRoute({ user }) {
       eventScope={eventScope}
     />
   )
+}
+
+function AdminManagerUnitEventDetailRoute({ user }) {
+  const { unitId } = useParams()
+  const scopedRole = getManageRoleForUnit(user, unitId)
+  if (scopedRole === USER_ROLES.staff) {
+    return <NotFoundPage />
+  }
+  if (scopedRole !== USER_ROLES.admin && scopedRole !== USER_ROLES.manager) {
+    return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+  }
+  return <UnitEventDetailPage />
+}
+
+function AdminManagerUnitEventEditRoute({ user }) {
+  const { unitId } = useParams()
+  const scopedRole = getManageRoleForUnit(user, unitId)
+  if (scopedRole === USER_ROLES.staff) {
+    return <NotFoundPage />
+  }
+  if (scopedRole !== USER_ROLES.admin && scopedRole !== USER_ROLES.manager) {
+    return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+  }
+  return <UnitEventEditPage />
 }
 
 function AdminManagerSemestersRoute({ user, roleLabel, accessToken, onSessionExpired }) {
@@ -291,6 +317,14 @@ export default function AdminRouter({
       <Route path="/unit" element={<PickUnitCard />} />
 
       {/* Admin Context Routes */}
+      <Route
+        path="/admin/:unitId/events/u/:eventId"
+        element={<AdminManagerUnitEventDetailRoute {...shared} />}
+      />
+      <Route
+        path="/admin/:unitId/events/u/:eventId/edit"
+        element={<AdminManagerUnitEventEditRoute {...shared} />}
+      />
       <Route
         path="/admin/:unitId/events/:eventScope/:eventId"
         element={<AdminManagerEventDetailRoute {...shared} />}

@@ -1,0 +1,278 @@
+.detailRoot {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.loadingBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.backLink {
+  background: none;
+  border: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  padding: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #0c1f45;
+  line-height: 1.2;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #e2e8f0;
+}
+
+.editBtn {
+  background: white;
+  color: #1e293b;
+}
+
+.editBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.deleteBtn {
+  background: #fff;
+  color: #ef4444;
+  border-color: #fee2e2;
+}
+
+.deleteBtn:hover {
+  background: #fef2f2;
+}
+
+.copyBtn {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 1px rgba(29, 78, 216, 0.08);
+}
+
+.copyBtn:hover {
+  background: #bfdbfe;
+  color: #1e40af;
+  border-color: #60a5fa;
+}
+
+.contentGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: stretch;
+}
+
+.mainColumn {
+  min-width: 0;
+}
+
+.rightCard {
+  width: 100%;
+}
+
+.contextCard {
+  margin-top: 0;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+}
+
+.cardHeader {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0c1f45;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.cardBody {
+  padding: 1.5rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.infoLabel {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.infoValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.descriptionSection .cardTitle {
+  margin-bottom: 1.25rem;
+}
+
+.descriptionText {
+  white-space: pre-wrap;
+}
+
+.sectionDesc {
+  margin-bottom: 1.25rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.unitList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.unitItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.unitLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+}
+
+.unitInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.unitName {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.unitType {
+  margin: 0;
+  font-size: 0.625rem;
+  color: #94a3b8;
+}
+
+.emptyText {
+  color: #94a3b8;
+  font-size: 0.8125rem;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.timePoint {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.timeIcon {
+  width: 2.25rem;
+  height: 2.25rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.timeContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.timeTitle {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.timeValue {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
