@@ -14,6 +14,11 @@ function adminPathSegments(pathname) {
     if (!rest) return []
     return rest.split('/').filter(Boolean)
   }
+  if (pathname.startsWith('/staff')) {
+    const rest = pathname.replace(/^\/staff\/?/, '')
+    if (!rest) return []
+    return rest.split('/').filter(Boolean)
+  }
   return null
 }
 
@@ -24,12 +29,14 @@ export function isAdminPath(pathname) {
   if (
     pathname === '/admin' ||
     pathname === '/admin/' ||
+    pathname === '/staff' ||
+    pathname === '/staff/' ||
     pathname === '/unit' ||
     pathname === '/unit/'
   ) {
     return true
   }
-  if (!pathname.startsWith('/admin/') && !pathname.startsWith('/unit/')) {
+  if (!pathname.startsWith('/admin/') && !pathname.startsWith('/staff/') && !pathname.startsWith('/unit/')) {
     return false
   }
   const segments = adminPathSegments(pathname)
@@ -98,9 +105,9 @@ export function buildAdminEventDetailPath(unitId, eventId, eventType) {
 
 export function buildStaffPath(unitId, panel = 'members') {
   if (!unitId) {
-    return '/unit'
+    return '/staff'
   }
-  return `/unit/${unitId}/${panel}`
+  return `/staff/${unitId}/${panel}`
 }
 
 export function buildAdminPath(unitId, panel = MANAGE_ADMIN_PANELS.users) {

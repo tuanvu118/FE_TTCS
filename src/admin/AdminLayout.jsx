@@ -20,15 +20,15 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
     return ids.join('|')
   }, [manageOptions])
   const { unitId: selectedUnitId, panel: selectedPanelRaw } = parseAdminPath(currentPath)
-  const isUnitContext = currentPath.startsWith('/unit/')
-  const selectedUnitRole = isUnitContext
+  const isStaffContext = currentPath.startsWith('/staff/') || currentPath.startsWith('/unit/')
+  const selectedUnitRole = isStaffContext
     ? USER_ROLES.staff
     : getManageRoleForUnit(user, selectedUnitId)
   const selectedPanel =
-    selectedPanelRaw || (isUnitContext ? 'members' : MANAGE_ADMIN_PANELS.users)
+    selectedPanelRaw || (isStaffContext ? 'members' : MANAGE_ADMIN_PANELS.users)
   const selectedUnit = manageableUnits.find((unitItem) => unitItem.id === selectedUnitId)
   const canRenderSidebar = Boolean(selectedUnitId && selectedUnitRole)
-  const isStaffSelected = isUnitContext
+  const isStaffSelected = isStaffContext
 
   useEffect(() => {
     if (!accessToken) {

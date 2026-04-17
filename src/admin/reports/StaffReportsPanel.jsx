@@ -58,7 +58,7 @@ export default function StaffReportsPanel({ accessToken, unitId, onSessionExpire
   }
 
   const handleViewDetail = (report) => {
-    navigate(`/unit/${unitId}/reports/${report.id}`)
+    navigate(`/staff/${unitId}/reports/${report.id}`)
   }
 
   return (
