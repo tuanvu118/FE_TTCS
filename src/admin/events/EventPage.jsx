@@ -73,7 +73,16 @@ export default function EventPage({ navigate, adminUnitId }) {
     try {
       const token = getStoredAuthSession()?.accessToken
       const res = await getSemesters(token)
-      setSemesters(res.items || [])
+      const list = res.items || []
+      setSemesters(list)
+
+      // Tự động chọn học kỳ đang hoạt động nếu chưa có lựa chọn hợp lệ
+      setSelectedSemesterId(prev => {
+        const isValid = prev && prev !== 'all' && list.some(s => s.id === prev)
+        if (isValid) return prev
+        const active = list.find(s => s.is_active)
+        return active ? active.id : 'all'
+      })
     } catch (err) {
       console.error('Failed to fetch semesters', err)
     }

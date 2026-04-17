@@ -60,14 +60,14 @@ function StaffUnitsPanelView({ accessToken, selectedUnitId, staffPanel, onSessio
 
 function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired, roleLabel }) {
   const { unitId } = useParams()
-  const isUnitContext = window.location.pathname.startsWith('/unit/')
+  const isUnitContext = window.location.pathname.startsWith('/staff/')
   const scopedRole = getManageRoleForUnit(user, unitId)
   
   if (!scopedRole) {
     return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
   }
 
-  // Nếu là context /unit, ưu tiên giao diện Staff
+  // Nếu là context /staff, ưu tiên giao diện Staff
   if (isUnitContext) {
     // Chỉ cần có bất kỳ quyền quản trị nào tại đơn vị (Staff/Manager/Admin) đều cho phép vào không gian đơn vị
     if (staffPanel === 'reports') {
@@ -288,7 +288,7 @@ export default function AdminRouter({
   return (
     <Routes>
       <Route path="/admin" element={<PickUnitCard />} />
-      <Route path="/unit" element={<PickUnitCard />} />
+      <Route path="/staff" element={<PickUnitCard />} />
 
       {/* Admin Context Routes */}
       <Route
@@ -310,30 +310,30 @@ export default function AdminRouter({
       <Route path="/admin/:unitId/reports" element={<AdminStaffRoute {...shared} staffPanel="reports" />} />
       <Route path="/admin/:unitId/reports/:reportId" element={<AdminStaffRoute {...shared} staffPanel="report-detail" />} />
       
-      {/* Unit Context Routes (Staff) */}
+      {/* Staff Context Routes (Staff) */}
       <Route
-        path="/unit/:unitId/members"
+        path="/staff/:unitId/members"
         element={<AdminStaffRoute {...shared} staffPanel="members" />}
       />
       <Route
-        path="/unit/:unitId/reports"
+        path="/staff/:unitId/reports"
         element={<AdminStaffRoute {...shared} staffPanel="reports" />}
       />
       <Route
-        path="/unit/:unitId/reports/:reportId"
+        path="/staff/:unitId/reports/:reportId"
         element={<AdminStaffRoute {...shared} staffPanel="report-detail" />}
       />
       <Route
-        path="/unit/:unitId/tasks"
+        path="/staff/:unitId/tasks"
         element={<AdminStaffRoute {...shared} staffPanel="events" />}
       />
 
       {/* Home Routes */}
       <Route path="/admin/:unitId" element={<AdminUnitHomeRoute {...shared} />} />
-      <Route path="/unit/:unitId" element={<AdminUnitHomeRoute {...shared} />} />
+      <Route path="/staff/:unitId" element={<AdminUnitHomeRoute {...shared} />} />
       
       <Route path="/admin/:unitId/*" element={<NotFoundPage />} />
-      <Route path="/unit/:unitId/*" element={<NotFoundPage />} />
+      <Route path="/staff/:unitId/*" element={<NotFoundPage />} />
     </Routes>
   )
 }

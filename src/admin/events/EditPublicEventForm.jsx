@@ -8,6 +8,8 @@ import {
   TextAlignLeft, 
   CheckSquare, 
   CaretDown,
+  Hash,
+  RadioButton,
   FloppyDiskBack,
   ArrowLeft
 } from '@phosphor-icons/react'
@@ -44,6 +46,7 @@ export default function EditPublicEventForm({ eventData, unitId }) {
       eventData.event_end ? dayjs(eventData.event_end) : null
     ],
     semester_id: eventData.semester_id || eventData.semesterId,
+    max_participants: eventData.max_participants || 0,
     form_fields: (eventData.form_fields || []).map(f => ({
       ...f,
       type: f.field_type || f.type // Map field_type to type for consistency with creation UI
@@ -133,6 +136,7 @@ export default function EditPublicEventForm({ eventData, unitId }) {
       if (formData.semester_id) {
           fd.append('semester_id', formData.semester_id)
       }
+      fd.append('max_participants', formData.max_participants)
       
       if (formData.imageFile) {
         fd.append('image', formData.imageFile)
@@ -275,19 +279,32 @@ export default function EditPublicEventForm({ eventData, unitId }) {
             </div>
             <div className={styles.fieldGroup} style={{ maxWidth: '200px' }}>
               <label className={styles.label}>Điểm rèn luyện</label>
-            <div className={styles.inputWithSuffix}>
-              <InputNumber 
-                min={0} 
-                max={50} 
-                className={styles.numberInput} 
-                value={formData.point}
-                onChange={(val) => handleChange('point', val)}
-              />
-              <span className={styles.suffix}>ĐIỂM</span>
+              <div className={styles.inputWithSuffix}>
+                <InputNumber 
+                  min={0} 
+                  max={50} 
+                  className={styles.numberInput} 
+                  value={formData.point}
+                  onChange={(val) => handleChange('point', val)}
+                />
+                <span className={styles.suffix}>ĐIỂM</span>
+              </div>
+            </div>
+            
+            <div className={styles.fieldGroup} style={{ maxWidth: '300px' }}>
+              <label className={styles.label}>Số lượng đăng ký</label>
+              <div className={styles.inputWithSuffix}>
+                <InputNumber 
+                  min={0} 
+                  className={styles.numberInput} 
+                  value={formData.max_participants}
+                  onChange={(val) => handleChange('max_participants', val)}
+                />
+                <span className={styles.suffix} style={{ fontSize: '10px' }}>NGƯỜI (0 = Không giới hạn)</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
     </section>
 
       {/* 3. NỘI DUNG MÔ TẢ */}
@@ -349,16 +366,15 @@ export default function EditPublicEventForm({ eventData, unitId }) {
                               value={field.type}
                               onChange={(val) => updateField(field.id, 'type', val)}
                               options={[
-                                { value: 'text', label: 'Văn bản ngắn', icon: <TextT /> },
-                                { value: 'textarea', label: 'Văn bản dài', icon: <TextAlignLeft /> },
-                                { value: 'select', label: 'Lựa chọn duy nhất', icon: <CaretDown /> },
+                                { value: 'text', label: 'Văn bản', icon: <TextAlignLeft /> },
+                                { value: 'number', label: 'Con số', icon: <Hash /> },
                                 { value: 'checkbox', label: 'Nhiều lựa chọn', icon: <CheckSquare /> },
                               ]}
                             />
                           </div>
                        </div>
 
-                       {(field.type === 'select' || field.type === 'checkbox') && (
+                       {field.type === 'checkbox' && (
                          <div className={styles.optionsSection}>
                            <label className={styles.label}>Các lựa chọn</label>
                            <div className={styles.optionsList}>

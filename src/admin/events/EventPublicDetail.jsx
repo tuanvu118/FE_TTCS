@@ -114,9 +114,9 @@ export default function EventPublicDetail({ data, semester }) {
                     <tr key={idx}>
                       <td>{field.label}</td>
                       <td>
-                        {(field.field_type || field.type) === 'text' ? 'Văn bản ngắn' : 
-                         (field.field_type || field.type) === 'textarea' ? 'Văn bản dài' : 
-                         (field.field_type || field.type) === 'select' ? 'Lựa chọn duy nhất' : 'Nhiều lựa chọn'}
+                        {(field.field_type || field.type) === 'number' ? 'Con số' : 
+                         (field.field_type || field.type) === 'checkbox' ? 'Nhiều lựa chọn' : 
+                         'Văn bản'}
                       </td>
                       <td>
                         {field.required && <span className={styles.requiredBadge}>Bắt buộc</span>}

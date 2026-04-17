@@ -20,7 +20,7 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
     return ids.join('|')
   }, [manageOptions])
   const { unitId: selectedUnitId, panel: selectedPanelRaw } = parseAdminPath(currentPath)
-  const isUnitContext = currentPath.startsWith('/unit/')
+  const isUnitContext = currentPath.startsWith('/staff/')
   const selectedUnitRole = isUnitContext
     ? USER_ROLES.staff
     : getManageRoleForUnit(user, selectedUnitId)
