@@ -13,6 +13,19 @@ function getSubmissionUnitId(submission) {
   return direct != null && direct !== '' ? String(direct).trim() : ''
 }
 
+/** Id bản ghi submission (POST /unit-event-submissions/status). */
+export function getSubmissionRecordId(submission) {
+  if (!submission || typeof submission !== 'object') {
+    return ''
+  }
+  const direct =
+    submission.id ??
+    submission._id ??
+    submission.unit_event_submission_id ??
+    submission.unitEventSubmissionId
+  return direct != null && direct !== '' ? String(direct).trim() : ''
+}
+
 /**
  * Chuẩn hóa trạng thái phản hồi HTTT về PENDING | APPROVED | REJECTED.
  * Map từ giá trị API cũ: COMPLETED / COMPLED → APPROVED; REJECT / REJECTED → REJECTED.
@@ -58,6 +71,7 @@ export function getHtttSubmissionStatusLabel(status) {
  *   unit: { id: string, name: string, logo: string|null, type: string, introduction: string|null },
  *   hasSubmission: boolean,
  *   submission: Record<string, unknown>|null,
+ *   submissionId: string,
  *   status: 'NONE'|'PENDING'|'APPROVED'|'REJECTED',
  *   statusLabel: string,
  * }>}
@@ -96,6 +110,7 @@ export function buildUnitEventCooperationRows(assignedUnits = [], submissions = 
     const status = !submission ? 'NONE' : statusRaw || 'PENDING'
     const statusLabel = !submission ? 'Chưa phản hồi' : getHtttSubmissionStatusLabel(status)
     const hasSubmission = Boolean(submission)
+    const submissionId = submission ? getSubmissionRecordId(submission) : ''
 
     return {
       key: unitId || `idx-${unit?.name || ''}`,
@@ -109,6 +124,7 @@ export function buildUnitEventCooperationRows(assignedUnits = [], submissions = 
       },
       hasSubmission,
       submission: submission || null,
+      submissionId,
       status,
       statusLabel,
     }

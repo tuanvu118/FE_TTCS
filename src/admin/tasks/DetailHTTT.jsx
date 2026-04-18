@@ -67,6 +67,19 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
     }
   }, [taskId, unitId])
 
+  const isLockedApproved = useMemo(() => {
+    if (!submission) {
+      return false
+    }
+    return normalizeHtttSubmissionStatus(submission.status) === 'APPROVED'
+  }, [submission])
+
+  useEffect(() => {
+    if (isLockedApproved) {
+      setIsEditing(false)
+    }
+  }, [isLockedApproved])
+
   const { statusText, statusVariant } = useMemo(() => {
     if (submissionLoading) {
       return { statusText: 'Đang tải…', statusVariant: 'loading' }
@@ -98,6 +111,10 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
       message.error('Thiếu thông tin nhiệm vụ.')
       return
     }
+    if (isLockedApproved) {
+      message.warning('Phản hồi đã được duyệt, không thể chỉnh sửa.')
+      return
+    }
 
     setIsSaving(true)
     try {
@@ -122,6 +139,10 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
   }
 
   const handleStartEdit = () => {
+    if (isLockedApproved) {
+      message.warning('Phản hồi đã được duyệt, không thể chỉnh sửa.')
+      return
+    }
     setEditContent(submission?.content || '')
     setEditEvidenceUrl(submission?.evidenceUrl || '')
     setIsEditing(true)
@@ -186,7 +207,7 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
               </div>
             ) : null}
 
-            {isEditing ? (
+            {isEditing && !isLockedApproved ? (
               <>
                 <div className={styles.field}>
                   <label className={styles.label}>Nội dung phản hồi</label>
@@ -232,11 +253,15 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
                 <p className={styles.line}>
                   <strong>Minh chứng:</strong> {submission?.evidenceUrl || 'Chưa có minh chứng'}
                 </p>
-                <div>
-                  <button type="button" onClick={handleStartEdit} className={styles.secondaryBtn}>
-                    Sửa phản hồi
-                  </button>
-                </div>
+                {isLockedApproved ? (
+                  <p className={styles.readonlyHint}>Phản hồi đã được duyệt, không thể chỉnh sửa.</p>
+                ) : (
+                  <div>
+                    <button type="button" onClick={handleStartEdit} className={styles.secondaryBtn}>
+                      Sửa phản hồi
+                    </button>
+                  </div>
+                )}
               </>
             ) : null}
           </>

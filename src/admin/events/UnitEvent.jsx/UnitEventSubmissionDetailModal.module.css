@@ -88,3 +88,18 @@
 .muted {
   color: #94a3b8;
 }
+
+.statusActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  margin-top: 0.25rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.statusBtnRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

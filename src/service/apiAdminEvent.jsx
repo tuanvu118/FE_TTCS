@@ -254,6 +254,35 @@ export async function getHtttSubmissionsAllByUnitEvent(unitEventId) {
   }
 }
 
+const HTTT_STATUS_VALUES = new Set(['PENDING', 'APPROVED', 'REJECTED'])
+
+/** Admin/Manager: cập nhật trạng thái duyệt phản hồi HTTT (POST /unit-event-submissions/status). */
+export async function updateHtttSubmissionStatus(unitEventSubmissionId, status) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  const sid = unitEventSubmissionId ? String(unitEventSubmissionId).trim() : ''
+  const st = String(status || '').toUpperCase().trim()
+  if (!sid || !HTTT_STATUS_VALUES.has(st)) {
+    throw new Error('Thiếu id phản hồi hoặc trạng thái không hợp lệ.')
+  }
+  try {
+    return await apiRequest('/unit-event-submissions/status', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        unit_event_submission_id: sid,
+        status: st,
+      }),
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+  } catch (error) {
+    notifyUnitEventsListError(error)
+    throw error
+  }
+}
+
 export async function updatePublicEvent(eventId, formData) {
   const accessToken = getStoredAuthSession()?.accessToken || ''
   try {

@@ -183,3 +183,10 @@
 .secondaryBtn:hover {
   background: #f8fafc;
 }
+
+.readonlyHint {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.5;
+}

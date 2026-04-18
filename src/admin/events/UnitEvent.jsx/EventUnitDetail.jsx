@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   Buildings,
   Calendar,
+  DownloadSimple,
   Link,
   PencilSimple,
   Trash,
@@ -13,6 +14,7 @@ import {
 import { Popconfirm, Spin, message } from 'antd'
 import { deleteUnitEvent, getHtttSubmissionsAllByUnitEvent, getUnitEventById } from '../../../service/apiAdminEvent'
 import { getStoredCurrentSemester } from '../../../utils/currentSemesterStorage'
+import { downloadUnitEventHtttExcel } from '../../../utils/exportUnitEventHtttExcel'
 import { buildUnitEventCooperationRows } from '../../../utils/unitEventCooperationRows'
 import UnitEventSubmissionDetailModal from './UnitEventSubmissionDetailModal'
 import styles from './EventUnitDetail.module.css'
@@ -103,6 +105,28 @@ export default function UnitEventDetailPage() {
   function closeSubmissionModal() {
     setSubmissionModalOpen(false)
     setSubmissionModalRow(null)
+  }
+
+  function handleExportHtttExcel() {
+    if (!data || data.type !== 'HTTT') {
+      return
+    }
+    try {
+      const semesterLabel = semesterObj
+        ? `${semesterObj.name} - ${semesterObj.academic_year}`
+        : ''
+      downloadUnitEventHtttExcel({
+        data,
+        cooperationRows,
+        routeUnitId: unitId,
+        routeEventId: eventId,
+        semesterLabel,
+      })
+      message.success('Đã tải file Excel.')
+    } catch (err) {
+      console.error('Export HTTT excel failed', err)
+      message.error('Không thể xuất file Excel.')
+    }
   }
 
   function statusBadgeClass(status) {
@@ -228,8 +252,20 @@ export default function UnitEventDetailPage() {
         </div>
 
         <div className={`${styles.card} ${styles.rightCard}`}>
-          <div className={styles.cardHeader}>
+          <div className={`${styles.cardHeader} ${styles.coopHeaderWithAction}`}>
             <h3 className={styles.cardTitle}>Đơn vị phối hợp</h3>
+            {data.type === 'HTTT' ? (
+              <button
+                type="button"
+                className={styles.exportExcelBtn}
+                onClick={handleExportHtttExcel}
+                disabled={htttSubmissionsLoading}
+                title="Xuất Excel: thông tin HTTT + danh sách đơn vị và trạng thái"
+              >
+                <DownloadSimple size={18} weight="bold" aria-hidden />
+                Xuất Excel
+              </button>
+            ) : null}
           </div>
           <div className={styles.cardBody}>
             <p className={styles.sectionDesc}>
@@ -357,6 +393,17 @@ export default function UnitEventDetailPage() {
         open={submissionModalOpen}
         onClose={closeSubmissionModal}
         row={submissionModalRow}
+        onAfterStatusUpdate={async () => {
+          if (!eventId || data?.type !== 'HTTT') {
+            return
+          }
+          try {
+            const list = await getHtttSubmissionsAllByUnitEvent(eventId)
+            setHtttSubmissions(list)
+          } catch {
+            message.error('Không thể làm mới danh sách phản hồi.')
+          }
+        }}
       />
     </div>
   )

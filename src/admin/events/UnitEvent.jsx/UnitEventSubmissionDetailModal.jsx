@@ -1,5 +1,7 @@
-import { Modal } from 'antd'
-import { getHtttSubmissionStatusLabel } from '../../../utils/unitEventCooperationRows'
+import { useEffect, useState } from 'react'
+import { Button, Modal, message } from 'antd'
+import { updateHtttSubmissionStatus } from '../../../service/apiAdminEvent'
+import { getHtttSubmissionStatusLabel, normalizeHtttSubmissionStatus } from '../../../utils/unitEventCooperationRows'
 import styles from './UnitEventSubmissionDetailModal.module.css'
 
 function submissionEvidenceUrlText(sub) {
@@ -13,6 +15,21 @@ function submissionEvidenceUrlText(sub) {
   return String(raw).trim()
 }
 
+function mergeSubmissionFromStatusResponse(sub, payload) {
+  if (!payload || typeof payload !== 'object') {
+    return sub
+  }
+  return {
+    ...sub,
+    content: payload.content ?? sub.content,
+    evidenceUrl: payload.evidenceUrl ?? payload.evidence_url ?? sub.evidenceUrl,
+    evidence_url: payload.evidence_url ?? payload.evidenceUrl ?? sub.evidence_url,
+    status: payload.status ?? sub.status,
+    submittedAt: payload.submittedAt ?? payload.submitted_at ?? sub.submittedAt,
+    submitted_at: payload.submitted_at ?? payload.submittedAt ?? sub.submitted_at,
+  }
+}
+
 function formatDate(value) {
   if (!value) {
     return '—'
@@ -24,11 +41,44 @@ function formatDate(value) {
   return d.toLocaleString('vi-VN')
 }
 
-export default function UnitEventSubmissionDetailModal({ open, onClose, row }) {
-  const sub = row?.submission
+export default function UnitEventSubmissionDetailModal({ open, onClose, row, onAfterStatusUpdate }) {
+  const submissionId = row?.submissionId || ''
+  const [localSub, setLocalSub] = useState(null)
+  const [statusSaving, setStatusSaving] = useState(false)
+
+  useEffect(() => {
+    if (open && row?.submission) {
+      setLocalSub({ ...row.submission })
+    }
+    if (!open) {
+      setLocalSub(null)
+      setStatusSaving(false)
+    }
+  }, [open, row])
+
+  const sub = localSub ?? row?.submission
   const unit = row?.unit
   const statusLabel = sub ? getHtttSubmissionStatusLabel(sub.status ?? 'PENDING') : 'Chưa phản hồi'
   const evidenceUrlText = submissionEvidenceUrlText(sub)
+  const normalizedStatus = sub ? normalizeHtttSubmissionStatus(sub.status) || 'PENDING' : ''
+
+  async function handleSetStatus(nextStatus) {
+    if (!submissionId) {
+      message.warning('Thiếu mã phản hồi, không thể cập nhật trạng thái.')
+      return
+    }
+    setStatusSaving(true)
+    try {
+      const updated = await updateHtttSubmissionStatus(submissionId, nextStatus)
+      setLocalSub((prev) => mergeSubmissionFromStatusResponse(prev || row?.submission, updated))
+      message.success('Đã cập nhật trạng thái phản hồi.')
+      await onAfterStatusUpdate?.()
+    } catch (err) {
+      message.error(err?.message || 'Không thể cập nhật trạng thái.')
+    } finally {
+      setStatusSaving(false)
+    }
+  }
 
   return (
     <Modal
@@ -76,7 +126,38 @@ export default function UnitEventSubmissionDetailModal({ open, onClose, row }) {
 
           <div className={styles.field}>
             <span className={styles.label}>Thời gian gửi</span>
-            <span>{formatDate(sub.submittedAt)}</span>
+            <span>{formatDate(sub.submittedAt ?? sub.submitted_at)}</span>
+          </div>
+
+          <div className={styles.statusActions}>
+            <span className={styles.label}>Cập nhật trạng thái duyệt</span>
+            {!submissionId ? (
+              <p className={styles.muted}>Không có mã phản hồi để gửi lên máy chủ.</p>
+            ) : (
+              <div className={styles.statusBtnRow}>
+                <Button
+                  type={normalizedStatus === 'PENDING' ? 'primary' : 'default'}
+                  disabled={statusSaving || normalizedStatus === 'PENDING'}
+                  onClick={() => handleSetStatus('PENDING')}
+                >
+                  Chờ duyệt
+                </Button>
+                <Button
+                  type={normalizedStatus === 'APPROVED' ? 'primary' : 'default'}
+                  disabled={statusSaving || normalizedStatus === 'APPROVED'}
+                  onClick={() => handleSetStatus('APPROVED')}
+                >
+                  Đã duyệt
+                </Button>
+                <Button
+                  danger
+                  disabled={statusSaving || normalizedStatus === 'REJECTED'}
+                  onClick={() => handleSetStatus('REJECTED')}
+                >
+                  Từ chối
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
