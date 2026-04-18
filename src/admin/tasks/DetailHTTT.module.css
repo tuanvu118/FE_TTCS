@@ -15,11 +15,18 @@
   border: 1px solid var(--ds-border);
   overflow: hidden;
   box-shadow: var(--ds-shadow-card);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.surfaceCard:hover {
+  box-shadow: var(--ds-shadow-card-hover, var(--ds-shadow-card));
+  border-color: var(--ds-border-strong);
 }
 
 .heroHeader {
-  padding: 1.35rem 1.5rem 1rem;
+  padding: 1.5rem 1.5rem 1.1rem;
   border-bottom: 1px solid var(--ds-divider);
+  background: linear-gradient(180deg, var(--ds-surface) 0%, var(--ds-surface-warm) 130%);
 }
 
 .heroTopRow {
@@ -47,10 +54,10 @@
 .heroTitle {
   margin: 0;
   font-size: clamp(1.35rem, 2.5vw, 1.75rem);
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  color: var(--ds-deep-navy);
+  color: var(--ds-text);
   font-family: var(--ds-font-sans);
 }
 
@@ -119,7 +126,7 @@
   margin: 0;
   font-size: 0.95rem;
   font-weight: 800;
-  color: var(--ds-deep-navy);
+  color: var(--ds-text);
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
@@ -156,6 +163,7 @@
   font-size: 0.9375rem;
   line-height: 1.55;
   color: var(--ds-text);
+  font-size: 0.96rem;
 }
 
 .readonlyMuted {
@@ -176,6 +184,12 @@
 .evidenceLink:hover {
   color: var(--ds-accent-hover);
   text-decoration: underline;
+}
+
+.evidenceLink:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 
 .editActionRow {

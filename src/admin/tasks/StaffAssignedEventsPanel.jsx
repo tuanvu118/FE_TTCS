@@ -23,6 +23,8 @@ export default function StaffAssignedEventsPanel() {
     const stored = getStoredCurrentSemester()
     return stored?.id || ''
   })
+  const [keyword, setKeyword] = useState('')
+  const [typeFilter, setTypeFilter] = useState('ALL')
 
   useEffect(() => {
     async function fetchSemesters() {
@@ -83,6 +85,16 @@ export default function StaffAssignedEventsPanel() {
     [semesters],
   )
 
+  const filteredRows = useMemo(() => {
+    const q = keyword.trim().toLowerCase()
+    return rows.filter((row) => {
+      const matchType = typeFilter === 'ALL' || row.type === typeFilter
+      const title = String(row.title || '').toLowerCase()
+      const matchKeyword = !q || title.includes(q)
+      return matchType && matchKeyword
+    })
+  }, [rows, keyword, typeFilter])
+
   function goDetail(row) {
     if (!unitId) return
     navigate(`/staff/${unitId}/tasks/${row.id}`)
@@ -102,12 +114,34 @@ export default function StaffAssignedEventsPanel() {
         />
       </div>
 
+      <div className={styles.filterRow}>
+        <input
+          className={styles.searchInput}
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder="Tìm theo tên sự kiện..."
+          aria-label="Tìm theo tên sự kiện"
+        />
+        <Select
+          className={styles.typeSelect}
+          value={typeFilter}
+          onChange={setTypeFilter}
+          options={[
+            { value: 'ALL', label: 'Tất cả loại' },
+            { value: 'HTTT', label: TYPE_LABEL.HTTT },
+            { value: 'HTSK', label: TYPE_LABEL.HTSK },
+          ]}
+        />
+      </div>
+
       {loading ? (
         <div className={styles.hint}>Đang tải…</div>
       ) : error ? (
         <div className={styles.error}>{error}</div>
       ) : rows.length === 0 ? (
         <div className={styles.empty}>Không có sự kiện được giao trong học kỳ này.</div>
+      ) : filteredRows.length === 0 ? (
+        <div className={styles.empty}>Không có sự kiện phù hợp với bộ lọc/từ khóa.</div>
       ) : (
         <div className={styles.tableWrap}>
           <table className={styles.table}>
@@ -130,7 +164,7 @@ export default function StaffAssignedEventsPanel() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => (
+              {filteredRows.map((row) => (
                 <tr key={row.id}>
                   <td className={styles.titleCell}>
                     <span className={styles.titleText}>{row.title}</span>

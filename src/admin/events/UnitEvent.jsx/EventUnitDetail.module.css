@@ -47,10 +47,11 @@
 
 .title {
   margin: 0;
-  font-size: 1.75rem;
-  font-weight: 900;
-  color: var(--ds-deep-navy);
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+  font-weight: 800;
+  color: var(--ds-text);
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .actions {
@@ -67,8 +68,20 @@
   font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.12s ease;
   border: 1px solid var(--ds-border);
+}
+
+.actionBtn:active {
+  transform: scale(0.98);
+}
+
+.actionBtn:focus-visible,
+.backLink:focus-visible,
+.exportExcelBtn:focus-visible,
+.coopDetailBtn:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 2px;
 }
 
 .editBtn {
@@ -166,7 +179,7 @@
   gap: 0.4rem;
   flex-shrink: 0;
   padding: 0.45rem 0.85rem;
-  border-radius: var(--ds-radius-md);
+  border-radius: 4px;
   border: 1px solid var(--ds-border-strong);
   background: var(--ds-surface);
   color: var(--ds-text);
@@ -226,7 +239,7 @@
 
 .sectionDesc {
   margin-bottom: 1.25rem;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   color: var(--ds-text-secondary);
 }
 
@@ -330,7 +343,7 @@
 .coopTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
 }
 
 .coopTable th,
@@ -342,12 +355,28 @@
 }
 
 .coopTable th {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 800;
   color: var(--ds-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   background: var(--ds-surface-subtle);
+}
+
+@media (max-width: 768px) {
+  .cardHeader,
+  .cardBody {
+    padding: 1rem;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actionBtn {
+    flex: 1 1 calc(50% - 0.4rem);
+    justify-content: center;
+  }
 }
 
 .coopTable tbody tr:last-child td {

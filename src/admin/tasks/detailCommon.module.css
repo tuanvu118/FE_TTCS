@@ -48,15 +48,15 @@
   padding: 0.75rem 1rem;
   border-radius: 10px;
   border: 1px solid var(--ds-border);
-  background: linear-gradient(135deg, var(--ds-surface-warm) 0%, var(--ds-surface-subtle) 100%);
+  background: linear-gradient(135deg, var(--ds-surface) 0%, var(--ds-surface-warm) 100%);
   box-shadow: var(--ds-shadow-card);
 }
 
 .statusLabel {
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--ds-text);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .statusBadge {
@@ -65,8 +65,8 @@
   padding: 0.35rem 0.85rem;
   border-radius: var(--ds-radius-pill);
   font-weight: 800;
-  font-size: 0.9rem;
-  letter-spacing: 0.04em;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
   border: 1px solid transparent;
 }
 
@@ -117,7 +117,7 @@
   margin: 0;
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  border: 1px dashed var(--ds-border-strong);
+  border: 1px solid var(--ds-border-strong);
   background: var(--ds-surface-warm);
   color: var(--ds-text);
   font-size: 0.95rem;
@@ -130,17 +130,22 @@
 }
 
 .primaryInviteBtn {
-  border: none;
-  background: var(--ds-deep-navy);
+  border: 1px solid transparent;
+  background: var(--ds-accent);
   color: var(--ds-surface);
   padding: 0.65rem 1.15rem;
-  border-radius: var(--ds-radius-md);
+  border-radius: 4px;
   font-weight: 800;
   cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.12s ease;
 }
 
 .primaryInviteBtn:hover {
-  background: color-mix(in srgb, var(--ds-deep-navy) 88%, var(--ds-surface));
+  background: var(--ds-accent-hover);
+}
+
+.primaryInviteBtn:active {
+  transform: scale(0.98);
 }
 
 .field {
@@ -172,18 +177,18 @@
 }
 
 .saveBtn {
-  border: none;
-  background: var(--ds-deep-navy);
+  border: 1px solid transparent;
+  background: var(--ds-accent);
   color: var(--ds-surface);
   padding: 0.625rem 1rem;
-  border-radius: var(--ds-radius-md);
+  border-radius: 4px;
   font-weight: 700;
   cursor: pointer;
   transition: background-color 0.15s ease, opacity 0.15s ease;
 }
 
 .saveBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--ds-deep-navy) 88%, var(--ds-surface));
+  background: var(--ds-accent-hover);
 }
 
 .saveBtn:disabled {
@@ -202,9 +207,16 @@
   background: var(--ds-surface);
   color: var(--ds-text);
   padding: 0.625rem 1rem;
-  border-radius: var(--ds-radius-md);
+  border-radius: 4px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.primaryInviteBtn:focus-visible,
+.saveBtn:focus-visible,
+.secondaryBtn:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 2px;
 }
 
 .secondaryBtn:hover {

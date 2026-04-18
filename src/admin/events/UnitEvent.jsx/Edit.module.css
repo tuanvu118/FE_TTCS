@@ -37,10 +37,10 @@
 
 .wizardTitle {
   margin: 0;
-  font-size: 1.125rem;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
   font-weight: 800;
-  color: var(--ds-deep-navy);
-  letter-spacing: -0.01em;
+  color: var(--ds-text);
+  letter-spacing: -0.02em;
 }
 
 .wizardSubtitle {
@@ -141,7 +141,7 @@
   border-radius: var(--ds-radius-md);
   font-size: 0.875rem;
   color: var(--ds-text);
-  background-color: var(--ds-surface-warm);
+  background-color: var(--ds-surface);
   transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 
@@ -158,7 +158,7 @@
   padding: 1rem;
   border: 1px solid var(--ds-border);
   border-radius: var(--ds-radius-md);
-  background-color: var(--ds-surface-warm);
+  background-color: var(--ds-surface);
   font-size: 0.875rem;
   resize: vertical;
   outline: none;
@@ -168,6 +168,7 @@
 .textarea:focus {
   border-color: var(--ds-accent);
   background-color: var(--ds-surface);
+  box-shadow: 0 0 0 4px var(--ds-focus-ring);
 }
 
 .select :global(.ant-select-selector) {
@@ -237,18 +238,19 @@
   font-size: 0.8125rem;
   color: var(--ds-text);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
 .backButton:hover {
-  background-color: var(--ds-secondary-fill);
+  background-color: var(--ds-surface-warm);
+  border-color: var(--ds-border-input);
 }
 
 .nextButton {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background-color: var(--ds-deep-navy);
+  background-color: var(--ds-accent);
   color: var(--ds-surface);
   border: none;
   padding: 0.625rem 1.75rem;
@@ -256,11 +258,22 @@
   font-weight: 700;
   font-size: 0.8125rem;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.nextButton:hover:not(:disabled) {
+  background-color: var(--ds-accent-hover);
 }
 
 .nextButton:disabled {
   background-color: var(--ds-border-input);
   color: var(--ds-text-muted);
   cursor: not-allowed;
+}
+
+.backLink:focus-visible,
+.backButton:focus-visible,
+.nextButton:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 2px;
 }
