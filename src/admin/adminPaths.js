@@ -9,13 +9,13 @@ function adminPathSegments(pathname) {
     if (!rest) return []
     return rest.split('/').filter(Boolean)
   }
-  if (pathname.startsWith('/unit')) {
-    const rest = pathname.replace(/^\/unit\/?/, '')
+  if (pathname.startsWith('/staff')) {
+    const rest = pathname.replace(/^\/staff\/?/, '')
     if (!rest) return []
     return rest.split('/').filter(Boolean)
   }
-  if (pathname.startsWith('/staff')) {
-    const rest = pathname.replace(/^\/staff\/?/, '')
+  if (pathname.startsWith('/unit')) {
+    const rest = pathname.replace(/^\/unit\/?/, '')
     if (!rest) return []
     return rest.split('/').filter(Boolean)
   }

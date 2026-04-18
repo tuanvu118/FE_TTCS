@@ -92,7 +92,7 @@ export default function EventDetailPage({ eventId }) {
       // Format answers: [{ field_id, value }]
       const answers = Object.entries(values).map(([field_id, value]) => ({
         field_id,
-        value: String(value)
+        value: Array.isArray(value) ? value.join(', ') : String(value)
       }))
 
       await registerPublicEvent(eventId, answers)
@@ -156,7 +156,8 @@ export default function EventDetailPage({ eventId }) {
   const regStart = new Date(eventData.registration_start || eventData.event_start)
   const regEnd = new Date(eventData.registration_end || eventData.event_start)
   const now = new Date()
-  const canRegister = now >= regStart && now <= regEnd && !isExpired
+  const isFull = eventData.max_participants > 0 && (eventData.current_participants || 0) >= eventData.max_participants
+  const canRegister = now >= regStart && now <= regEnd && !isExpired && !isFull
   const formatDateTime = (date) => {
     return date.toLocaleString('vi-VN', {
       weekday: 'long',
@@ -261,6 +262,11 @@ export default function EventDetailPage({ eventId }) {
                   <span className="status-dot" />
                   <span>Sắp mở đăng ký</span>
                 </div>
+              ) : isFull ? (
+                <div className="reg-status-value closed">
+                  <span className="status-dot" />
+                  <span>Sự kiện đã hết slot</span>
+                </div>
               ) : canRegister ? (
                 <div className="reg-status-value open">
                   <span className="status-dot" />
@@ -311,10 +317,16 @@ export default function EventDetailPage({ eventId }) {
               <div className="capacity-info">
                 <div className="capacity-label">
                   <span>Sức chứa:</span>
-                  <span>{eventData.max_participants} chỗ</span>
+                  <span>{eventData.current_participants || 0}/{eventData.max_participants} chỗ</span>
                 </div>
                 <div className="progress-bar-bg">
-                  <div className="progress-bar-fill" style={{ width: '0%' }}></div>
+                  <div 
+                    className="progress-bar-fill" 
+                    style={{ 
+                      width: `${Math.min(100, ((eventData.current_participants || 0) / eventData.max_participants) * 100)}%`,
+                      backgroundColor: isFull ? '#ef4444' : '#10b981'
+                    }}
+                  ></div>
                 </div>
               </div>
             )}
@@ -351,14 +363,19 @@ export default function EventDetailPage({ eventId }) {
               key={field.id}
               name={field.id}
               label={field.label}
-              rules={[{ required: field.required, message: `Vui lòng nhập ${field.label.toLowerCase()}` }]}
+              rules={[
+                { required: field.required, message: `Vui lòng nhập ${field.label.toLowerCase()}` },
+                { max: 1000, message: 'Nội dung quá dài (tối đa 1000 ký tự)' }
+              ]}
             >
-              {field.field_type === 'textarea' ? (
-                <Input.TextArea placeholder="..." rows={4} />
-              ) : field.field_type === 'select' ? (
-                <Select placeholder="Chọn một tùy chọn">
+              {field.field_type === 'text' ? (
+                <Input.TextArea placeholder="..." rows={4} maxLength={1000} />
+              ) : field.field_type === 'checkbox' ? (
+                <Select mode="multiple" placeholder="Chọn các tùy chọn phù hợp">
                   {field.options?.map(opt => <Select.Option key={opt} value={opt}>{opt}</Select.Option>)}
                 </Select>
+              ) : field.field_type === 'number' ? (
+                <Input type="number" placeholder="Nhập số..." />
               ) : (
                 <Input placeholder="..." />
               )}
