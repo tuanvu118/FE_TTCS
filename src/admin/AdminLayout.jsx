@@ -20,15 +20,50 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
     return ids.join('|')
   }, [manageOptions])
   const { unitId: selectedUnitId, panel: selectedPanelRaw } = parseAdminPath(currentPath)
-  const isUnitContext = currentPath.startsWith('/unit/')
-  const selectedUnitRole = isUnitContext
+  const isStaffContext = currentPath.startsWith('/staff/') || currentPath.startsWith('/unit/')
+  const selectedUnitRole = isStaffContext
     ? USER_ROLES.staff
     : getManageRoleForUnit(user, selectedUnitId)
   const selectedPanel =
-    selectedPanelRaw || (isUnitContext ? 'members' : MANAGE_ADMIN_PANELS.users)
+    selectedPanelRaw || (isStaffContext ? 'members' : MANAGE_ADMIN_PANELS.users)
   const selectedUnit = manageableUnits.find((unitItem) => unitItem.id === selectedUnitId)
+  const [urlOnlyUnit, setUrlOnlyUnit] = useState(null)
+
+  useEffect(() => {
+    if (!selectedUnitId || !accessToken) {
+      setUrlOnlyUnit(null)
+      return
+    }
+    if (selectedUnit) {
+      setUrlOnlyUnit(null)
+      return
+    }
+
+    let cancelled = false
+    setUrlOnlyUnit(null)
+
+    ;(async () => {
+      try {
+        const unit = await getUnitById(selectedUnitId, accessToken)
+        if (cancelled || unit?.id !== selectedUnitId) {
+          return
+        }
+        setUrlOnlyUnit(unit)
+      } catch {
+        if (!cancelled) {
+          setUrlOnlyUnit(null)
+        }
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedUnitId, selectedUnit, accessToken])
+
+  const selectedUnitForNav = selectedUnit || urlOnlyUnit
   const canRenderSidebar = Boolean(selectedUnitId && selectedUnitRole)
-  const isStaffSelected = isUnitContext
+  const isStaffSelected = isStaffContext
 
   useEffect(() => {
     if (!accessToken) {
@@ -127,15 +162,12 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
       return
     }
 
+    // Nhận diện đơn vị hiện tại từ URL
     const selectedOption = manageOptions.find((optionItem) => optionItem.unitId === selectedUnitId)
-    if (!selectedOption) {
-      const defaultOption = manageOptions[0]
-      if (defaultOption.role === USER_ROLES.staff) {
-        navigate(buildStaffPath(defaultOption.unitId, 'members'))
-      } else {
-        navigate(buildAdminPath(defaultOption.unitId, MANAGE_ADMIN_PANELS.users))
-      }
-    }
+    
+    // Nếu không tìm thấy unitId trong danh sách quản lý, chúng ta KHÔNG tự động redirect 
+    // ở đây để tránh lỗi nhảy trang khi truy cập các đường dẫn chi tiết (reports/events).
+    // AdminRouter sẽ tự xử lý việc cho phép truy cập hay không thông qua ForbiddenPage.
   }, [currentPath, manageOptions, manageableUnits, navigate, selectedUnitId])
 
   useEffect(() => {
@@ -171,7 +203,7 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
         isDropdownOpen={isDropdownOpen}
         setIsDropdownOpen={setIsDropdownOpen}
         selectedUnitId={selectedUnitId}
-        selectedUnit={selectedUnit}
+        selectedUnit={selectedUnitForNav}
         selectedUnitRole={selectedUnitRole}
         selectedPanel={selectedPanel}
         manageableUnits={manageableUnits}

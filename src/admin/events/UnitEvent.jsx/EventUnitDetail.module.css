@@ -1,0 +1,451 @@
+.detailRoot {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.loadingBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.backLink {
+  background: none;
+  border: none;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--ds-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  padding: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+  font-weight: 800;
+  color: var(--ds-text);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: var(--ds-radius-md);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.12s ease;
+  border: 1px solid var(--ds-border);
+}
+
+.actionBtn:active {
+  transform: scale(0.98);
+}
+
+.actionBtn:focus-visible,
+.backLink:focus-visible,
+.exportExcelBtn:focus-visible,
+.coopDetailBtn:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 2px;
+}
+
+.editBtn {
+  background: var(--ds-surface);
+  color: var(--ds-text);
+}
+
+.editBtn:hover {
+  background: var(--ds-surface-warm);
+  border-color: var(--ds-border-strong);
+}
+
+.deleteBtn {
+  background: var(--ds-surface);
+  color: var(--ds-danger);
+  border-color: var(--ds-danger-border);
+}
+
+.deleteBtn:hover {
+  background: var(--ds-danger-bg);
+}
+
+.copyBtn {
+  background: var(--ds-accent-soft-bg);
+  color: var(--ds-accent-soft-text);
+  border-color: var(--ds-badge-pending-border);
+  box-shadow: 0 0 0 1px var(--ds-focus-ring);
+}
+
+.copyBtn:hover {
+  background: var(--ds-badge-loading-bg);
+  color: var(--ds-accent-hover);
+  border-color: var(--ds-accent);
+}
+
+.contentGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: stretch;
+}
+
+.mainColumn {
+  min-width: 0;
+}
+
+.rightCard {
+  width: 100%;
+}
+
+.contextCard {
+  margin-top: 0;
+}
+
+.card {
+  background: var(--ds-surface);
+  border-radius: var(--ds-radius-card);
+  border: 1px solid var(--ds-border);
+  overflow: hidden;
+  box-shadow: var(--ds-shadow-card);
+}
+
+.cardHeader {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--ds-divider);
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ds-deep-navy);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.coopHeaderWithAction {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.coopHeaderWithAction .cardTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.exportExcelBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding: 0.45rem 0.85rem;
+  border-radius: 4px;
+  border: 1px solid var(--ds-border-strong);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.exportExcelBtn:hover {
+  background: var(--ds-surface-warm);
+  border-color: var(--ds-border-input);
+}
+
+.exportExcelBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cardBody {
+  padding: 1.5rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.infoLabel {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--ds-text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.infoValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ds-text);
+}
+
+.descriptionSection .cardTitle {
+  margin-bottom: 1.25rem;
+}
+
+.descriptionText {
+  white-space: pre-wrap;
+}
+
+.sectionDesc {
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--ds-text-secondary);
+}
+
+.unitList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.unitItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.unitLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ds-radius-md);
+  object-fit: cover;
+  border: 1px solid var(--ds-border);
+}
+
+.unitInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.unitName {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ds-text);
+}
+
+.unitType {
+  margin: 0;
+  font-size: 0.625rem;
+  color: var(--ds-text-muted);
+}
+
+.emptyText {
+  color: var(--ds-text-muted);
+  font-size: 0.8125rem;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.timePoint {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.timeIcon {
+  width: 2.25rem;
+  height: 2.25rem;
+  background: var(--ds-surface-warm);
+  border-radius: var(--ds-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.timeContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.timeTitle {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--ds-text-muted);
+}
+
+.timeValue {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ds-text);
+}
+
+.coopError {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--ds-danger);
+}
+
+.coopTableWrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--ds-border);
+  border-radius: 10px;
+}
+
+.coopTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.coopTable th,
+.coopTable td {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--ds-divider);
+  vertical-align: middle;
+}
+
+.coopTable th {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--ds-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--ds-surface-subtle);
+}
+
+@media (max-width: 768px) {
+  .cardHeader,
+  .cardBody {
+    padding: 1rem;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actionBtn {
+    flex: 1 1 calc(50% - 0.4rem);
+    justify-content: center;
+  }
+}
+
+.coopTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.coopUnitCell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.coopActionCell {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.coopDetailBtn {
+  border: 1px solid var(--ds-border-strong);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.coopDetailBtn:hover:not(:disabled) {
+  background: var(--ds-surface-warm);
+}
+
+.coopDetailBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--ds-radius-pill);
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+}
+
+.badgeNone {
+  background: var(--ds-warning-bg);
+  color: var(--ds-warning-text);
+  border-color: var(--ds-warning-border);
+}
+
+.badgePending {
+  background: var(--ds-accent-soft-bg);
+  color: var(--ds-accent-soft-text);
+  border-color: var(--ds-badge-pending-border);
+}
+
+.badgeCompleted {
+  background: var(--ds-success-bg);
+  color: var(--ds-success-text);
+  border-color: var(--ds-badge-approved-border);
+}
+
+.badgeReject {
+  background: var(--ds-danger-bg);
+  color: var(--ds-danger);
+  border-color: var(--ds-badge-reject-border);
+}

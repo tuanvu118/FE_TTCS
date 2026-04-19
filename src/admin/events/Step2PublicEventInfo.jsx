@@ -23,12 +23,9 @@ import styles from './step2PublicEventInfo.module.css'
 const { RangePicker } = DatePicker
 
 const FIELD_TYPES = [
-  { id: 'text', label: 'Văn bản ngắn', icon: TextT },
-  { id: 'textarea', label: 'Văn bản dài', icon: TextAlignLeft },
+  { id: 'text', label: 'Văn bản', icon: TextAlignLeft },
   { id: 'number', label: 'Con số', icon: Hash },
-  { id: 'select', label: 'Chọn (Dropdown)', icon: ListBullets },
-  { id: 'radio', label: 'Chọn một (Radio)', icon: RadioButton },
-  { id: 'checkbox', label: 'Chọn nhiều (Checkbox)', icon: CheckSquare },
+  { id: 'checkbox', label: 'Nhiều lựa chọn', icon: CheckSquare },
 ]
 
 export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBack, onNext }) {
@@ -166,6 +163,7 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
               className={styles.input}
               placeholder="Ví dụ: Hội nghị Thủ lĩnh trẻ 2024"
               value={data.title}
+              maxLength={255}
               onChange={e => setData(prev => ({ ...prev, title: e.target.value }))}
             />
           </div>
@@ -394,7 +392,7 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
                       </div>
                     </div>
 
-                    {['select', 'radio', 'checkbox'].includes(field.field_type) && (
+                    {field.field_type === 'checkbox' && (
                       <div className={styles.optionsSection}>
                         <label className={styles.label}>CÁC TÙY CHỌN</label>
                         <div className={styles.optionsList}>

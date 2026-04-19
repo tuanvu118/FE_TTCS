@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import TopNav from './components/TopNav'
 import { useAuth } from './hooks/useAuth'
 import { useRouter } from './hooks/useRouter'
@@ -15,6 +16,7 @@ import LogoutPage from './page/LogoutPage'
 import NotFoundPage from './page/NotFoundPage'
 import ProfilePage from './page/ProfilePage'
 import QrScanPage from './page/QrScanPage'
+import { handleTaskRouteAuthView } from './utils/taskRouteHandler'
 import { PATHS, getClubUnitIdFromPath } from './utils/routes'
 
 function App() {
@@ -40,8 +42,16 @@ function App() {
   const clubUnitId = getClubUnitIdFromPath(pathname)
   const eventIdMatched = pathname.match(/^\/events\/([^/]+)$/)
   const eventId = eventIdMatched?.[1] || ''
+  const taskIdMatched = pathname.match(/^\/task\/([^/]+)$/)
+  const taskId = taskIdMatched?.[1] || ''
   const isAdminArea = isAdminPath(pathname)
   const isAdminLayout = isAuthenticated && isAdminArea
+
+  useEffect(() => {
+    if (taskId && isAuthenticated && !isLoadingUser) {
+      handleTaskRouteAuthView(taskId, navigate)
+    }
+  }, [taskId, isAuthenticated, isLoadingUser, navigate])
 
   let page = <NotFoundPage />
 
@@ -57,7 +67,8 @@ function App() {
   const mustCheckAuth =
     requiresAuthPaths.has(pathname) ||
     isAdminArea ||
-    pathname.startsWith(`${PATHS.club}/`)
+    pathname.startsWith(`${PATHS.club}/`) ||
+    Boolean(taskId)
 
 
   if (mustCheckAuth && !isAuthenticated) {
@@ -73,6 +84,8 @@ function App() {
     page = <EventDetailPage eventId={eventId} />
   } else if (pathname === PATHS.qrScan) {
     page = <QrScanPage />
+  } else if (taskId) {
+    page = null
   } else if (pathname === PATHS.about) {
     page = <AboutPage />
   } else if (pathname === PATHS.club) {
@@ -112,6 +125,10 @@ function App() {
     page = <LogoutPage onLogout={logout} replace={replace} />
   } else {
     page = <NotFoundPage />
+  }
+
+  if (taskId && isAuthenticated && !isLoadingUser) {
+    return null
   }
 
   return (

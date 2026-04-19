@@ -6,7 +6,8 @@ import {
   Eye, 
   Calendar, 
   FileText,
-  Funnel
+  Funnel,
+  Export
 } from '@phosphor-icons/react'
 import styles from './reportManagement.module.css'
 import { apiRequest } from '../../service/apiClient'
@@ -58,7 +59,7 @@ export default function StaffReportsPanel({ accessToken, unitId, onSessionExpire
   }
 
   const handleViewDetail = (report) => {
-    navigate(`/unit/${unitId}/reports/${report.id}`)
+    navigate(`/staff/${unitId}/reports/${report.id}`)
   }
 
   return (

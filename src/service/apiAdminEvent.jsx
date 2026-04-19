@@ -231,6 +231,81 @@ export async function getUnitEventById(eventId, unitId = null) {
   }
 }
 
+/** Danh sách phản hồi HTTT theo sự kiện (admin/manager). */
+export async function getHtttSubmissionsAllByUnitEvent(unitEventId) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  const eid = unitEventId ? String(unitEventId).trim() : ''
+  if (!eid) {
+    return []
+  }
+  try {
+    const response = await apiRequest(
+      `/unit-event-submissions/HTTT/all?unit_event_id=${encodeURIComponent(eid)}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        ...(accessToken ? { authToken: accessToken } : {}),
+      },
+    )
+    return Array.isArray(response) ? response : []
+  } catch (error) {
+    notifyUnitEventsListError(error)
+    throw error
+  }
+}
+
+/** Danh sách đăng ký HTSK theo sự kiện (admin/manager). */
+export async function getHtskRegistrationsByUnitEvent(unitEventId) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  const eid = unitEventId ? String(unitEventId).trim() : ''
+  if (!eid) {
+    return []
+  }
+  try {
+    const response = await apiRequest(
+      `/unit-event-submissions/HTSK/list?unit_event_id=${encodeURIComponent(eid)}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        ...(accessToken ? { authToken: accessToken } : {}),
+      },
+    )
+    return Array.isArray(response) ? response : []
+  } catch (error) {
+    notifyUnitEventsListError(error)
+    throw error
+  }
+}
+
+const HTTT_STATUS_VALUES = new Set(['PENDING', 'APPROVED', 'REJECTED'])
+
+/** Admin/Manager: cập nhật trạng thái duyệt phản hồi HTTT (POST /unit-event-submissions/status). */
+export async function updateHtttSubmissionStatus(unitEventSubmissionId, status) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  const sid = unitEventSubmissionId ? String(unitEventSubmissionId).trim() : ''
+  const st = String(status || '').toUpperCase().trim()
+  if (!sid || !HTTT_STATUS_VALUES.has(st)) {
+    throw new Error('Thiếu id phản hồi hoặc trạng thái không hợp lệ.')
+  }
+  try {
+    return await apiRequest('/unit-event-submissions/status', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        unit_event_submission_id: sid,
+        status: st,
+      }),
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+  } catch (error) {
+    notifyUnitEventsListError(error)
+    throw error
+  }
+}
+
 export async function updatePublicEvent(eventId, formData) {
   const accessToken = getStoredAuthSession()?.accessToken || ''
   try {

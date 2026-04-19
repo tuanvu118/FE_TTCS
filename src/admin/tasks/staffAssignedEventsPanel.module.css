@@ -1,0 +1,272 @@
+.root {
+  padding: 1.25rem 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.filterRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  flex: 1 1 320px;
+  min-width: 220px;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--ds-border-input);
+  border-radius: 4px;
+  background: var(--ds-surface);
+  font-size: 0.875rem;
+  color: var(--ds-text);
+}
+
+.searchInput::placeholder {
+  color: var(--ds-text-muted);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--ds-accent);
+  box-shadow: 0 0 0 3px var(--ds-focus-ring);
+}
+
+.typeSelect {
+  min-width: 220px;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ds-text);
+  font-family: var(--ds-font-sans);
+}
+
+.semesterSelect {
+  min-width: 260px;
+}
+
+/* Bảng: card nổi nhẹ + viền whisper (DESIGN.md §2) */
+.tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-card);
+  box-shadow: var(--ds-shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.tableWrap:hover {
+  box-shadow: var(--ds-shadow-card-hover, var(--ds-shadow-card));
+}
+
+.table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-family: var(--ds-font-sans);
+}
+
+.colTitle {
+  width: 36%;
+}
+
+.colPoint {
+  width: 4.5rem;
+}
+
+.colType {
+  width: 26%;
+}
+
+.colDate {
+  width: auto;
+}
+
+.colAction {
+  width: 8.5rem;
+}
+
+.table th,
+.table td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ds-text-secondary);
+  border-bottom: 1px solid var(--ds-divider);
+}
+
+.table th {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ds-text-muted);
+  background: var(--ds-surface-warm);
+  border-bottom: 1px solid var(--ds-border);
+  white-space: nowrap;
+}
+
+.thNumeric {
+  text-align: right;
+}
+
+.thAction {
+  width: 8.5rem;
+}
+
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background: var(--ds-surface-hover);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.titleCell {
+  padding-right: 1.25rem;
+}
+
+.titleText {
+  display: block;
+  font-weight: 600;
+  color: var(--ds-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.numCell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--ds-text);
+}
+
+.dateCell {
+  font-size: 0.8125rem;
+  color: var(--ds-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.actionCell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Pill loại nhiệm vụ — DESIGN.md badge 12px / pill */
+.typePill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--ds-radius-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.typePillHttt {
+  background: var(--ds-accent-soft-bg);
+  color: var(--ds-accent-soft-text);
+  border-color: var(--ds-badge-pending-border);
+}
+
+.typePillHtsk {
+  background: var(--ds-badge-neutral-bg);
+  color: var(--ds-badge-neutral-text);
+  border-color: var(--ds-badge-neutral-border);
+}
+
+.typePillNeutral {
+  background: var(--ds-surface-subtle);
+  color: var(--ds-text-secondary);
+  border-color: var(--ds-border);
+}
+
+/* Ghost / link — DESIGN.md §4 */
+.linkBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  border: none;
+  background: transparent;
+  padding: 0.35rem 0.25rem;
+  margin: 0 -0.25rem 0 0;
+  border-radius: var(--ds-radius-sm);
+  color: var(--ds-accent);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.linkBtn:hover {
+  color: var(--ds-accent-hover);
+  text-decoration: underline;
+}
+
+.linkBtn:focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .root {
+    padding: 1rem;
+  }
+
+  .header {
+    margin-bottom: 1rem;
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+}
+
+.hint,
+.empty {
+  padding: 1.25rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--ds-text-secondary);
+  background: var(--ds-surface-warm);
+  border: 1px dashed var(--ds-border-strong);
+  border-radius: var(--ds-radius-md);
+}
+
+.error {
+  padding: 0.9rem 1rem;
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-danger-bg);
+  color: var(--ds-danger);
+  border: 1px solid var(--ds-danger-border);
+  font-size: 0.875rem;
+}

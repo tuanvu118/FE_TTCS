@@ -2,22 +2,23 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, PencilSimple, Trash, WarningCircle, Link } from '@phosphor-icons/react'
 import { Spin, Popconfirm, message } from 'antd'
+import NotFoundPage from '../../page/NotFoundPage'
 import { 
-  getPublicEventById, 
-  getUnitEventById,
-  deletePublicEvent,
-  deleteUnitEvent
+  getPublicEventById,
+  deletePublicEvent
 } from '../../service/apiAdminEvent'
 import { getSemesters } from '../../service/semesterService'
 import { getStoredAuthSession } from '../../service/authSession'
 
 import EventPublicDetail from './EventPublicDetail'
-import EventUnitDetail from './EventUnitDetail'
 import styles from './adminEventDetail.module.css'
 
 export default function AdminEventDetailPage() {
   const { unitId, eventScope, eventId } = useParams()
   const navigate = useNavigate()
+  if (eventScope !== 'p') {
+    return <NotFoundPage />
+  }
   
   const [data, setData] = useState(null)
   const [semesters, setSemesters] = useState([])
@@ -33,10 +34,7 @@ export default function AdminEventDetailPage() {
     setError(null)
     try {
       const token = getStoredAuthSession()?.accessToken
-      const [eventRes, semRes] = await Promise.all([
-        eventScope === 'p' ? getPublicEventById(eventId) : getUnitEventById(eventId, unitId),
-        getSemesters(token)
-      ])
+      const [eventRes, semRes] = await Promise.all([getPublicEventById(eventId), getSemesters(token)])
       
       setData(eventRes)
       setSemesters(semRes.items || [])
@@ -56,11 +54,7 @@ export default function AdminEventDetailPage() {
 
   const handleDelete = async () => {
     try {
-      if (eventScope === 'p') {
-        await deletePublicEvent(eventId)
-      } else {
-        await deleteUnitEvent(eventId)
-      }
+      await deletePublicEvent(eventId)
       handleBack() // Redirect to list
     } catch (e) {
       // Error handled by service
@@ -141,11 +135,7 @@ export default function AdminEventDetailPage() {
         </div>
       </header>
 
-      {eventScope === 'p' ? (
-        <EventPublicDetail data={data} semester={semesterObj} />
-      ) : (
-        <EventUnitDetail data={data} semester={semesterObj} />
-      )}
+      <EventPublicDetail data={data} semester={semesterObj} />
     </div>
   )
 }

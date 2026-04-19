@@ -3,7 +3,7 @@ import {
   ArrowLeft,
   ArrowRight,
 } from '@phosphor-icons/react'
-import { Select, InputNumber, Badge } from 'antd'
+import { Select, InputNumber, Badge, message } from 'antd'
 import { getUnits } from '../../service/unitService'
 import { getSemesters } from '../../service/semesterService'
 import { getStoredAuthSession } from '../../service/authSession'
@@ -52,6 +52,26 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
 
 
   const isFormValid = data.title && data.description && data.listUnitId?.length > 0 && data.semesterId
+
+  const handleNext = () => {
+    if ((data.point ?? 0) > 10) {
+      message.warning('Điểm thưởng không được vượt quá 10.')
+      return
+    }
+    onNext()
+  }
+
+  const handlePointChange = (val) => {
+    if (val == null) {
+      setData((prev) => ({ ...prev, point: 0 }))
+      return
+    }
+    if (val > 10) {
+      message.warning('Điểm thưởng không được vượt quá 10.')
+      return
+    }
+    setData((prev) => ({ ...prev, point: val }))
+  }
 
   return (
     <div className={styles.container}>
@@ -140,10 +160,9 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
                 <InputNumber 
                   className={styles.numberInput}
                   min={0}
-                  max={10}
                   step={0.1}
                   value={data.point}
-                  onChange={val => setData(prev => ({ ...prev, point: val }))}
+                  onChange={handlePointChange}
                 />
                 <span className={styles.suffix}>ĐIỂM</span>
               </div>
@@ -162,7 +181,7 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
           <button 
             className={styles.nextButton} 
             disabled={!isFormValid || isSubmitting}
-            onClick={onNext}
+            onClick={handleNext}
           >
             {isSubmitting ? 'Đang tạo...' : 'Tạo yêu cầu'}
             {!isSubmitting && <ArrowRight size={16} weight="bold" />}
