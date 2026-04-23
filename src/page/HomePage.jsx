@@ -58,7 +58,6 @@ function stripHtml(html) {
   if (!html) return ''
   const doc = new DOMParser().parseFromString(html, 'text/html')
   let text = doc.body.textContent || ''
-  // Loại bỏ emoji/icon dải unicode
   text = text.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
   return text.trim()
 }
@@ -93,15 +92,37 @@ export default function HomePage() {
         getUnits().catch(err => { console.error('Units API Error:', err); return { items: [] }; }),
       ])
 
-      setEvents(Array.isArray(eventsResponse.items) ? eventsResponse.items : [])
-      setNews(Array.isArray(newsData.items) ? newsData.items.slice(0, 3) : [])
+      const eventItems = (Array.isArray(eventsResponse.items) ? eventsResponse.items : []).map(ev => {
+        let imgUrl = ev.image_url;
+        if (imgUrl && !imgUrl.startsWith('http')) {
+          const baseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+          const path = imgUrl.startsWith('/') ? imgUrl : '/' + imgUrl;
+          imgUrl = baseUrl + path;
+        }
+        return { ...ev, image_url: imgUrl };
+      })
+      setEvents(eventItems)
+      
+      const newsItems = (Array.isArray(newsData.items) ? newsData.items : []).map(item => {
+        let imgUrl = item.image_url;
+        if (imgUrl && !imgUrl.startsWith('http')) {
+          const baseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+          const path = imgUrl.startsWith('/') ? imgUrl : '/' + imgUrl;
+          imgUrl = baseUrl + path;
+        }
+        return { ...item, image_url: imgUrl };
+      })
+      setNews(newsItems.slice(0, 3))
 
-      const allUnits = (unitsData?.items || []).map(u => ({
-        ...u,
-        logo: u.logo && !u.logo.startsWith('http') 
-          ? `${import.meta.env.VITE_API_BASE_URL || ''}${u.logo}`.replace('//', '/')
-          : u.logo
-      }))
+      const allUnits = (unitsData?.items || []).map(u => {
+        let logoUrl = u.logo;
+        if (logoUrl && !logoUrl.startsWith('http')) {
+          const baseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+          const path = logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl;
+          logoUrl = baseUrl + path;
+        }
+        return { ...u, logo: logoUrl };
+      })
       
       let filteredUnits = allUnits
         .filter(u => {
@@ -139,10 +160,7 @@ export default function HomePage() {
     const now = new Date()
     const regStart = event.registration_start ? new Date(event.registration_start) : null
     const regEnd = event.registration_end ? new Date(event.registration_end) : null
-    
-    // Nếu không có mốc thời gian, mặc định là Đang mở đơn
     if (!regStart && !regEnd) return { label: 'Đang mở đơn', className: 'status-open' }
-    
     if (regStart && now < regStart) return { label: 'Sắp mở đơn', className: 'status-upcoming' }
     if (regEnd && now > regEnd) return { label: 'Đã đóng đơn', className: 'status-closed' }
     return { label: 'Đang mở đơn', className: 'status-open' }
@@ -201,8 +219,6 @@ export default function HomePage() {
       <div className="home-body">
         <div className="home-grid">
           <div className="home-left">
-
-            {/* Sự kiện sắp tới */}
             <section className="home-section section-upcoming">
               <div className="home-section-header">
                 <div>
@@ -250,7 +266,6 @@ export default function HomePage() {
               )}
             </section>
 
-            {/* CLB & Liên chi */}
             <section className="home-section">
               <div className="home-section-header">
                 <div>
@@ -283,7 +298,6 @@ export default function HomePage() {
               </div>
             </section>
 
-            {/* Tin tức & Thông báo */}
             <section className="home-section">
               <div className="home-section-header">
                 <h2 className="home-section-title">Tin tức & Thông báo</h2>
@@ -349,19 +363,11 @@ export default function HomePage() {
                     ))}
                   </div>
                 )}
-
-                {isAuthenticated && (
-                  <Link to={PATHS.event} className="home-sidebar-view-all">
-                    Xem lịch trình của tôi
-                  </Link>
-                )}
               </div>
             </div>
           </aside>
-
         </div>
       </div>
-
     </div>
   )
 }

@@ -12,6 +12,7 @@ import SemestersPage from './semesters/SemestersPage'
 import UnitsManagementPage from './units/UnitsManagementPage'
 import EventPromotionListPage from './promotions/EventPromotionListPage'
 import CreateEventPromotionPage from './promotions/CreateEventPromotionPage'
+import EditEventPromotionPage from './promotions/EditEventPromotionPage'
 import AdminPromotionManagement from './promotions/AdminPromotionManagement'
 
 import StaffUnitsWorkspace from './members/StaffUnitsWorkspace'
@@ -52,7 +53,7 @@ function LegacyUnitContextRedirect() {
   return <Navigate to={nextPath} replace />
 }
 
-function StaffUnitsPanelView({ accessToken, selectedUnitId, staffPanel, onSessionExpired }) {
+function StaffUnitsPanelView({ accessToken, selectedUnitId, role, staffPanel, onSessionExpired }) {
   const activePanel = ['members', 'reports', 'events', 'promotions'].includes(staffPanel) ? staffPanel : 'members'
   if (activePanel === 'reports') {
     return (
@@ -73,6 +74,7 @@ function StaffUnitsPanelView({ accessToken, selectedUnitId, staffPanel, onSessio
     <StaffUnitsWorkspace
       accessToken={accessToken}
       selectedUnitId={selectedUnitId}
+      role={role}
       activePanel={activePanel}
       onSessionExpired={onSessionExpired}
     />
@@ -115,10 +117,14 @@ function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired, role
     if (staffPanel === 'promotion-create') {
       return <CreateEventPromotionPage />
     }
+    if (staffPanel === 'promotion-edit') {
+      return <EditEventPromotionPage />
+    }
     return (
       <StaffUnitsPanelView
         accessToken={accessToken}
         selectedUnitId={unitId}
+        role={scopedRole}
         staffPanel={staffPanel}
         onSessionExpired={onSessionExpired}
       />
@@ -179,6 +185,7 @@ function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired, role
     <StaffUnitsPanelView
       accessToken={accessToken}
       selectedUnitId={unitId}
+      role={scopedRole}
       staffPanel={staffPanel}
       onSessionExpired={onSessionExpired}
     />
@@ -313,6 +320,7 @@ function AdminUnitHomeRoute({ user, roleLabel, accessToken, onSessionExpired }) 
       <StaffUnitsPanelView
         accessToken={accessToken}
         selectedUnitId={unitId}
+        role={scopedRole}
         staffPanel="members"
         onSessionExpired={onSessionExpired}
       />
@@ -402,6 +410,10 @@ export default function AdminRouter({
       <Route
         path="/staff/:unitId/promotions/create"
         element={<AdminStaffRoute {...shared} staffPanel="promotion-create" />}
+      />
+      <Route
+        path="/staff/:unitId/promotions/edit/:id"
+        element={<AdminStaffRoute {...shared} staffPanel="promotion-edit" />}
       />
       <Route
         path="/staff/:unitId/reports/:reportId"
