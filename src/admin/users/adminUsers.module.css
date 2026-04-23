@@ -480,6 +480,16 @@
   font-weight: 500 !important;
 }
 
+/* Keep AntD search input from inheriting global `.field input` sizing */
+.formSelect :global(.ant-select-input),
+.formSelect :global(.ant-select-selection-search-input) {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
 .formSelect:hover :global(.ant-select-selector) {
   border-color: #94a3b8 !important;
 }
