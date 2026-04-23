@@ -211,16 +211,36 @@ export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterD
   }
 
   const handleOpenRespond = (editing = false) => {
-    const initialIds = editing ? pickListMsv(submission) : []
-    const initialContent = editing ? pickContent(submission) : ''
+    const canEditExisting = editing && Boolean(submission)
+    const initialIds = canEditExisting ? pickListMsv(submission) : []
+    const initialContent = canEditExisting ? pickContent(submission) : ''
     const initialMeta = {}
-    if (editing) {
-      submittedRows.forEach(row => {
-        if (row.student_id) initialMeta[row.student_id] = { full_name: row.full_name, class_name: row.class_name }
-      })
+    if (canEditExisting) {
+      for (const row of submittedRows) {
+        const id = String(row?.student_id || '').trim()
+        if (!id) {
+          continue
+        }
+        initialMeta[id] = {
+          full_name: row?.full_name || '',
+          class_name: row?.class_name || '',
+        }
+      }
     }
-    setShowRespondForm(true); setIsEditingExisting(editing); setFormStep('pick')
-    setSelectedStudentIds(new Set(initialIds)); setSelectedMeta(initialMeta); setContentDraft(initialContent)
+    setShowRespondForm(true)
+    setIsEditingExisting(canEditExisting)
+    setFormStep('pick')
+    setPageIndex(0)
+    setFilterMsv('')
+    setFilterName('')
+    setFilterClass('')
+    setDebouncedFilters({ msv: '', name: '', class: '' })
+    setSelectedStudentIds(new Set(initialIds))
+    setSelectedMeta(initialMeta)
+    setContentDraft(initialContent)
+    setPastedMsvText('')
+    setRosterByStudentId(null)
+    setAddMsvInput('')
   }
 
   const handleGoReview = async () => {
