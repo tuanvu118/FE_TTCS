@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, PencilSimple, Trash, WarningCircle, Link } from '@phosphor-icons/react'
+import { ArrowLeft, PencilSimple, Trash, WarningCircle, Link, QrCode } from '@phosphor-icons/react'
 import { Spin, Popconfirm, message } from 'antd'
 import NotFoundPage from '../../page/NotFoundPage'
 import { 
@@ -11,6 +11,7 @@ import { getSemesters } from '../../service/semesterService'
 import { getStoredAuthSession } from '../../service/authSession'
 
 import EventPublicDetail from './EventPublicDetail'
+import QRModalPublicEvent from './QR/QRModalPublicEvent'
 import styles from './adminEventDetail.module.css'
 
 export default function AdminEventDetailPage() {
@@ -24,6 +25,7 @@ export default function AdminEventDetailPage() {
   const [semesters, setSemesters] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -103,6 +105,14 @@ export default function AdminEventDetailPage() {
           <h1 className={styles.title}>{data.title}</h1>
         </div>
         <div className={styles.actions}>
+          <button
+            className={`${styles.actionBtn} ${styles.copyBtn}`}
+            onClick={() => setIsQrModalOpen(true)}
+            title="Mở QR điểm danh"
+          >
+            <QrCode size={18} />
+            QR Điểm danh
+          </button>
           <button 
             className={`${styles.actionBtn} ${styles.copyBtn}`}
             onClick={handleCopyUrl}
@@ -136,6 +146,7 @@ export default function AdminEventDetailPage() {
       </header>
 
       <EventPublicDetail data={data} semester={semesterObj} />
+      <QRModalPublicEvent open={isQrModalOpen} onClose={() => setIsQrModalOpen(false)} eventId={eventId} />
     </div>
   )
 }
