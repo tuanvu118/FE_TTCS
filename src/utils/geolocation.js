@@ -1,13 +1,13 @@
 const DEFAULT_OPTIONS = {
-  enableHighAccuracy: true,
-  timeout: 10000,
+  enableHighAccuracy: false,
+  timeout: 6000,
   maximumAge: 0,
 }
 
 const FALLBACK_OPTIONS = {
-  enableHighAccuracy: false,
-  timeout: 20000,
-  maximumAge: 60000,
+  enableHighAccuracy: true,
+  timeout: 10000,
+  maximumAge: 0,
 }
 
 function mapGeolocationError(error) {
@@ -50,12 +50,10 @@ export function getCurrentCoordinates(options = {}) {
     })
 
   return readPosition(primaryOptions).catch((error) => {
-    // On many mobile devices, high accuracy can timeout in poor GPS conditions.
-    // Retry once with relaxed options before surfacing an error.
+    // Fast-first strategy: if quick network/cached lookup fails,
+    // retry once with high accuracy GPS to improve precision.
     const shouldRetry =
-      (error?.code === 2 || error?.code === 3) &&
-      primaryOptions.enableHighAccuracy &&
-      !Object.prototype.hasOwnProperty.call(options, 'enableHighAccuracy')
+      (error?.code === 2 || error?.code === 3) && !primaryOptions.enableHighAccuracy
 
     if (!shouldRetry) {
       throw mapGeolocationError(error)
