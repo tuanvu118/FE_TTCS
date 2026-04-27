@@ -24,6 +24,7 @@ function QrScanPage() {
   const streamRef = useRef(null)
   const scanFrameRef = useRef(null)
   const detectorRef = useRef(null)
+  const scanTimeoutRef = useRef(null)
 
   function toDateTimeLocalInput(value) {
     if (!value) return ''
@@ -50,6 +51,10 @@ function QrScanPage() {
   }
 
   function stopCamera() {
+    if (scanTimeoutRef.current) {
+      clearTimeout(scanTimeoutRef.current)
+      scanTimeoutRef.current = null
+    }
     if (scanFrameRef.current) {
       cancelAnimationFrame(scanFrameRef.current)
       scanFrameRef.current = null
@@ -76,6 +81,7 @@ function QrScanPage() {
         if (Array.isArray(codes) && codes.length > 0) {
           const qrRawValue = codes[0]?.rawValue || ''
           if (qrRawValue) {
+            setScanError('')
             applyScannedPayload(qrRawValue)
             message.success('Đã quét QR từ camera.')
             stopCamera()
@@ -92,7 +98,7 @@ function QrScanPage() {
   async function startCameraScan() {
     setScanError('')
     if (!('BarcodeDetector' in window)) {
-      setScanError('Thiết bị của bạn không hỗ trợ quét QR. Vui lòng dùng thiết bị khác')
+      setScanError('Thiết bị/trình duyệt chưa hỗ trợ quét QR trực tiếp. Vui lòng dán mã QR vào ô qr_value.')
       return
     }
 
@@ -113,6 +119,11 @@ function QrScanPage() {
       }
 
       setCameraActive(true)
+      scanTimeoutRef.current = setTimeout(() => {
+        if (scanFrameRef.current) {
+          setScanError('Chưa nhận diện được QR. Hãy tăng sáng, giữ máy ổn định và đưa mã vào gần camera hơn.')
+        }
+      }, 12000)
       scanFrameRef.current = requestAnimationFrame(scanLoop)
     } catch {
       setScanError('Không thể mở camera để quét QR.')
@@ -313,6 +324,7 @@ function QrScanPage() {
           Sau khi quét thành công, hệ thống sẽ tự điền qr_value và thời gian hiệu lực.
           Bạn kiểm tra lại rồi bấm Gửi điểm danh.
         </Text>
+        {cameraActive ? <Text type="secondary">Camera đang hoạt động, vui lòng đưa mã QR vào khung hình.</Text> : null}
       </div>
 
       <div style={{ display: 'grid', gap: 8 }}>

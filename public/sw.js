@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ptit-pwa-v6'
+const CACHE_NAME = 'ptit-pwa-v7'
 const PRECACHE_ASSETS = ['/manifest.webmanifest', '/logo-white-circle.png']
 const IS_LOCALHOST =
   self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1'

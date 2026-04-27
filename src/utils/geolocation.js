@@ -4,6 +4,12 @@ const DEFAULT_OPTIONS = {
   maximumAge: 0,
 }
 
+const FALLBACK_OPTIONS = {
+  enableHighAccuracy: false,
+  timeout: 20000,
+  maximumAge: 60000,
+}
+
 function mapGeolocationError(error) {
   switch (error?.code) {
     case 1:
@@ -22,23 +28,47 @@ export function getCurrentCoordinates(options = {}) {
     return Promise.reject(new Error('Trình duyệt không hỗ trợ định vị.'))
   }
 
-  const mergedOptions = {
+  const primaryOptions = {
     ...DEFAULT_OPTIONS,
     ...options,
   }
 
-  return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        resolve({
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-        })
-      },
-      (error) => {
-        reject(mapGeolocationError(error))
-      },
-      mergedOptions,
-    )
+  const readPosition = (readOptions) =>
+    new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+          resolve({
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+          })
+        },
+        (error) => {
+          reject(error)
+        },
+        readOptions,
+      )
+    })
+
+  return readPosition(primaryOptions).catch((error) => {
+    // On many mobile devices, high accuracy can timeout in poor GPS conditions.
+    // Retry once with relaxed options before surfacing an error.
+    const shouldRetry =
+      (error?.code === 2 || error?.code === 3) &&
+      primaryOptions.enableHighAccuracy &&
+      !Object.prototype.hasOwnProperty.call(options, 'enableHighAccuracy')
+
+    if (!shouldRetry) {
+      throw mapGeolocationError(error)
+    }
+
+    const retryOptions = {
+      ...FALLBACK_OPTIONS,
+      ...options,
+      enableHighAccuracy: false,
+    }
+
+    return readPosition(retryOptions).catch((retryError) => {
+      throw mapGeolocationError(retryError)
+    })
   })
 }
