@@ -7,6 +7,7 @@ import {
   DownloadSimple,
   Link,
   PencilSimple,
+  QrCode,
   Trash,
   Trophy,
 } from '@phosphor-icons/react'
@@ -14,6 +15,7 @@ import { Popconfirm, message } from 'antd'
 import { deleteUnitEvent, getHtskRegistrationsByUnitEvent } from '../../../service/apiAdminEvent'
 import { getStoredCurrentSemester } from '../../../utils/currentSemesterStorage'
 import { downloadUnitEventHtskExcel } from '../../../utils/exportUnitEventHtskExcel'
+import QRModalUnitEvent from '../QR/QRModalUnitEvent'
 import styles from './EUDetail.module.css'
 
 export default function EUDetailHTSK({ data, unitId, eventId }) {
@@ -21,6 +23,7 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
   const [registrations, setRegistrations] = useState([])
   const [registrationsLoading, setRegistrationsLoading] = useState(false)
   const [registrationsError, setRegistrationsError] = useState('')
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false)
   const currentSemester = getStoredCurrentSemester()
   const semesterObj =
     data && currentSemester?.id === (data.semester_id || data.semesterId) ? currentSemester : null
@@ -66,6 +69,16 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
     }
   }
 
+  const formatDateTime = (value) => {
+    if (!value) return '—'
+    const parsed = new Date(value)
+    return Number.isNaN(parsed.getTime()) ? '—' : parsed.toLocaleString('vi-VN')
+  }
+
+  const studentRegistrationEnabled = Boolean(data?.is_student_registration)
+  const showLimit =
+    data?.type === 'HTSK' && studentRegistrationEnabled
+
   useEffect(() => {
     if (!eventId) {
       setRegistrations([])
@@ -109,6 +122,14 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
         <div className={styles.actions}>
           <button
             className={`${styles.actionBtn} ${styles.copyBtn}`}
+            onClick={() => setIsQrModalOpen(true)}
+            title="Mở QR điểm danh"
+          >
+            <QrCode size={18} />
+            QR Điểm danh
+          </button>
+          <button
+            className={`${styles.actionBtn} ${styles.copyBtn}`}
             onClick={handleCopyUrl}
             title="Sao chép link xem của sinh viên"
           >
@@ -134,6 +155,7 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
           </Popconfirm>
         </div>
       </header>
+      <QRModalUnitEvent open={isQrModalOpen} onClose={() => setIsQrModalOpen(false)} eventId={eventId} />
 
       <div className={styles.contentGrid}>
         <div className={styles.mainColumn}>
@@ -163,6 +185,32 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
                     {semesterObj ? `${semesterObj.name} - ${semesterObj.academic_year}` : 'N/A'}
                   </span>
                 </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>THỜI GIAN DIỄN RA</span>
+                  <span className={styles.infoValue}>
+                    {formatDateTime(data.event_start)} - {formatDateTime(data.event_end)}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>THỜI GIAN ĐĂNG KÝ</span>
+                  <span className={styles.infoValue}>
+                    {formatDateTime(data.registration_start)} - {formatDateTime(data.registration_end)}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>SV CHỦ ĐỘNG ĐĂNG KÝ</span>
+                  <span className={styles.infoValue}>
+                    {studentRegistrationEnabled ? 'Có' : 'Không'}
+                  </span>
+                </div>
+                {showLimit ? (
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>GIỚI HẠN SV/ĐƠN VỊ</span>
+                    <span className={styles.infoValue}>
+                      {data.limit_student_registration_in_one_unit ?? '—'}
+                    </span>
+                  </div>
+                ) : null}
               </div>
 
               <div className={styles.descriptionSection}>

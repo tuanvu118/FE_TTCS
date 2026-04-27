@@ -85,3 +85,23 @@ export async function cancelRegistration(eventId) {
     authToken: accessToken,
   })
 }
+
+/**
+ * Scan attendance QR with current location
+ */
+export async function scanAttendanceQr({ qrValue, latitude, longitude }) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  return apiRequest('/attendance/scan', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      qr_value: qrValue,
+      latitude,
+      longitude,
+    }),
+    ...(accessToken ? { authToken: accessToken } : {}),
+  })
+}
