@@ -8,26 +8,6 @@ import {
   requestNotificationAndInstall,
 } from '../service/pwaService'
 
-const INSTALL_FLAG_KEY = 'ptit_pwa_installed'
-const INSTALL_FLAG_COOKIE = 'ptit_pwa_installed'
-
-function readInstallCookie() {
-  const match = document.cookie
-    .split('; ')
-    .find((item) => item.startsWith(`${INSTALL_FLAG_COOKIE}=`))
-  if (!match) {
-    return null
-  }
-  const value = match.split('=')[1]
-  return value === '1' ? '1' : '0'
-}
-
-function writeInstallMarkers(value) {
-  const normalized = value === '1' ? '1' : '0'
-  window.localStorage.setItem(INSTALL_FLAG_KEY, normalized)
-  document.cookie = `${INSTALL_FLAG_COOKIE}=${normalized}; path=/; max-age=31536000; samesite=lax`
-}
-
 export default function DownloadModal({
   open,
   onClose,
@@ -47,15 +27,7 @@ export default function DownloadModal({
   function getInstalledState() {
     const standaloneOnIos = window.navigator.standalone === true
     const standaloneOnOthers = window.matchMedia('(display-mode: standalone)').matches
-    const rememberedInstall =
-      window.localStorage.getItem(INSTALL_FLAG_KEY) === '1' || readInstallCookie() === '1'
-
-    if (standaloneOnIos || standaloneOnOthers) {
-      // If app is opened in standalone mode, persist marker for browser tabs too.
-      writeInstallMarkers('1')
-      return true
-    }
-    return Boolean(rememberedInstall)
+    return Boolean(standaloneOnIos || standaloneOnOthers)
   }
 
   useEffect(() => {
@@ -66,14 +38,11 @@ export default function DownloadModal({
       const available = Boolean(event?.detail?.available)
       setIsInstallAvailable(available)
       if (available) {
-        // If install prompt is available again, the app is likely not installed.
-        writeInstallMarkers('0')
         setIsInstalled(false)
       }
     }
     function handleAppInstalled() {
       setIsInstalled(true)
-      writeInstallMarkers('1')
       message.success('Ứng dụng đã được cài đặt.')
     }
 
@@ -234,7 +203,7 @@ export default function DownloadModal({
       maskClosable={maskClosable}
     >
       <div className={styles.content}>
-        <h3 className={styles.title}>Cài PTIT dưới dạng ứng dụng - V4</h3>
+        <h3 className={styles.title}>Cài PTIT dưới dạng ứng dụng - V5</h3>
         <p className={styles.description}>
           Cài đặt ứng dụng để mở nhanh từ màn hình chính, trải nghiệm toàn màn hình và dùng ổn định hơn.
         </p>
