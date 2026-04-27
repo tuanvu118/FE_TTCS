@@ -95,17 +95,34 @@ function QrScanPage() {
       })
   }
 
+  async function ensureQrDetector() {
+    if (!('BarcodeDetector' in window)) {
+      throw new Error('Thiết bị/trình duyệt chưa hỗ trợ Barcode Detection API.')
+    }
+
+    if (typeof window.BarcodeDetector.getSupportedFormats === 'function') {
+      const supportedFormats = await window.BarcodeDetector.getSupportedFormats()
+      if (Array.isArray(supportedFormats) && !supportedFormats.includes('qr_code')) {
+        throw new Error('Trình duyệt có BarcodeDetector nhưng không hỗ trợ định dạng qr_code.')
+      }
+    }
+
+    if (!detectorRef.current) {
+      detectorRef.current = new window.BarcodeDetector({ formats: ['qr_code'] })
+    }
+
+    return detectorRef.current
+  }
+
   async function startCameraScan() {
     setScanError('')
-    if (!('BarcodeDetector' in window)) {
-      setScanError('Thiết bị/trình duyệt chưa hỗ trợ quét QR trực tiếp. Vui lòng dán mã QR vào ô qr_value.')
+    if (!window.isSecureContext) {
+      setScanError('Quét QR chỉ hoạt động trong secure context (HTTPS hoặc localhost).')
       return
     }
 
     try {
-      if (!detectorRef.current) {
-        detectorRef.current = new window.BarcodeDetector({ formats: ['qr_code'] })
-      }
+      await ensureQrDetector()
 
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' },
@@ -125,8 +142,8 @@ function QrScanPage() {
         }
       }, 12000)
       scanFrameRef.current = requestAnimationFrame(scanLoop)
-    } catch {
-      setScanError('Không thể mở camera để quét QR.')
+    } catch (error) {
+      setScanError(error?.message || 'Không thể mở camera để quét QR.')
       stopCamera()
     }
   }
