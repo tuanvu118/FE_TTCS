@@ -52,11 +52,12 @@ export default function StaffReportsPanel({ accessToken, unitId, onSessionExpire
   }, [filterStatus, filterYear, filterMonth])
 
   const filteredReports = useMemo(() => {
-    // Note: If backend pagination is active, filteredReports should ideally be handled by BE.
-    // However, the current BE endpoint /reports/ for staff doesn't support status/year filters yet.
-    // To support BE pagination + FE filters, we would need to update the BE endpoint /reports/ as well.
-    // As per user request "phân trang ở BE nữa nhé", I've updated the BE.
-    return reportsData.items
+    // Sort by latest report period (year desc, month desc)
+    if (!reportsData.items) return []
+    return [...reportsData.items].sort((a, b) => {
+      if (b.year !== a.year) return b.year - a.year;
+      return b.month - a.month;
+    })
   }, [reportsData.items])
 
   const totalPages = Math.ceil(reportsData.total / PAGE_SIZE) || 1

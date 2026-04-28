@@ -1,14 +1,15 @@
 .shell {
   display: grid;
   grid-template-areas: 'sidebar content';
-  grid-template-columns: 352px minmax(0, 1fr);
+  grid-template-columns: 280px minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   height: 100%;
   max-height: 100%;
   min-height: 0;
   overflow: hidden;
-  background: #eef2f8;
+  background: #f8fafc;
 }
+
 
 .sidebar {
   grid-area: sidebar;
@@ -324,23 +325,25 @@
 .main {
   flex: 1 1 auto;
   min-height: 0;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   overscroll-behavior: contain;
-  padding: 1rem;
-  background: #eef2f8;
+  padding: 1.5rem 2rem;
+  background: #f8fafc;
   scrollbar-width: thin;
-  scrollbar-color: rgba(15, 77, 147, 0.4) #eef2f8;
+  scrollbar-color: rgba(15, 77, 147, 0.4) #f8fafc;
+  scrollbar-gutter: stable;
 }
 
 .main::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 8px;
+  height: 8px;
 }
 
 .main::-webkit-scrollbar-track {
-  background: #eef2f8;
-  border-radius: 999px;
+  background: #f8fafc;
 }
+
 
 .main::-webkit-scrollbar-thumb {
   background: rgba(15, 77, 147, 0.32);

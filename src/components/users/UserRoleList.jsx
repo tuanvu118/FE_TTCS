@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { getUnitDetail } from '../../service/unitService'
 import { isSystemUnit } from '../../utils/unitUtils'
 
-function UserRoleList({ roles }) {
-  const [unitNameById, setUnitNameById] = useState({})
+function UserRoleList({ roles, unitNameMap }) {
+  const [unitNameById, setUnitNameById] = useState(unitNameMap || {})
+
   const [hiddenUnitIds, setHiddenUnitIds] = useState(new Set())
-  const [isResolvingUnits, setIsResolvingUnits] = useState(false)
+  const [isResolvingUnits, setIsResolvingUnits] = useState(Boolean(roles?.length))
+
 
   const visibleRoles = useMemo(
     () => roles?.filter((roleItem) => !hiddenUnitIds.has(roleItem.unit_id)) || [],
@@ -16,12 +18,21 @@ function UserRoleList({ roles }) {
     let isCancelled = false
 
     async function loadUnitNames() {
+      setHiddenUnitIds(new Set())
       if (!roles?.length) {
-        setUnitNameById({})
-        setHiddenUnitIds(new Set())
+        setUnitNameById(unitNameMap || {})
         setIsResolvingUnits(false)
         return
       }
+
+      // Nếu đã có thông tin catalog từ ngoài truyền vào, dùng luôn để tránh nháy
+      if (unitNameMap && Object.keys(unitNameMap).length > 0) {
+        setUnitNameById(unitNameMap)
+        setIsResolvingUnits(false)
+        return
+      }
+
+
 
       const uniqueUnitIds = [...new Set(roles.map((roleItem) => roleItem.unit_id).filter(Boolean))]
 

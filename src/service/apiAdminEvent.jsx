@@ -452,3 +452,25 @@ export async function createPublicEventAttendanceSession(eventId, payload) {
   }
 }
 
+export async function markManualAttendance(payload) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  try {
+    const response = await apiRequest('/manual-attendance/mark', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+    return response
+  } catch (error) {
+    if (error instanceof ApiError) {
+      message.error(error.message || 'Điểm danh thủ công thất bại.')
+    } else {
+      message.error('Không thể kết nối đến máy chủ.')
+    }
+    throw error
+  }
+}

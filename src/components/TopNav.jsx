@@ -1,5 +1,7 @@
 import { GearSix, QrCode, UserCircle } from '@phosphor-icons/react'
 import { PATHS, primaryNavigation } from '../utils/routes'
+import styles from './TopNav.module.css'
+
 
 const navIconSize = 18
 
@@ -75,12 +77,13 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, navigate }) {
         {!isAuthenticated && (
           <button
             type="button"
-            className="nav-action-button nav-action-button-light"
+            className={styles.loginBtn}
             onClick={() => navigate(PATHS.login)}
           >
             Đăng nhập
           </button>
         )}
+
 
         {isAuthenticated && (
           <>

@@ -8,7 +8,8 @@ import {
   removeAssignment,
 } from '../../service/rbacService'
 import { getSemesters } from '../../service/semesterService'
-import { getManagedUnits } from '../../service/unitService'
+import { getManagedUnits, getUnits, getUnitById } from '../../service/unitService'
+
 import { formatDateTime, getValidationMessage } from '../../utils/userUtils'
 import styles from './adminUsers.module.css'
 import SemesterSelector from '../../components/semesters/SemesterSelector'
@@ -21,14 +22,25 @@ const INITIAL_ASSIGN_FORM = {
   semester_id: '',
 }
 
-function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged }) {
-  const [roles, setRoles] = useState([])
-  const [units, setUnits] = useState([])
-  const [semesters, setSemesters] = useState([])
-  const [assignments, setAssignments] = useState([])
+function UserRoleManagementSection({ 
+  userId, 
+  accessToken, 
+  initialAssignments, 
+  catalogData, 
+  unitNameMap,
+  onError, 
+  onRoleChanged 
+}) {
+
+  const [roles, setRoles] = useState(catalogData?.roles || [])
+  const [units, setUnits] = useState(catalogData?.units || [])
+  const [semesters, setSemesters] = useState(catalogData?.semesters || [])
+  const [assignments, setAssignments] = useState(initialAssignments || [])
   const [globalSemester] = useCurrentSemester()
   const [form, setForm] = useState(INITIAL_ASSIGN_FORM)
   const [isLoading, setIsLoading] = useState(true)
+  const [isResolvingNames, setIsResolvingNames] = useState(true)
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [assignmentToRemove, setAssignmentToRemove] = useState(null)
   const visibleUnits = useMemo(
@@ -40,9 +52,22 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
     [units],
   )
   const visibleAssignments = useMemo(
-    () => assignments.filter((assignmentItem) => !hiddenUnitIds.has(assignmentItem.unit_id)),
+    () => assignments.filter((item) => {
+      const roleCode = String(item.role_code || '').trim().toUpperCase()
+      // Luôn ẩn quyền USER
+      if (roleCode === 'USER') return false
+      
+      // ADMIN và MANAGER luôn hiển thị
+      if (roleCode === 'ADMIN' || roleCode === 'MANAGER') return true
+      
+      // Các quyền khác (như STAFF) thì kiểm tra xem đơn vị có bị ẩn không
+      const isHiddenUnit = hiddenUnitIds.has(item.unit_id)
+      return !isHiddenUnit
+    }),
     [assignments, hiddenUnitIds],
   )
+
+
 
   const roleOptions = useMemo(
     () => {
@@ -73,53 +98,113 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
       })),
     [semesters],
   )
-  const unitNameById = useMemo(
-    () => Object.fromEntries(visibleUnits.map((unitItem) => [unitItem.id, unitItem.name || unitItem.id])),
-    [visibleUnits],
-  )
-  const semesterNameById = useMemo(
-    () =>
-      Object.fromEntries(
-        semesters.map((semesterItem) => [
-          semesterItem.id,
-          semesterItem.name
-            ? `${semesterItem.name} (${semesterItem.academic_year})`
-            : semesterItem.id,
-        ]),
-      ),
-    [semesters],
-  )
-
-  useEffect(() => {
-    loadCatalogData()
-  }, [userId, accessToken])
-
-  useEffect(() => {
-    loadAssignments()
-  }, [userId, accessToken, globalSemester?.id])
-
-  async function loadCatalogData() {
-    setIsLoading(true)
-
-    try {
-      // Fetch roles
-      const nextRoles = await getRoles(accessToken)
-      setRoles(nextRoles)
-
-      // Fetch units with auth
-      const unitResponse = await getManagedUnits({ skip: 0, limit: 100 }, accessToken)
-      setUnits(unitResponse.items)
-
-      // Fetch semesters for table display
-      const semesterResponse = await getSemesters({ skip: 0, limit: 100 }, accessToken)
-      setSemesters(semesterResponse.items)
-    } catch (error) {
-      console.error('Failed to load permission catalog data:', error)
-      onError?.(error, 'Không thể tải danh mục phân quyền.')
-    } finally {
-      setIsLoading(false)
-    }
+  const getUnitDisplayName = (id, roleCode) => {
+    const rc = String(roleCode || '').trim().toUpperCase()
+    if (rc === 'ADMIN' || rc === 'MANAGER') return 'Đoàn Thanh Niên'
+    
+    const targetId = String(id || '')
+    
+    // Ưu tiên tìm trong map truyền từ ngoài vào (vì nó ổn định hơn)
+    if (unitNameMap && unitNameMap[targetId]) return unitNameMap[targetId]
+    
+    // Sau đó mới tìm trong state local
+    const localUnit = units.find(u => String(u.id) === targetId)
+    if (localUnit && localUnit.name && localUnit.name !== localUnit.id) return localUnit.name
+    
+    return targetId || 'N/A'
   }
+
+  const getSemesterDisplayName = (id) => {
+    const targetId = String(id || '')
+    const sem = semesters.find(s => String(s.id) === targetId)
+    if (sem && sem.name) {
+      return `${sem.name} (${sem.academic_year})`
+    }
+    return targetId || 'Học kỳ hiện hành'
+  }
+
+
+
+  useEffect(() => {
+    if (catalogData) {
+      setRoles(catalogData.roles)
+      setUnits(catalogData.units)
+      setSemesters(catalogData.semesters)
+      setIsLoading(false)
+    } else {
+      loadCatalogData()
+    }
+  }, [catalogData, userId, accessToken])
+
+  useEffect(() => {
+    if (initialAssignments && initialAssignments.length > 0) {
+      setAssignments(initialAssignments)
+      setIsLoading(false)
+    } else {
+      loadAssignments()
+    }
+  }, [initialAssignments, userId, accessToken, globalSemester?.id])
+
+
+  useEffect(() => {
+    if (!assignments || !accessToken) {
+      if (!isLoading) setIsResolvingNames(false)
+      return
+    }
+
+    async function resolveMissingNames() {
+      setIsResolvingNames(true)
+      try {
+        const missingUnitIds = [...new Set(assignments.map(a => a.unit_id))]
+          .filter(id => id && !units.some(u => u.id === id && u.name !== u.id) && (!unitNameMap || !unitNameMap[id]))
+        
+        if (missingUnitIds.length > 0) {
+          const newUnits = await Promise.all(
+            missingUnitIds.map(async (id) => {
+              try {
+                const u = await getUnitById(id, accessToken)
+                return { id, name: u.name, type: u.type || 'CLB' }
+              } catch {
+                return null
+              }
+            })
+          )
+          const validNewUnits = newUnits.filter(Boolean)
+          if (validNewUnits.length > 0) {
+            setUnits(prev => {
+              const existingIds = new Set(prev.map(u => u.id))
+              const filteredNew = validNewUnits.filter(nu => !existingIds.has(nu.id))
+              return [...prev, ...filteredNew]
+            })
+          }
+        }
+
+        const missingSemIds = [...new Set(assignments.map(a => a.semester_id))]
+          .filter(id => id && !semesters.some(s => s.id === id))
+        
+        if (missingSemIds.length > 0) {
+          try {
+            const resp = await getSemesters({ skip: 0, limit: 100 }, accessToken)
+            if (resp?.items) {
+              setSemesters(prev => {
+                const existingIds = new Set(prev.map(s => s.id))
+                const newItems = resp.items.filter(s => !existingIds.has(s.id))
+                return [...prev, ...newItems]
+              })
+            }
+          } catch (err) {
+            console.error("Failed to fetch missing semesters", err)
+          }
+        }
+      } finally {
+        setIsResolvingNames(false)
+      }
+    }
+
+    resolveMissingNames()
+  }, [assignments, accessToken])
+
+
 
   async function loadAssignments() {
     setIsLoading(true)
@@ -130,13 +215,17 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
         accessToken,
         globalSemester?.id === 'all' ? undefined : globalSemester?.id,
       )
-      setAssignments(assignmentResponse.items)
+      const fetchedAssignments = assignmentResponse.items
+      setAssignments(fetchedAssignments)
+
+
     } catch (error) {
       onError?.(error, 'Không thể tải danh sách phân quyền.')
     } finally {
       setIsLoading(false)
     }
   }
+
 
   async function handleAssignRole(event) {
     event.preventDefault()
@@ -185,6 +274,16 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (isLoading || isResolvingNames) {
+    return (
+      <div className={styles.managementSection}>
+        <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
+          Đang tải dữ liệu phân quyền...
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -263,9 +362,7 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
         </button>
       </form>
 
-      {isLoading ? (
-        <p className={styles.mutedCopy}>Đang tải danh sách phân quyền...</p>
-      ) : visibleAssignments.length ? (
+      {visibleAssignments.length ? (
         <div className={styles.assignmentShell}>
           <table className={styles.assignmentTable}>
             <thead>
@@ -283,8 +380,13 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
                   <td>
                     <span className="user-role-badge">{assignmentItem.role_code || 'USER'}</span>
                   </td>
-                  <td>{unitNameById[assignmentItem.unit_id] || 'Chưa cập nhật'}</td>
-                  <td>{semesterNameById[assignmentItem.semester_id] || 'Học kỳ hiện hành'}</td>
+                  <td>
+                    {getUnitDisplayName(assignmentItem.unit_id, assignmentItem.role_code)}
+                  </td>
+
+                  <td>{getSemesterDisplayName(assignmentItem.semester_id)}</td>
+
+
                   <td>{formatDateTime(assignmentItem.created_at)}</td>
                   <td>
                     <button

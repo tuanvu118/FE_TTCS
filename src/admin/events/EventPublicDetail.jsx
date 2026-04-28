@@ -9,10 +9,16 @@ import {
   User,
   CaretRight,
   X,
-  FileXls
+  FileXls,
+  SealCheck,
+  Circle
 } from '@phosphor-icons/react'
 import { useState, useEffect } from 'react'
-import { getEventRegistrations } from '../../service/apiAdminEvent'
+import { message, Modal } from 'antd'
+import { getEventRegistrations, markManualAttendance } from '../../service/apiAdminEvent'
+
+
+
 import { downloadPublicEventExcel } from '../../utils/exportPublicEventExcel'
 import styles from './adminEventDetail.module.css'
 
@@ -39,6 +45,43 @@ export default function EventPublicDetail({ data, semester }) {
       setLoading(false)
     }
   }
+
+  const handleMarkAttendance = async (e, reg) => {
+    e.stopPropagation() // Prevent opening modal
+    
+    if (reg.checked_in) return
+
+    const now = new Date()
+    const start = new Date(data.event_start)
+    const end = new Date(data.event_end)
+
+    if (now < start || now > end) {
+      message.warning('Chỉ có thể điểm danh trong thời gian diễn ra sự kiện.')
+      return
+    }
+
+    Modal.confirm({
+      title: 'Xác nhận điểm danh',
+      content: `Bạn có chắc chắn muốn điểm danh thủ công cho sinh viên ${reg.full_name}?`,
+      okText: 'Xác nhận',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        try {
+          await markManualAttendance({
+            event_id: data.id,
+            user_id: reg.user_id,
+            event_type: 'public'
+          })
+          message.success(`Đã điểm danh thành công cho ${reg.full_name}`)
+          fetchRegistrations() // Refresh list
+        } catch (error) {
+          console.error('Manual attendance failed:', error)
+        }
+      }
+    })
+  }
+
+
 
   const handleOpenDetail = (reg) => {
     setSelectedReg(reg)
@@ -74,7 +117,7 @@ export default function EventPublicDetail({ data, semester }) {
                 <span className={styles.infoValue}>{data.location || 'Chưa xác định'}</span>
               </div>
               <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>SỨC CHỨA</span>
+                <span className={styles.infoLabel}>SLOT</span>
                 <span className={styles.infoValue}>{data.max_participants || 0} CHỖ</span>
               </div>
               <div className={styles.infoItem}>
@@ -83,12 +126,14 @@ export default function EventPublicDetail({ data, semester }) {
               </div>
             </div>
 
-            <div style={{ margin: '2.5rem 0', borderTop: '1px solid #f1f5f9' }} />
+            <div style={{ marginTop: '1.25rem', marginBottom: '1.25rem', borderTop: '1px solid #f1f5f9' }} />
 
             <div className={styles.descriptionSection}>
-              <h3 className={styles.cardTitle} style={{ marginBottom: '1.5rem', color: '#64748b' }}>Mô tả chi tiết</h3>
+              <h3 className={styles.cardTitle} style={{ marginBottom: '1rem', color: '#64748b' }}>Mô tả chi tiết</h3>
+
               <div 
-                className="rich-text-content"
+                className={`rich-text-content ${styles.descriptionContent}`}
+
                 dangerouslySetInnerHTML={{ __html: data.description }} 
               />
             </div>
@@ -188,8 +233,12 @@ export default function EventPublicDetail({ data, semester }) {
                       <th style={{ paddingLeft: '1.5rem' }}>SINH VIÊN</th>
                       <th>MSSV</th>
                       <th>THỜI GIAN ĐĂNG KÝ</th>
+                      <th style={{ textAlign: 'center' }}>TRẠNG THÁI</th>
+                      <th style={{ textAlign: 'center' }}>THAO TÁC</th>
                       <th style={{ width: '50px' }}></th>
                     </tr>
+
+
                   </thead>
                   <tbody>
                     {registrations.map((reg, idx) => (
@@ -210,10 +259,45 @@ export default function EventPublicDetail({ data, semester }) {
                         <td style={{ color: '#64748b' }}>
                           {new Date(reg.registered_at).toLocaleString('vi-VN')}
                         </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <span 
+                            className={reg.checked_in ? styles.badgeSuccess : styles.badgeWarning}
+                            style={{ 
+                              display: 'inline-flex', 
+                              alignItems: 'center', 
+                              gap: '0.3rem',
+                              padding: '0.25rem 0.6rem',
+                              borderRadius: '6px',
+                              fontSize: '0.75rem',
+                              fontWeight: 700
+                            }}
+                          >
+                            {reg.checked_in ? (
+                              <>
+                                <SealCheck size={14} weight="fill" />
+                                ĐÃ CÓ MẶT
+                              </>
+                            ) : (
+                              'CHƯA CÓ MẶT'
+                            )}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          {!reg.checked_in && (
+                            <button 
+                              className={styles.markBtn}
+                              onClick={(e) => handleMarkAttendance(e, reg)}
+                            >
+                              ĐIỂM DANH
+                            </button>
+                          )}
+                        </td>
+
                         <td style={{ textAlign: 'center', color: '#94a3b8' }}>
                           <CaretRight size={18} />
                         </td>
                       </tr>
+
                     ))}
                   </tbody>
                 </table>

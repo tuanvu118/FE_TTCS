@@ -232,6 +232,7 @@
   gap: 0.75rem; /* Khoảng cách vừa phải để ôm sát */
   align-items: center;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .rank {

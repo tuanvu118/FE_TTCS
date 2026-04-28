@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { Eye, EyeSlash, GoogleLogo, FacebookLogo } from '@phosphor-icons/react'
 import NotificationPopup from '../components/NotificationPopup'
 import { PATHS } from '../utils/routes'
+import styles from './LoginPage.module.css'
 
 function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) {
   const [form, setForm] = useState({
@@ -21,6 +23,38 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
       [name]: value,
     }))
   }
+
+  const getFriendlyErrorMessage = (errorMsg) => {
+    if (!errorMsg) return 'Đăng nhập thất bại. Vui lòng thử lại.'
+    const msg = errorMsg.toLowerCase()
+    
+    // Xử lý các lỗi từ Backend (cả tiếng Anh lẫn tiếng Việt không dấu)
+    if (
+      msg.includes('incorrect') || 
+      msg.includes('invalid') || 
+      msg.includes('credentials') ||
+      msg.includes('thong tin dang nhap') ||
+      msg.includes('khong chinh xac')
+    ) {
+      return 'Tài khoản hoặc mật khẩu không chính xác.'
+    }
+    
+    if (msg.includes('inactive') || msg.includes('disabled') || msg.includes('vo hieu hoa')) {
+      return 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.'
+    }
+    
+    if (msg.includes('not found') || msg.includes('khong ton tai')) {
+      return 'Tài khoản không tồn tại trong hệ thống.'
+    }
+    
+    if (msg.includes('network') || msg.includes('fetch')) {
+      return 'Lỗi kết nối mạng. Vui lòng kiểm tra lại đường truyền.'
+    }
+    
+    return errorMsg
+  }
+
+
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -44,24 +78,47 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
     } catch (error) {
       setStatus({
         loading: false,
-        error: error.message,
+        error: getFriendlyErrorMessage(error.message),
       })
+      // Tối ưu: Xóa mật khẩu khi đăng nhập sai để người dùng dễ nhập lại
+      setForm(prev => ({ ...prev, password: '' }))
     }
   }
 
+
   if (isAuthenticated) {
     return (
-      <section className="page-card auth-card auth-card-compact">
-        <h1>Đăng nhập</h1>
-        <p>
-          Bạn đã đăng nhập với tài khoản <strong>{user?.studentId}</strong>.
-        </p>
+      <section className={styles.authView}>
+        <div className={styles.bannerSection}>
+          <img 
+            src="/login_side_banner_png_1777403397186.png" 
+            alt="Đoàn Thanh Niên" 
+            className={styles.bannerImg}
+          />
+          <div className={styles.bannerContent}>
+            <h2>Đoàn Thanh Niên</h2>
+            <p>Hệ thống quản lý hoạt động và sinh hoạt Đoàn trực tuyến.</p>
+          </div>
+        </div>
+        <div className={styles.loginSection}>
+          <div className={styles.authCard}>
+            <div className={styles.authCopy}>
+              <h1>Chào mừng</h1>
+              <p>
+                Bạn đã đăng nhập với tài khoản <strong>{user?.studentId}</strong>.
+              </p>
+            </div>
+            <button className={styles.submitBtn} onClick={() => navigate(PATHS.home)}>
+              Đi tới Trang chủ
+            </button>
+          </div>
+        </div>
       </section>
     )
   }
 
   return (
-    <section className="auth-view">
+    <section className={styles.authView}>
       <NotificationPopup
         isOpen={Boolean(status.error)}
         title="Đăng nhập thất bại"
@@ -74,96 +131,85 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
         }
       />
 
-      <div className="auth-card auth-card-compact">
-        <div className="auth-copy auth-copy-centered">
-          <h1>Đăng nhập</h1>
-          <p>Chào mừng bạn quay lại với hệ thống ĐTN.</p>
-        </div>
-
-        <form className="login-form auth-form" onSubmit={handleSubmit}>
-          <label className="field field-full">
-            <span>Tài khoản</span>
-            <input
-              name="studentId"
-              type="text"
-              value={form.studentId}
-              onChange={handleChange}
-              placeholder="Nhập mã sinh viên"
-            />
-          </label>
-
-          <div className="auth-form-row">
-            <span className="field-title">Mật khẩu</span>
-            <button type="button" className="text-link auth-inline-link">
-              Quên mật khẩu?
-            </button>
-          </div>
-
-          <label className="field field-full">
-            <div className="password-field">
-              <input
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={form.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                className="icon-button"
-                aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-                onClick={() => setShowPassword((current) => !current)}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="3"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                  />
-                </svg>
-              </button>
-            </div>
-          </label>
-
-          <button
-            type="submit"
-            className="primary-button auth-submit"
-            disabled={status.loading}
-          >
-            {status.loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
-          </button>
-        </form>
-
-        <div className="auth-divider">
-          <span>HOẶC ĐĂNG NHẬP VỚI</span>
-        </div>
-
-        <div className="social-auth-list">
-          <button type="button" className="social-auth-button">
-            Google
-          </button>
-          <button type="button" className="social-auth-button">
-            Facebook
-          </button>
+      <div className={styles.bannerSection}>
+        <img 
+          src="/login_side_banner_png_1777403397186.png" 
+          alt="Đoàn Thanh Niên Banner" 
+          className={styles.bannerImg}
+        />
+        <div className={styles.bannerContent}>
+          <h2>Đoàn Thanh Niên</h2>
+          <p>Nâng cao hiệu quả công tác Đoàn và phong trào thanh niên qua chuyển đổi số.</p>
         </div>
       </div>
 
-      <p className="auth-switch-copy">
-        Chỉ tài khoản đã được cấp quyền mới có thể đăng nhập vào hệ thống.
-      </p>
+      <div className={styles.loginSection}>
+        <div className={styles.authCard}>
+          <div className={styles.authCopy}>
+            <h1>Đăng nhập</h1>
+            <p>Sử dụng tài khoản sinh viên/cán bộ để tiếp tục.</p>
+          </div>
+
+          <form className={styles.loginForm} onSubmit={handleSubmit}>
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>Tài khoản</span>
+              <input
+                name="studentId"
+                type="text"
+                className={styles.inputField}
+                value={form.studentId}
+                onChange={handleChange}
+                placeholder="Nhập mã sinh viên"
+                required
+              />
+            </div>
+
+            <div className={styles.field}>
+              <div className={styles.authFormRow}>
+                <span className={styles.fieldLabel}>Mật khẩu</span>
+                <button type="button" className={styles.forgotLink}>
+                  Quên mật khẩu?
+                </button>
+              </div>
+              <div className={styles.passwordWrapper}>
+                <input
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  className={styles.inputField}
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  className={styles.eyeBtn}
+                  aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                  onClick={() => setShowPassword((current) => !current)}
+                >
+                  {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={status.loading}
+            >
+              {status.loading ? 'Đang xử lý...' : 'Đăng nhập'}
+            </button>
+          </form>
+
+          <p className={styles.switchCopy}>
+            Hệ thống quản lý nội bộ. Vui lòng không chia sẻ tài khoản cho người khác.
+          </p>
+        </div>
+      </div>
     </section>
   )
 }
 
+
 export default LoginPage
+

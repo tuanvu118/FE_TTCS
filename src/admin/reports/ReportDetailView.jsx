@@ -238,6 +238,20 @@ export default function ReportDetailView({
     })
   }
 
+  const handleApproveReport = () => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Xác nhận phê duyệt báo cáo',
+      message: 'Bạn có chắc chắn muốn phê duyệt báo cáo này? Sau khi duyệt, báo cáo sẽ được ghi nhận là hợp lệ vào hệ thống.',
+      danger: false,
+      onConfirm: () => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        updateReportStatus('DA_DUYET');
+      }
+    })
+  }
+
+
   const handleBack = () => {
     navigate(-1)
   }
@@ -263,6 +277,8 @@ export default function ReportDetailView({
 
   const isLocked = report.status !== 'CHUA_NOP' && report.status !== 'YEU_CAU_NOP_LAI'
   const isPendingApproval = report.status === 'CHO_DUYET'
+  const totalPoints = report.unit_events?.reduce((sum, ev) => sum + (ev.point || 0), 0) || 0;
+
 
   return (
     <div className={styles.pageContainer}>
@@ -307,7 +323,7 @@ export default function ReportDetailView({
                 </button>
                 <button 
                   className={`${styles.actionBtn} ${styles.approve}`}
-                  onClick={() => { if(window.confirm('Xác nhận phê duyệt báo cáo này?')) updateReportStatus('DA_DUYET') }}
+                  onClick={handleApproveReport}
                 >
                   <SealCheck size={18} weight="fill" /> Phê duyệt
                 </button>
@@ -329,35 +345,42 @@ export default function ReportDetailView({
 
       <div className={styles.statsCardGrid}>
         <div className={styles.miniStat}>
-          <div className={styles.statIconBox}><Article size={20} weight="fill" color="#2563eb" /></div>
+          <div className={styles.statIconBox}><Article size={18} weight="fill" color="#2563eb" /></div>
           <div>
-            <div className={styles.miniLabel}>Tổng hoạt động</div>
+            <div className={styles.miniLabel}>Tổng HĐ</div>
             <div className={styles.miniValue}>{report.internal_events.length + (report.unit_events?.length || 0)}</div>
           </div>
         </div>
         <div className={styles.miniStat}>
-          <div className={styles.statIconBox}><UserGear size={20} weight="fill" color="#f59e0b" /></div>
+          <div className={styles.statIconBox}><UserGear size={18} weight="fill" color="#f59e0b" /></div>
           <div>
             <div className={styles.miniLabel}>Được giao</div>
             <div className={styles.miniValue}>{report.unit_events?.length || 0}</div>
           </div>
         </div>
         <div className={styles.miniStat}>
-          <div className={styles.statIconBox}><UsersThree size={20} weight="fill" color="#10b981" /></div>
+          <div className={styles.statIconBox}><UsersThree size={18} weight="fill" color="#10b981" /></div>
           <div>
-            <div className={styles.miniLabel}>Nội bộ (Tự quản)</div>
+            <div className={styles.miniLabel}>Nội bộ</div>
             <div className={styles.miniValue}>{report.internal_events.length}</div>
           </div>
         </div>
-          <div className={styles.miniStat}>
-            <div className={styles.statIconBox}><Globe size={20} weight="fill" color="#6366f1" /></div>
-            <div>
-              <div className={styles.miniLabel}>Trạng thái</div>
-              <div className={`${styles.badge} ${styles['s_' + report.status.toLowerCase()]}`}>
-                {getStatusLabel(report.status)}
-              </div>
+        <div className={styles.miniStat}>
+          <div className={styles.statIconBox}><SealCheck size={18} weight="fill" color="#8b5cf6" /></div>
+          <div>
+            <div className={styles.miniLabel}>Tổng điểm</div>
+            <div className={styles.miniValue}>{totalPoints}</div>
+          </div>
+        </div>
+        <div className={styles.miniStat}>
+          <div className={styles.statIconBox}><Globe size={18} weight="fill" color="#6366f1" /></div>
+          <div>
+            <div className={styles.miniLabel}>Trạng thái</div>
+            <div className={`${styles.badge} ${styles['s_' + report.status.toLowerCase()]}`}>
+              {getStatusLabel(report.status)}
             </div>
           </div>
+        </div>
       </div>
 
       <div className={styles.standalonePage}>

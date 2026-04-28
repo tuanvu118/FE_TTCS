@@ -159,12 +159,13 @@ export default function NewsPortalPage() {
             
             <div className={styles.trendingList}>
               {hotNews.map((item, index) => (
-                <div key={item.id} className={styles.trendingItem}>
+                <Link key={item.id} to={`/news/${item.id}`} className={styles.trendingItem}>
                   <span className={styles.rank}>{(index + 1).toString().padStart(2, '0')}</span>
                   <div className={styles.trendInfo}>
                     <h4>{item.title}</h4>
                   </div>
-                </div>
+                </Link>
+
               ))}
             </div>
           </div>

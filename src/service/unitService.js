@@ -157,21 +157,32 @@ function mapUnitMemberListResponse(response) {
   }
 }
 
-export async function getUnits(params = {}) {
+export async function getUnits(params = {}, authToken) {
   const response = await apiRequest(`/units${buildQuery(params)}`, {
     method: 'GET',
+    authToken,
   })
 
   return mapUnitListResponse(response)
 }
 
+
+const unitDetailCache = new Map();
+
 export async function getUnitDetail(unitId) {
+  if (unitDetailCache.has(unitId) && Date.now() - unitDetailCache.get(unitId).time < 30000) {
+    return unitDetailCache.get(unitId).data;
+  }
+
   const response = await apiRequest(`/units/${unitId}`, {
     method: 'GET',
   })
 
-  return mapUnit(response)
+  const result = mapUnit(response)
+  unitDetailCache.set(unitId, { data: result, time: Date.now() })
+  return result
 }
+
 
 export async function getManagedUnits(params = {}, authToken) {
   const response = await apiRequest(`/units${buildQuery(params)}`, {
@@ -183,13 +194,20 @@ export async function getManagedUnits(params = {}, authToken) {
 }
 
 export async function getUnitById(unitId, authToken) {
+  if (unitDetailCache.has(unitId) && Date.now() - unitDetailCache.get(unitId).time < 30000) {
+    return unitDetailCache.get(unitId).data;
+  }
+
   const response = await apiRequest(`/units/${unitId}`, {
     method: 'GET',
     authToken,
   })
 
-  return mapUnit(response)
+  const result = mapUnit(response)
+  unitDetailCache.set(unitId, { data: result, time: Date.now() })
+  return result
 }
+
 
 export async function createUnit(form, authToken) {
   const response = await apiRequest('/units', {

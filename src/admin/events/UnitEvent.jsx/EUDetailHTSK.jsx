@@ -11,10 +11,12 @@ import {
   Trash,
   Trophy,
 } from '@phosphor-icons/react'
-import { Popconfirm, message } from 'antd'
-import { deleteUnitEvent, getHtskRegistrationsByUnitEvent } from '../../../service/apiAdminEvent'
+import { Popconfirm, message, Modal } from 'antd'
+
+import { deleteUnitEvent, getHtskRegistrationsByUnitEvent, markManualAttendance } from '../../../service/apiAdminEvent'
 import { getStoredCurrentSemester } from '../../../utils/currentSemesterStorage'
 import { downloadUnitEventHtskExcel } from '../../../utils/exportUnitEventHtskExcel'
+
 import QRModalUnitEvent from '../QR/QRModalUnitEvent'
 import styles from './EUDetail.module.css'
 
@@ -112,6 +114,44 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
       cancelled = true
     }
   }, [eventId])
+
+  const handleMarkAttendance = async (item) => {
+    const user = item?.user || {}
+    if (!user.id) return
+
+    const now = new Date()
+    const start = new Date(data.event_start)
+    const end = new Date(data.event_end)
+
+    if (now < start || now > end) {
+      message.warning('Chỉ có thể điểm danh trong thời gian diễn ra sự kiện.')
+      return
+    }
+
+    Modal.confirm({
+      title: 'Xác nhận điểm danh',
+      content: `Bạn có chắc chắn muốn điểm danh thủ công cho sinh viên ${user.full_name}?`,
+      okText: 'Xác nhận',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        try {
+          await markManualAttendance({
+            event_id: eventId,
+            user_id: user.id,
+            event_type: 'unit'
+          })
+          message.success(`Đã điểm danh thành công cho ${user.full_name}`)
+          // Reload list
+          const list = await getHtskRegistrationsByUnitEvent(eventId)
+          setRegistrations(Array.isArray(list) ? list : [])
+        } catch (error) {
+          console.error('Manual attendance failed:', error)
+        }
+      }
+    })
+  }
+
+
 
   return (
     <div className={styles.detailRoot}>
@@ -281,8 +321,10 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
                       <th>Lớp</th>
                       <th>Email</th>
                       <th>Đơn vị nộp</th>
-                      <th>Check-in</th>
+                      <th>Trạng thái</th>
+                      <th>Thao tác</th>
                     </tr>
+
                   </thead>
                   <tbody>
                     {registrations.map((item, idx) => {
@@ -297,13 +339,25 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
                           <td>{user?.email || '—'}</td>
                           <td>{item?.unit_name || '—'}</td>
                           <td>
-                            <span
+                            <span 
                               className={`${styles.statusBadge} ${checkedIn ? styles.badgeCompleted : styles.badgeNone}`}
                             >
                               {checkedIn ? 'Đã check-in' : 'Chưa check-in'}
                             </span>
                           </td>
+                          <td>
+                            {!checkedIn && (
+                              <button 
+                                className={styles.markBtn}
+                                onClick={() => handleMarkAttendance(item)}
+                              >
+                                Điểm danh
+                              </button>
+                            )}
+                          </td>
+
                         </tr>
+
                       )
                     })}
                   </tbody>

@@ -333,7 +333,7 @@ export default function EventDetailPage({ eventId }) {
             {eventData.max_participants > 0 && (
               <div className="capacity-info">
                 <div className="capacity-label">
-                  <span>Sức chứa:</span>
+                  <span>Slot:</span>
                   <span>{eventData.current_participants || 0}/{eventData.max_participants} chỗ</span>
                 </div>
                 <div className="progress-bar-bg">

@@ -60,6 +60,20 @@ export default function StaffUnitsWorkspace({
     loadMembers(selectedUnitId, memberQuery)
   }, [selectedUnitId, activePanel, memberQuery, accessToken])
 
+  // Debounce search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setMemberQuery(prev => ({
+        ...prev,
+        ...memberFilters,
+        skip: 0 // Reset to first page on search
+      }))
+    }, 500)
+
+    return () => clearTimeout(handler)
+  }, [memberFilters])
+
+
   async function loadUnitDetail(unitId) {
     setIsLoadingDetail(true)
     try {
@@ -198,13 +212,23 @@ export default function StaffUnitsWorkspace({
             <div className={styles.filterBar}>
               <div className={styles.filterGroup}>
                 <div className={styles.filterSelect}>
-                  <MagnifyingGlass size={16} />
+                  <MagnifyingGlass size={18} weight="bold" />
                   <input
                     placeholder="Tìm tên, mã sinh viên..."
                     value={memberFilters.full_name}
                     onChange={e => setMemberFilters(p => ({ ...p, full_name: e.target.value }))}
                   />
+                  {memberFilters.full_name && (
+                    <button 
+                      className={styles.clearBtn} 
+                      onClick={() => setMemberFilters(p => ({ ...p, full_name: '' }))}
+                      title="Xóa tìm kiếm"
+                    >
+                      ×
+                    </button>
+                  )}
                 </div>
+
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>

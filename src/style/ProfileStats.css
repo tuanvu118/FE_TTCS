@@ -142,14 +142,16 @@
 
 /* ── STATS CARDS ── */
 .stats-overview {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
 }
 
 .stat-card {
-  padding: 1rem 1.25rem;
+  flex: 1;
+  padding: 0.75rem 1rem;
   border-radius: 10px;
   background: #ffffff;
   border: 1px solid #f1f5f9;
@@ -171,7 +173,7 @@
 }
 
 .stat-label { 
-  font-size: 0.7rem; 
+  font-size: 0.65rem; 
   font-weight: 700; 
   opacity: 0.85; 
   text-transform: uppercase;
@@ -179,7 +181,7 @@
 }
 
 .stat-value { 
-  font-size: 1.25rem; 
+  font-size: 1.15rem; 
   font-weight: 900; 
   line-height: 1.1;
 }

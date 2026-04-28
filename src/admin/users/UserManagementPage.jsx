@@ -1,8 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
 import NotificationPopup from '../../components/NotificationPopup'
 import UserAvatar from '../../components/users/UserAvatar'
 import UserFormModal from '../../components/users/UserFormModal'
 import { createUser, getUserDetail, getUsers, updateUser } from '../../service/userService'
+import { getRoles, getUserAssignments } from '../../service/rbacService'
+import { getManagedUnits, getUnits, getUnitById } from '../../service/unitService'
+
+import { getSemesters } from '../../service/semesterService'
+
 import { USER_ROLES } from '../../utils/routes'
 import { getValidationMessage } from '../../utils/userUtils'
 import UserDetailDrawer from './UserDetailDrawer'
@@ -47,9 +53,20 @@ function UserManagementPage({
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [editingUser, setEditingUser] = useState(null)
   const [selectedUser, setSelectedUser] = useState(null)
+  const [selectedUserAssignments, setSelectedUserAssignments] = useState([])
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isDetailLoading, setIsDetailLoading] = useState(false)
   const [isSubmittingForm, setIsSubmittingForm] = useState(false)
+
+  // Catalog Data for Drawer
+  const [catalog, setCatalog] = useState({ roles: [], units: [], semesters: [] })
+  const [isCatalogLoading, setIsCatalogLoading] = useState(true)
+
+  const unitNameMap = useMemo(() => {
+    return Object.fromEntries(catalog.units.map(u => [u.id, u.name]))
+  }, [catalog.units])
+
+
 
   const canCreateUser = role === USER_ROLES.admin || role === USER_ROLES.manager
   const canEditOtherUsers = canCreateUser
@@ -66,10 +83,36 @@ function UserManagementPage({
   }, [accessToken, query])
 
   useEffect(() => {
+    async function loadCatalog() {
+      try {
+        const [rolesData, unitResp, semResp] = await Promise.all([
+          getRoles(accessToken),
+          getUnits({ skip: 0, limit: 1000 }, accessToken),
+          getSemesters({ skip: 0, limit: 100 }, accessToken)
+
+        ])
+
+
+        setCatalog({
+          roles: rolesData,
+          units: unitResp.items,
+          semesters: semResp.items
+        })
+      } catch (err) {
+        console.error('Failed to load catalog', err)
+      } finally {
+        setIsCatalogLoading(false)
+      }
+    }
+    if (accessToken) loadCatalog()
+  }, [accessToken])
+
+  useEffect(() => {
     if (initialCreateOpen) {
       setIsCreateOpen(true)
     }
   }, [initialCreateOpen])
+
 
   async function loadUsers(nextQuery) {
     setIsLoadingUsers(true)
@@ -99,12 +142,19 @@ function UserManagementPage({
   }
 
   async function handleViewDetail(userId) {
+    setSelectedUser(null)
+    setSelectedUserAssignments([])
     setIsDrawerOpen(true)
     setIsDetailLoading(true)
 
     try {
-      const userDetail = await getUserDetail(userId, accessToken)
+      const [userDetail, assignmentsResp] = await Promise.all([
+        getUserDetail(userId, accessToken),
+        getUserAssignments(userId, accessToken)
+      ])
+      
       setSelectedUser(userDetail)
+      setSelectedUserAssignments(assignmentsResp.items)
     } catch (error) {
       setSelectedUser(null)
       handleApiError(error, 'Không thể tải chi tiết người dùng.')
@@ -112,6 +162,7 @@ function UserManagementPage({
       setIsDetailLoading(false)
     }
   }
+
 
   async function handleOpenEdit(userId) {
     setIsSubmittingForm(false)
@@ -294,9 +345,13 @@ function UserManagementPage({
 
       <UserDetailDrawer
         isOpen={isDrawerOpen}
-        isLoading={isDetailLoading}
+        isLoading={isDetailLoading || isCatalogLoading}
         user={selectedUser}
+        assignments={selectedUserAssignments}
+        catalog={catalog}
+        unitNames={unitNameMap}
         role={role}
+
         accessToken={accessToken}
         canEdit={canEditOtherUsers && Boolean(selectedUser?.id)}
         onClose={() => setIsDrawerOpen(false)}
@@ -307,6 +362,7 @@ function UserManagementPage({
         onApiError={handleApiError}
         onRoleChanged={handleRoleChanged}
       />
+
 
       <section className={styles.consoleHeader}>
         <div>

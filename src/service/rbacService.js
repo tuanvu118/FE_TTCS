@@ -49,14 +49,16 @@ function buildQuery(params = {}) {
 
 function mapRole(role) {
   return {
-    id: role?.id || '',
+    id: role?._id || role?.id || '',
+
     code: role?.code || 'USER',
   }
 }
 
 function mapAssignment(assignment) {
   return {
-    id: assignment?.id || '',
+    id: assignment?._id || assignment?.id || '',
+
     user_id: assignment?.user_id || '',
     role_id: assignment?.role_id || '',
     role_code: assignment?.role_code || '',

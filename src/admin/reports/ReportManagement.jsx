@@ -60,7 +60,9 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
   async function fetchUnits() {
     try {
       const resp = await getManagedUnits({ limit: 100 }, accessToken)
-      setAllUnits(resp.items || [])
+      const units = resp.items || []
+      setAllUnits(units.filter(u => u.name && u.name.toUpperCase() !== 'DEFAULT'))
+
     } catch (error) {
        console.error("Failed to load units", error)
     }
@@ -135,7 +137,13 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
     }
   }
 
-  const filteredReports = reports
+  const filteredReports = useMemo(() => {
+    return reports.filter(report => {
+      const uName = unitNames[report.unit_id]
+      return !(uName && uName.toUpperCase() === 'DEFAULT')
+    })
+  }, [reports, unitNames])
+
 
   const totalPages = Math.ceil(reportsData.total / PAGE_SIZE) || 1
   const canGoPrevious = currentPage > 1

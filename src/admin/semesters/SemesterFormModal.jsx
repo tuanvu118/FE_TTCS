@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { X, Calendar, GraduationCap, CheckCircle } from '@phosphor-icons/react'
 import NotificationPopup from '../../components/NotificationPopup'
 import { toApiDateTimeValue, toDateTimeLocalValue } from '../../utils/semesterUtils'
 import styles from './adminSemesters.module.css'
@@ -93,7 +94,7 @@ function SemesterFormModal({ isOpen, mode, initialValues, isSubmitting, onClose,
   }
 
   return (
-    <div className="user-modal-backdrop" role="presentation" onClick={onClose}>
+    <div className={styles.modalOverlay} role="presentation" onClick={onClose}>
       <NotificationPopup
         isOpen={Boolean(notice)}
         title="Lỗi biểu mẫu"
@@ -102,98 +103,118 @@ function SemesterFormModal({ isOpen, mode, initialValues, isSubmitting, onClose,
       />
 
       <section
-        className="user-modal"
+        className={styles.modalContent}
         role="dialog"
         aria-modal="true"
         aria-labelledby="semester-form-title"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="user-modal-header">
+        <div className={styles.modalHeader}>
           <div>
-            <h2 id="semester-form-title">
+            <h2 id="semester-form-title" className={styles.modalTitle}>
               {mode === 'create' ? 'Tạo học kỳ mới' : 'Cập nhật học kỳ'}
             </h2>
-            <p>
+            <p className={styles.modalSubtitle}>
               {mode === 'create'
-                ? 'Biểu mẫu gửi JSON tới API POST /semesters.'
-                : 'Biểu mẫu gửi JSON tới API PUT /semesters/{semester_id}.'}
+                ? 'Thiết lập thông tin cho học kỳ mới trong hệ thống.'
+                : 'Thay đổi các mốc thời gian hoặc trạng thái của học kỳ.'}
             </p>
           </div>
           <button
             type="button"
-            className="notification-popup-close"
+            className={styles.closeBtn}
             aria-label="Đóng biểu mẫu học kỳ"
             onClick={onClose}
           >
-            ×
+            <X weight="bold" />
           </button>
         </div>
 
-        <form className={styles.formGrid} onSubmit={handleSubmit}>
-          <label className="field field-full">
-            <span>Tên học kỳ</span>
-            <input
-              name="name"
-              type="text"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Học kỳ 1"
-            />
-          </label>
+        <div className={styles.modalBody}>
+          <form className={styles.formGrid} onSubmit={handleSubmit}>
+            <div className={`${styles.field} ${styles.fieldFull}`}>
+              <span>
+                <GraduationCap size={14} weight="bold" style={{ marginRight: '4px' }} />
+                Tên học kỳ
+              </span>
+              <input
+                name="name"
+                type="text"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Ví dụ: Học kỳ 1"
+                required
+              />
+            </div>
 
-          <label className="field">
-            <span>Năm học</span>
-            <input
-              name="academic_year"
-              type="text"
-              value={form.academic_year}
-              onChange={handleChange}
-              placeholder="2025-2026"
-            />
-          </label>
+            <div className={styles.field}>
+              <span>Năm học</span>
+              <input
+                name="academic_year"
+                type="text"
+                value={form.academic_year}
+                onChange={handleChange}
+                placeholder="Ví dụ: 2025-2026"
+                required
+              />
+            </div>
 
-          <label className="field">
-            <span>Ngày bắt đầu</span>
-            <input
-              name="start_date"
-              type="datetime-local"
-              value={form.start_date}
-              onChange={handleChange}
-            />
-          </label>
+            <div className={styles.field}>
+              <span>
+                <Calendar size={14} weight="bold" style={{ marginRight: '4px' }} />
+                Ngày bắt đầu
+              </span>
+              <input
+                name="start_date"
+                type="datetime-local"
+                value={form.start_date}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <label className="field">
-            <span>Ngày kết thúc</span>
-            <input
-              name="end_date"
-              type="datetime-local"
-              value={form.end_date}
-              onChange={handleChange}
-            />
-          </label>
+            <div className={styles.field}>
+              <span>Ngày kết thúc</span>
+              <input
+                name="end_date"
+                type="datetime-local"
+                value={form.end_date}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <label className={`${styles.checkbox} field-full`}>
-            <input
-              name="is_active"
-              type="checkbox"
-              checked={form.is_active}
-              onChange={handleChange}
-            />
-            <span>Đặt làm học kỳ active</span>
-          </label>
+            <div className={styles.fieldFull}>
+              <label className={styles.checkboxWrapper}>
+                <input
+                  name="is_active"
+                  type="checkbox"
+                  checked={form.is_active}
+                  onChange={handleChange}
+                />
+                <span>Đặt làm học kỳ hiện tại (Active)</span>
+              </label>
+            </div>
 
-          <div className="user-form-actions field-full">
-            <button type="button" className="secondary-button" onClick={onClose} disabled={isSubmitting}>
-              Hủy
-            </button>
-            <button type="submit" className="primary-button" disabled={isSubmitting}>
-              {isSubmitting ? 'Đang xử lý...' : mode === 'create' ? 'Tạo học kỳ' : 'Lưu thay đổi'}
-            </button>
-          </div>
-        </form>
+            <div className={`${styles.formActions} ${styles.fieldFull}`}>
+              <button 
+                type="button" 
+                className={styles.secondaryBtn} 
+                onClick={onClose} 
+                disabled={isSubmitting}
+              >
+                Hủy
+              </button>
+              <button type="submit" className={styles.primaryBtn} disabled={isSubmitting}>
+                {isSubmitting ? 'Đang xử lý...' : mode === 'create' ? 'Tạo học kỳ' : 'Lưu thay đổi'}
+              </button>
+            </div>
+          </form>
+        </div>
       </section>
     </div>
   )
 }
 
 export default SemesterFormModal
+

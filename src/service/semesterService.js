@@ -72,7 +72,8 @@ function buildQuery(params = {}) {
 
 function mapSemester(semester) {
   return {
-    id: semester?.id || '',
+    id: semester?._id || semester?.id || '',
+
     name: semester?.name || '',
     academic_year: semester?.academic_year || '',
     start_date: semester?.start_date || '',
@@ -131,24 +132,43 @@ function normalizeGetSemestersArgs(paramsOrToken, tokenMaybe) {
   }
 }
 
+let getSemestersCache = null;
+let getSemestersCacheTime = 0;
+
 export async function getSemesters(paramsOrToken = {}, tokenMaybe = '') {
   const { params, authToken } = normalizeGetSemestersArgs(paramsOrToken, tokenMaybe)
+  
+  // Cache for 10 seconds if no params or standard skip=0 limit=100
+  const isCacheable = Object.keys(params).length === 0 || (params.skip === 0 && params.limit === 100 && Object.keys(params).length === 2)
+  if (isCacheable && getSemestersCache && Date.now() - getSemestersCacheTime < 10000) {
+    return getSemestersCache
+  }
+
   const response = await apiRequest(`/semesters${buildQuery(params)}`, {
     method: 'GET',
     authToken,
   })
 
+  let result;
   if (Array.isArray(response)) {
-    return {
+    result = {
       items: response.map(mapSemester),
       total: response.length,
       skip: Number(params?.skip || 0),
       limit: Number(params?.limit || response.length || 0),
     }
+  } else {
+    result = mapSemesterListResponse(response)
   }
 
-  return mapSemesterListResponse(response)
+  if (isCacheable) {
+    getSemestersCache = result
+    getSemestersCacheTime = Date.now()
+  }
+
+  return result
 }
+
 
 export async function getCurrentSemester(authToken) {
   const response = await apiRequest('/semesters/current', {

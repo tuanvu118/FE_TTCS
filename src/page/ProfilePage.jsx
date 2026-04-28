@@ -22,7 +22,7 @@ function ProfilePage({
   const [profile, setProfile] = useState(null)
   const [stats, setStats] = useState(null)
   const [currentSemester] = useCurrentSemester()
-  const [activeTab, setActiveTab] = useState('info') // 'info' | 'events' | 'points'
+  const [activeTab, setActiveTab] = useState('info') // 'info' | 'history'
   const [isLoading, setIsLoading] = useState(true)
   const [isStatsLoading, setIsStatsLoading] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -159,8 +159,7 @@ function ProfilePage({
           <header className="profile-tabs-header">
             <nav className="tabs-nav">
               <button className={`tab-btn ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>Thông tin</button>
-              <button className={`tab-btn ${activeTab === 'events' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>Sự kiện</button>
-              <button className={`tab-btn ${activeTab === 'points' ? 'active' : ''}`} onClick={() => setActiveTab('points')}>Điểm rèn luyện</button>
+              <button className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>Lịch sử</button>
             </nav>
 
             <div className="semester-selector">
@@ -190,7 +189,7 @@ function ProfilePage({
               </div>
             )}
 
-            {(activeTab === 'events' || activeTab === 'points') && (
+            {activeTab === 'history' && (
               <div className="tab-pane-stats">
                 <div className="stats-overview">
                   <div className="stat-card points">
@@ -198,8 +197,8 @@ function ProfilePage({
                     <span className="stat-value">{stats?.total_points || 0}</span>
                   </div>
                   <div className="stat-card">
-                    <span className="stat-label">Sự kiện tham gia</span>
-                    <span className="stat-value">{stats?.participated_events?.length || 0}</span>
+                    <span className="stat-label">Sự kiện đã tham gia</span>
+                    <span className="stat-value">{stats?.participated_events?.filter(ev => ev.checked_in).length || 0}</span>
                   </div>
                 </div>
 
@@ -208,26 +207,24 @@ function ProfilePage({
                 ) : (
                   <div className="events-history">
                     <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-                      {activeTab === 'events' ? 'Lịch sử tham gia' : 'Chi tiết điểm rèn luyện'}
+                      Lịch sử tham gia sự kiện
                     </h3>
                     
-                    {stats?.participated_events?.length > 0 ? (
-                      stats.participated_events.map(ev => (
+                    {stats?.participated_events?.filter(ev => ev.checked_in).length > 0 ? (
+                      stats.participated_events.filter(ev => ev.checked_in).map(ev => (
                         <div key={ev.event_id} className="event-item-row">
                           <div className="event-info">
                             <h4>{ev.title}</h4>
                             <span>{new Date(ev.event_start).toLocaleDateString('vi-VN')}</span>
                           </div>
                           <div className="event-meta">
-                            <span className={`status-tag ${ev.checked_in ? 'checked' : 'pending'}`}>
-                              {ev.checked_in ? 'Đã tham gia' : 'Đã đăng ký'}
-                            </span>
+                            <span className="status-tag checked">Đã tham gia</span>
                             <span className="point-badge">+{ev.point} điểm</span>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <p className="empty-state">Không có dữ liệu trong học kỳ này.</p>
+                      <p className="empty-state">Chưa có sự kiện nào được ghi nhận tham gia thành công trong học kỳ này.</p>
                     )}
                   </div>
                 )}

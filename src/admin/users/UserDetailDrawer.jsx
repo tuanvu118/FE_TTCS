@@ -10,7 +10,11 @@ function UserDetailDrawer({
   isOpen,
   isLoading,
   user,
+  assignments,
+  catalog,
+  unitNames,
   role,
+
   accessToken,
   canEdit,
   onClose,
@@ -18,6 +22,7 @@ function UserDetailDrawer({
   onApiError,
   onRoleChanged,
 }) {
+
   if (!isOpen) {
     return null
   }
@@ -45,9 +50,31 @@ function UserDetailDrawer({
           </button>
         </div>
 
-        {isLoading ? (
-          <p className={styles.mutedCopy}>Đang tải chi tiết người dùng...</p>
-        ) : user ? (
+        <div className={styles.drawerBody}>
+          {isLoading ? (
+            <div className={styles.skeletonWrapper}>
+              <div className={styles.skeletonHero}>
+                <div className={styles.skeletonAvatar} />
+                <div className={styles.skeletonTextGroup}>
+                  <div className={styles.skeletonTitle} />
+                  <div className={styles.skeletonSubtitle} />
+                </div>
+              </div>
+              <div className={styles.skeletonGrid}>
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className={styles.skeletonField}>
+                    <div className={styles.skeletonLabel} />
+                    <div className={styles.skeletonValue} />
+                  </div>
+                ))}
+              </div>
+              <div className={styles.skeletonSection}>
+                <div className={styles.skeletonLabel} />
+                <div className={styles.skeletonList} />
+              </div>
+            </div>
+          ) : user ? (
+
           <div className={styles.detailContent}>
             <div className={styles.detailHero}>
               <div className={styles.detailHeroInfo}>
@@ -90,22 +117,30 @@ function UserDetailDrawer({
 
             <div className={styles.roleSection}>
               <h4>Quyền đơn vị</h4>
-              <UserRoleList roles={user.roles} />
+              <UserRoleList roles={user.roles} unitNameMap={unitNames} />
+
             </div>
 
             {isAdmin && user.id && (
               <UserRoleManagementSection
                 userId={user.id}
                 accessToken={accessToken}
+                initialAssignments={assignments}
+                catalogData={catalog}
+                unitNameMap={unitNames}
                 onError={onApiError}
                 onRoleChanged={onRoleChanged}
+
               />
             )}
+
           </div>
         ) : (
           <p className={styles.mutedCopy}>Không tìm thấy người dùng.</p>
         )}
+        </div>
       </aside>
+
     </div>,
     document.body,
   )

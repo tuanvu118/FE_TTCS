@@ -477,3 +477,22 @@
   color: var(--ds-danger);
   border-color: var(--ds-badge-reject-border);
 }
+
+.markBtn {
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.markBtn:hover {
+  background-color: #4f46e5;
+  transform: translateY(-1px);
+}
+

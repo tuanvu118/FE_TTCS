@@ -216,7 +216,7 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
               />
             </div>
             <div className={styles.fieldGroup} style={{ flex: 1 }}>
-              <label className={styles.label}>SỨC CHỨA (MAX)</label>
+              <label className={styles.label}>SLOT</label>
               <div className={styles.inputWithSuffix}>
                 <InputNumber 
                   className={styles.numberInput}
