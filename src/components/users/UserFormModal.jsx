@@ -9,7 +9,7 @@ import {
   Image as ImageIcon,
   X 
 } from '@phosphor-icons/react'
-import NotificationPopup from '../NotificationPopup'
+import { message } from 'antd'
 
 const initialFormState = {
   full_name: '',
@@ -72,7 +72,6 @@ function UserFormModal({
   onSubmit,
 }) {
   const [form, setForm] = useState(initialFormState)
-  const [notice, setNotice] = useState('')
 
   useEffect(() => {
     if (!isOpen) {
@@ -80,7 +79,6 @@ function UserFormModal({
     }
 
     setForm(buildFormState(initialValues))
-    setNotice('')
   }, [initialValues, isOpen])
 
   if (!isOpen) {
@@ -107,12 +105,12 @@ function UserFormModal({
         !form.student_id.trim() ||
         !form.class_name.trim())
     ) {
-      setNotice('Vui lòng nhập đầy đủ các trường bắt buộc.')
+      message.error('Vui lòng nhập đầy đủ các trường bắt buộc.')
       return
     }
 
     if (form.password && form.password.length < 6) {
-      setNotice('Mật khẩu phải có tối thiểu 6 ký tự.')
+      message.error('Mật khẩu phải có tối thiểu 6 ký tự.')
       return
     }
 
@@ -129,13 +127,6 @@ function UserFormModal({
 
   return (
     <div className="user-modal-backdrop" role="presentation" onClick={onClose}>
-      <NotificationPopup
-        isOpen={Boolean(notice)}
-        title="Lỗi biểu mẫu"
-        message={notice}
-        onClose={() => setNotice('')}
-      />
-
       <section
         className="user-modal"
         role="dialog"

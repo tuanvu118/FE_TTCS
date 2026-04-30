@@ -488,6 +488,16 @@ export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterD
                 <div className={u.pasteBlock}>
                   <span className={u.pasteLabel}>Dán danh sách MSV</span>
                   <textarea className={u.pasteTextarea} value={pastedMsvText} onChange={e => setPastedMsvText(e.target.value)} placeholder="B20DCCN001&#10;B20DCCN002..." />
+                  <div className={u.pasteActions}>
+                    <button
+                      type="button"
+                      className={u.primaryBtn}
+                      onClick={handleGoReview}
+                      disabled={validatingReview}
+                    >
+                      {validatingReview ? 'Đang xử lý...' : 'Xử lý danh sách MSV'}
+                    </button>
+                  </div>
                 </div>
                 <div className={u.selectedBar}>
                   <span>Đã chọn: <strong>{selectedStudentIds.size + parsePastedMsvLines(pastedMsvText).length}</strong> sinh viên</span>
@@ -520,17 +530,20 @@ export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterD
                 </div>
              </div>
            ) : (
-             <div className={u.formStack}>
+             <div className={`${u.formStack} ${u.reviewStack}`}>
                 <h3 className={u.sectionHeading}>Xem lại và Gửi</h3>
                 <div className={u.readonlyBlock}>
                   <span className={u.readonlyLabel}>Nội dung phản hồi</span>
                   <textarea className={u.pasteTextarea} value={contentDraft} onChange={e => setContentDraft(e.target.value)} placeholder="Nhập nội dung phản hồi công việc..." />
                 </div>
                 <div className={u.addMsvRow}>
-                  <input className={u.filterInput} style={{ flex: 1 }} value={addMsvInput} onChange={e => setAddMsvInput(e.target.value)} placeholder="Thêm MSV nhanh..." />
-                  <button className={u.secondaryBtn} onClick={handleAddMsvInReview}><Plus /></button>
+                  <input className={u.filterInput} value={addMsvInput} onChange={e => setAddMsvInput(e.target.value)} placeholder="Thêm MSV nhanh..." />
+                  <button className={u.secondaryBtn} onClick={handleAddMsvInReview}>
+                    <Plus size={16} weight="bold" />
+                    Thêm
+                  </button>
                 </div>
-                <div className={u.memberTableWrap} style={{ maxHeight: 300 }}>
+                <div className={`${u.memberTableWrap} ${u.reviewTableWrap}`}>
                   <table className={u.memberTable}>
                     <thead><tr><th>MSV</th><th>Họ tên</th><th>Lớp</th><th style={{ width: 60 }}></th></tr></thead>
                     <tbody>
@@ -539,7 +552,7 @@ export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterD
                           <td>{id}</td>
                           <td>{selectedMeta[id]?.full_name || '—'}</td>
                           <td>{selectedMeta[id]?.class_name || '—'}</td>
-                          <td><button className={u.errorText} style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => {
+                          <td><button type="button" className={u.removeRowBtn} onClick={() => {
                             setSelectedStudentIds(prev => { const n = new Set(prev); n.delete(id); return n })
                           }}>Xóa</button></td>
                         </tr>
