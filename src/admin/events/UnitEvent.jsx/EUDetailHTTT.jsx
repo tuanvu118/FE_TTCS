@@ -64,6 +64,7 @@ export default function EUDetailHTTT({ data, unitId, eventId }) {
   const currentSemester = getStoredCurrentSemester()
   const semesterObj =
     data && currentSemester?.id === (data.semester_id || data.semesterId) ? currentSemester : null
+  const displayLocation = String(data?.location || '').trim() || 'Chưa cập nhật'
 
   const cooperationRows = useMemo(
     () => buildUnitEventCooperationRows(data?.assigned_units, htttSubmissions),
@@ -198,6 +199,10 @@ export default function EUDetailHTTT({ data, unitId, eventId }) {
                     {semesterObj ? `${semesterObj.name} - ${semesterObj.academic_year}` : 'N/A'}
                   </span>
                 </div>
+                {/* <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>ĐỊA ĐIỂM</span>
+                  <span className={styles.infoValue}>{displayLocation}</span>
+                </div> */}
               </div>
 
               <div className={styles.descriptionSection}>

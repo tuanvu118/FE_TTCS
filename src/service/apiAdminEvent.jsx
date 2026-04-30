@@ -67,6 +67,7 @@ function toAdminEventRow(item, type) {
   return {
     id: String(item?.id ?? ''),
     title: String(item?.title ?? ''),
+    location: String(item?.location ?? ''),
     point: normalizePoint(item?.point),
     create_at: created,
     type,

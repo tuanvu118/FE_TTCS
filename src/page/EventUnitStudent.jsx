@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, CalendarBlank, CheckCircle, Clock, Users, Warning } from '@phosphor-icons/react'
+import { ArrowLeft, CalendarBlank, CheckCircle, Clock, MapPin, Users, Warning } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
 import { Modal, message } from 'antd'
 import {
@@ -26,6 +26,18 @@ function formatDateTime(value) {
   })
 }
 
+function formatLocation(value) {
+  const text = String(value || '').trim()
+  return text || 'Chưa cập nhật'
+}
+
+function parseUtcDateMs(value) {
+  if (!value) return NaN
+  const raw = String(value).trim()
+  const d = /z$/i.test(raw) ? new Date(raw) : new Date(`${raw}Z`)
+  return d.getTime()
+}
+
 export default function EventUnitStudent({ unitId, eventId }) {
   const navigate = useNavigate()
   const [data, setData] = useState(null)
@@ -33,6 +45,7 @@ export default function EventUnitStudent({ unitId, eventId }) {
   const [error, setError] = useState('')
   const [registering, setRegistering] = useState(false)
   const [expandDescription, setExpandDescription] = useState(false)
+  const [nowMs, setNowMs] = useState(() => Date.now())
 
   async function loadOverview() {
     setLoading(true)
@@ -78,6 +91,15 @@ export default function EventUnitStudent({ unitId, eventId }) {
     setExpandDescription(false)
   }, [data?.description])
 
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setNowMs(Date.now())
+    }, 1000)
+    return () => {
+      window.clearInterval(timer)
+    }
+  }, [])
+
   if (loading) {
     return (
       <div className="event-unit-student-page">
@@ -113,6 +135,19 @@ export default function EventUnitStudent({ unitId, eventId }) {
   const shortDescription = isDescriptionLong
     ? `${descriptionText.slice(0, DESCRIPTION_LIMIT).trimEnd()}...`
     : descriptionText
+  const registrationStartMs = parseUtcDateMs(data?.registration_start)
+  const registrationEndMs = parseUtcDateMs(data?.registration_end)
+  const isInRegistrationWindow =
+    Number.isFinite(registrationStartMs) &&
+    Number.isFinite(registrationEndMs) &&
+    nowMs >= registrationStartMs &&
+    nowMs < registrationEndMs
+  const remainingMs = Number.isFinite(registrationEndMs) ? Math.max(0, registrationEndMs - nowMs) : 0
+  const showCountdown = isInRegistrationWindow && remainingMs > 0
+  const countdownDays = Math.floor(remainingMs / (24 * 60 * 60 * 1000))
+  const countdownHours = Math.floor((remainingMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000))
+  const countdownMinutes = Math.floor((remainingMs % (60 * 60 * 1000)) / (60 * 1000))
+  const countdownSeconds = Math.floor((remainingMs % (60 * 1000)) / 1000)
 
   const handleRegister = async () => {
     if (!canRegister || isRegistered) return
@@ -179,7 +214,14 @@ export default function EventUnitStudent({ unitId, eventId }) {
           </div>
           <div className="eus-row">
             <span><Users size={16} /> Số lượng</span>
-            <strong>{data.slot_used ?? 0}/{data.slot_limit ?? 0} (còn {remaining})</strong>
+            <strong>
+              {data.slot_used ?? 0}/{data.slot_limit ?? 0}
+              <span className="eus-remaining-pill">Còn {remaining} suất</span>
+            </strong>
+          </div>
+          <div className="eus-row">
+            <span><MapPin size={16} /> Địa điểm</span>
+            <strong>{formatLocation(data.location)}</strong>
           </div>
           <div className="eus-desc">
             <h3>Mô tả</h3>
@@ -195,6 +237,31 @@ export default function EventUnitStudent({ unitId, eventId }) {
             )}
           </div>
         </section>
+
+        {showCountdown && (
+          <section className="eus-card eus-countdown-card" aria-live="polite">
+            <h2>Thời gian đăng ký còn lại</h2>
+            <p className="eus-countdown-label">Đếm ngược đến lúc đóng đăng ký</p>
+            <div className="eus-countdown-grid">
+              <div className="eus-countdown-item">
+                <strong>{String(countdownDays).padStart(2, '0')}</strong>
+                <span>Ngày</span>
+              </div>
+              <div className="eus-countdown-item">
+                <strong>{String(countdownHours).padStart(2, '0')}</strong>
+                <span>Giờ</span>
+              </div>
+              <div className="eus-countdown-item">
+                <strong>{String(countdownMinutes).padStart(2, '0')}</strong>
+                <span>Phút</span>
+              </div>
+              <div className="eus-countdown-item">
+                <strong>{String(countdownSeconds).padStart(2, '0')}</strong>
+                <span>Giây</span>
+              </div>
+            </div>
+          </section>
+        )}
 
         <aside className="eus-card">
           <h2>Trạng thái của bạn</h2>

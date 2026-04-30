@@ -57,6 +57,11 @@ function formatDateTime(value) {
   return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString('vi-VN')
 }
 
+function formatLocation(value) {
+  const text = String(value || '').trim()
+  return text || 'Chưa cập nhật'
+}
+
 export default function DetailHTSKStudentRegistration({ data, unitId, taskId, semesterId, semesterDisplay }) {
   const [submission, setSubmission] = useState(null)
   const [submissionLoading, setSubmissionLoading] = useState(true)
@@ -388,6 +393,10 @@ export default function DetailHTSKStudentRegistration({ data, unitId, taskId, se
             <div className={u.infoItem}>
               <span className={u.infoLabel}>Giới hạn SV/đơn vị</span>
               <span className={u.infoValue}>{data?.limit_student_registration_in_one_unit ?? '—'}</span>
+            </div>
+            <div className={u.infoItem}>
+              <span className={u.infoLabel}>Địa điểm</span>
+              <span className={u.infoValue}>{formatLocation(data?.location)}</span>
             </div>
           </div>
           <div className={u.readonlyBlock} style={{ marginBottom: '1.25rem', padding: '1rem 1.25rem' }}>

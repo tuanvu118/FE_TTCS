@@ -79,6 +79,7 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
   const studentRegistrationEnabled = Boolean(data?.is_student_registration)
   const showLimit =
     data?.type === 'HTSK' && studentRegistrationEnabled
+  const displayLocation = String(data?.location || '').trim() || 'Chưa cập nhật'
 
   useEffect(() => {
     if (!eventId) {
@@ -234,6 +235,10 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
                   </span>
                 </div>
                 <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>ĐỊA ĐIỂM</span>
+                  <span className={styles.infoValue}>{displayLocation}</span>
+                </div>
+                <div className={styles.infoItem}>
                   <span className={styles.infoLabel}>SV CHỦ ĐỘNG ĐĂNG KÝ</span>
                   <span className={styles.infoValue}>
                     {studentRegistrationEnabled ? 'Có' : 'Không'}
@@ -338,7 +343,7 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
                             <span 
                               className={`${styles.statusBadge} ${checkedIn ? styles.badgeCompleted : styles.badgeNone}`}
                             >
-                              {checkedIn ? 'Đã check-in' : 'Chưa check-in'}
+                              {checkedIn ? 'Đã điểm danh' : 'Chưa điểm danh'}
                             </span>
                           </td>
                           <td>

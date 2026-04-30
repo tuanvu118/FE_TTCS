@@ -17,6 +17,11 @@ import styles from './eventPage.module.css'
 const TYPE_LABEL = { SK: 'Sự kiện', HTSK: 'Hỗ trợ sự kiện', HTTT: 'Hỗ trợ truyền thông' }
 const EVENT_TYPE_ICON = { SK: Globe, HTSK: Handshake, HTTT: Broadcast }
 
+function formatLocation(value) {
+  const text = String(value || '').trim()
+  return text || 'Chưa cập nhật'
+}
+
 export default function EventPage({ navigate, adminUnitId }) {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
@@ -132,6 +137,7 @@ export default function EventPage({ navigate, adminUnitId }) {
         <div className={styles.tableHeader}>
           <span>Tên sự kiện</span>
           <span>Loại hình</span>
+          <span>Địa điểm</span>
           <span>Điểm</span>
           <span>Học kỳ</span>
           <span>Thao tác</span>
@@ -151,6 +157,9 @@ export default function EventPage({ navigate, adminUnitId }) {
               </div>
               <div className={styles.typeCell}>
                 {TYPE_LABEL[row.type]}
+              </div>
+              <div className={styles.locationCell}>
+                {formatLocation(row.location)}
               </div>
               <div className={styles.pointCell}>
                 {row.point}

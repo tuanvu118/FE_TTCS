@@ -162,6 +162,21 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
             </div>
           </div>
 
+          <div className={styles.fieldGroup}>
+            <label className={styles.label}>ĐỊA ĐIỂM</label>
+            <input
+              className={styles.input}
+              placeholder={
+                type === 'HTSK'
+                  ? 'Ví dụ: Hội trường A2 - Đại học ABC'
+                  : 'HTTT không sử dụng địa điểm'
+              }
+              value={type === 'HTSK' ? (data.location || '') : ''}
+              disabled={type === 'HTTT'}
+              onChange={(e) => setData((prev) => ({ ...prev, location: e.target.value }))}
+            />
+          </div>
+
           {type === 'HTSK' && (
             <div className={styles.row}>
               <div className={styles.fieldGroup} style={{ flex: 1 }}>

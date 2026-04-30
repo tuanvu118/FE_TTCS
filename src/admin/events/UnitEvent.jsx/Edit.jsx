@@ -22,6 +22,7 @@ export default function UnitEventEditPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    location: '',
     point: 0,
     listUnitId: [],
     semesterId: undefined,
@@ -46,6 +47,7 @@ export default function UnitEventEditPage() {
       setFormData({
         title: response.title || '',
         description: response.description || '',
+        location: response.location || '',
         point: Number(response.point) || 0,
         listUnitId: response.assigned_units?.map((u) => u.id) || [],
         semesterId: response.semesterId || response.semester_id,
@@ -135,6 +137,7 @@ export default function UnitEventEditPage() {
       if (formData.semesterId) {
         fd.append('semester_id', formData.semesterId)
       }
+      fd.append('location', data?.type === 'HTSK' ? (formData.location || '') : '')
       fd.append('registration_start', formData.registrationPeriod[0].toISOString())
       fd.append('registration_end', formData.registrationPeriod[1].toISOString())
       fd.append('event_start', formData.eventPeriod[0].toISOString())
@@ -206,6 +209,16 @@ export default function UnitEventEditPage() {
                   placeholder="Ví dụ: Hỗ trợ truyền thông Giải giao hữu bóng đá 2024"
                   value={formData.title}
                   onChange={(e) => handleChange('title', e.target.value)}
+                />
+              </div>
+              <div className={styles.fieldGroup}>
+                <label className={styles.label}>Địa điểm</label>
+                <input
+                  className={styles.input}
+                  placeholder={data?.type === 'HTSK' ? 'Ví dụ: Hội trường A2' : 'HTTT không sử dụng địa điểm'}
+                  value={data?.type === 'HTSK' ? (formData.location || '') : ''}
+                  disabled={data?.type !== 'HTSK'}
+                  onChange={(e) => handleChange('location', e.target.value)}
                 />
               </div>
             </div>

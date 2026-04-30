@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Badge } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { CaretLeft, CaretRight, MagnifyingGlass, Funnel, Eye } from '@phosphor-icons/react'
 import { getMyUnitEventsBySemester } from '../../service/taskService'
@@ -10,6 +9,17 @@ import styles from './staffAssignedEventsPanel.module.css'
 const TYPE_LABEL = {
   HTSK: 'Hỗ trợ sự kiện',
   HTTT: 'Hỗ trợ truyền thông',
+}
+
+function getTypeBadgeClass(type) {
+  if (type === 'HTSK') return `${styles.typeBadge} ${styles.typeHtsk}`
+  if (type === 'HTTT') return `${styles.typeBadge} ${styles.typeHttt}`
+  return `${styles.typeBadge} ${styles.typeDefault}`
+}
+
+function formatLocation(value) {
+  const text = String(value || '').trim()
+  return text || 'Chưa cập nhật'
 }
 
 export default function StaffAssignedEventsPanel() {
@@ -42,12 +52,18 @@ export default function StaffAssignedEventsPanel() {
 
   const filteredRows = useMemo(() => {
     const q = keyword.trim().toLowerCase()
-    return rows.filter((row) => {
-      const matchType = typeFilter === 'ALL' || row.type === typeFilter
-      const title = String(row.title || '').toLowerCase()
-      const matchKeyword = !q || title.includes(q)
-      return matchType && matchKeyword
-    })
+    return rows
+      .filter((row) => {
+        const matchType = typeFilter === 'ALL' || row.type === typeFilter
+        const title = String(row.title || '').toLowerCase()
+        const matchKeyword = !q || title.includes(q)
+        return matchType && matchKeyword
+      })
+      .sort((a, b) => {
+        const timeA = new Date(a?.created_at || 0).getTime()
+        const timeB = new Date(b?.created_at || 0).getTime()
+        return timeB - timeA
+      })
   }, [rows, keyword, typeFilter])
 
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / itemsPerPage))
@@ -107,6 +123,7 @@ export default function StaffAssignedEventsPanel() {
         <div className={styles.tableHeader}>
           <span>Sự kiện</span>
           <span>Loại hình</span>
+          <span>Địa điểm</span>
           <span style={{ textAlign: 'center' }}>Điểm</span>
           <span>Ngày tạo</span>
           <span>Thao tác</span>
@@ -125,7 +142,10 @@ export default function StaffAssignedEventsPanel() {
                 <strong>{row.title}</strong>
               </div>
               <div className={styles.categoryCell}>
-                {TYPE_LABEL[row.type] || row.type}
+                <span className={getTypeBadgeClass(row.type)}>{TYPE_LABEL[row.type] || row.type}</span>
+              </div>
+              <div className={styles.locationCell}>
+                {formatLocation(row.location)}
               </div>
               <div className={styles.pointCell}>
                 {row.point ?? 0}

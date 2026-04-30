@@ -793,6 +793,13 @@ select:disabled {
   padding: 0.5rem 0 0;
 }
 
+.page-content-unit-student {
+  width: min(100%, 100%);
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .page-content-home {
   width: 100%;
   max-width: 100%;
@@ -1879,6 +1886,13 @@ select:disabled {
   .page-content {
     width: min(100%, calc(100% - 1.25rem));
     padding: 1.5rem 0 calc(6.3rem + max(12px, env(safe-area-inset-bottom)));
+  }
+
+  .page-content.page-content-unit-student {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 0 calc(6.3rem + max(12px, env(safe-area-inset-bottom)));
   }
 
   .page-card,

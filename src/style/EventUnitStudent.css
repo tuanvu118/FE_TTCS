@@ -26,6 +26,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
   border: 1px solid #dbe3f0;
   background: #f8fafc;
   color: #334155;
@@ -36,6 +40,7 @@
   border-radius: 9px;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: var(--ds-shadow-card);
 }
 
 .eus-back:hover {
@@ -121,6 +126,21 @@
   text-align: right;
 }
 
+.eus-remaining-pill {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.55rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: var(--ds-radius-pill, 9999px);
+  background: var(--ds-success-bg, #ecfdf5);
+  color: var(--ds-success-text, #047857);
+  border: 1px solid var(--ds-success-border, rgba(26, 174, 57, 0.28));
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 .eus-desc {
   margin-top: 1rem;
 }
@@ -167,6 +187,55 @@
   background: #eff6ff;
   color: #1d4ed8;
   border: 1px solid #bfdbfe;
+}
+
+.eus-countdown-card {
+  align-self: start;
+  background: var(--ds-accent-soft-bg, #f2f9ff);
+  border: 1px solid var(--ds-badge-pending-border, rgba(9, 127, 232, 0.28));
+  border-radius: var(--ds-radius-card, 12px);
+  box-shadow: var(--ds-shadow-card);
+  padding: 0.9rem;
+}
+
+.eus-countdown-label {
+  margin: 0 0 0.65rem !important;
+  color: var(--ds-accent-soft-text, #097fe8);
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+}
+
+.eus-countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.eus-countdown-item {
+  background: var(--ds-surface, #ffffff);
+  border: 1px solid var(--ds-border, rgba(0, 0, 0, 0.1));
+  border-radius: var(--ds-radius-md, 8px);
+  padding: 0.5rem 0.35rem;
+  text-align: center;
+}
+
+.eus-countdown-item strong {
+  display: block;
+  color: var(--ds-text, rgba(0, 0, 0, 0.95));
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.eus-countdown-item span {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ds-text-secondary, #615d59);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .eus-note {
@@ -235,16 +304,24 @@
   .eus-row strong {
     text-align: left;
   }
+
+  .eus-remaining-pill {
+    margin-left: 0.4rem;
+  }
+
+  .eus-countdown-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
   .event-unit-student-page {
-    padding: 0.75rem;
+    padding: 0.5rem 0.5rem 0.75rem;
   }
 
   .eus-hero {
     border-radius: 10px;
-    padding: 0.85rem 0.85rem 1rem;
+    padding: 0.75rem 0.75rem 0.9rem;
   }
 
   .eus-topline {
@@ -259,6 +336,10 @@
   }
 
   .eus-back {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: calc(100% - 20px);
     padding: 0.62rem 0.8rem;
   }
 
@@ -275,7 +356,7 @@
 
   .eus-card {
     border-radius: 10px;
-    padding: 0.9rem;
+    padding: 0.8rem;
   }
 
   .eus-card h2 {

@@ -18,6 +18,11 @@ function looksLikeHttpUrl(value) {
   return /^https?:\/\//i.test(value.trim())
 }
 
+function formatLocation(value) {
+  const text = String(value || '').trim()
+  return text || 'Chưa cập nhật'
+}
+
 export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
   const [submission, setSubmission] = useState(null)
   const [isCreateMode, setIsCreateMode] = useState(false)
@@ -205,6 +210,10 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
                 <Clock size={18} weight="bold" />
                 {semesterDisplay}
               </span>
+            </div>
+            <div className={u.infoItem}>
+              <span className={u.infoLabel}>Địa điểm</span>
+              <span className={u.infoValue}>{formatLocation(data?.location)}</span>
             </div>
           </div>
           {data?.description ? (

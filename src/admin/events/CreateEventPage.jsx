@@ -100,6 +100,11 @@ export default function CreateEventPage() {
           formData.append('event_start', eventPeriod[0].toISOString())
           formData.append('event_end', eventPeriod[1].toISOString())
         }
+        if (selectedType === 'HTSK') {
+          formData.append('location', eventData.location || '')
+        } else {
+          formData.append('location', '')
+        }
         formData.append('is_student_registration', String(Boolean(eventData.is_student_registration)))
         if (selectedType === 'HTSK' && eventData.is_student_registration) {
           const limit = eventData.limit_student_registration_in_one_unit
