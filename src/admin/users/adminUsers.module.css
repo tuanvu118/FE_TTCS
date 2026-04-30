@@ -566,6 +566,20 @@
   padding: 0.5rem 1rem !important;
   font-size: 0.85rem !important;
   border-radius: 8px !important;
+  border: none !important;
+  background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.24) !important;
+}
+
+.roleRemoveButton:hover {
+  filter: brightness(1.08) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.3) !important;
+}
+
+.roleRemoveButton:active {
+  transform: translateY(0);
 }
 
 .mutedCopy {

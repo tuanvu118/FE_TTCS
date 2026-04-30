@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Eye, EyeSlash, GoogleLogo, FacebookLogo } from '@phosphor-icons/react'
+import { message } from 'antd'
 import NotificationPopup from '../components/NotificationPopup'
 import { PATHS } from '../utils/routes'
 import styles from './LoginPage.module.css'
@@ -54,6 +55,10 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
     return errorMsg
   }
 
+  function handleForgotPassword() {
+    message.info('Vui lòng liên hệ Quản trị hệ thống để được hỗ trợ cấp lại mật khẩu.')
+  }
+
 
 
   async function handleSubmit(event) {
@@ -90,12 +95,20 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
     return (
       <section className={styles.authView}>
         <div className={styles.bannerSection}>
+        <div className={styles.bannerIllustrations} aria-hidden>
+          <img src="/Teenager-cuate.svg" alt="" className={styles.bannerIllustrationPrimary} />
+          <img src="/Young and happy-amico.svg" alt="" className={styles.bannerIllustrationSecondary} />
+        </div>
           <img 
             src="/login_side_banner_png_1777403397186.png" 
             alt="Đoàn Thanh Niên" 
             className={styles.bannerImg}
           />
           <div className={styles.bannerContent}>
+            <div className={styles.bannerLogos} aria-hidden>
+              <img src="/HuyHieuDoan.png" alt="" className={styles.bannerLogo} />
+              <img src="/logo-white-circle.png" alt="" className={styles.bannerLogo} />
+            </div>
             <h2>Đoàn Thanh Niên</h2>
             <p>Hệ thống quản lý hoạt động và sinh hoạt Đoàn trực tuyến.</p>
           </div>
@@ -132,12 +145,20 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
       />
 
       <div className={styles.bannerSection}>
-        <img 
-          src="/login_side_banner_png_1777403397186.png" 
+        <div className={styles.bannerIllustrations} aria-hidden>
+          <img src="/Teenager-cuate.svg" alt="" className={styles.bannerIllustrationPrimary} />
+          <img src="/Young and happy-amico.svg" alt="" className={styles.bannerIllustrationSecondary} />
+        </div>
+        {/* <img 
+          src="/HuyHieuDoan.png" 
           alt="Đoàn Thanh Niên Banner" 
           className={styles.bannerImg}
-        />
+        /> */}
         <div className={styles.bannerContent}>
+          <div className={styles.bannerLogos} aria-hidden>
+            <img src="/HuyHieuDoan.png" alt="" className={styles.bannerLogo} />
+            <img src="/logo-white-circle.png" alt="" className={styles.bannerLogo} />
+          </div>
           <h2>Đoàn Thanh Niên</h2>
           <p>Nâng cao hiệu quả công tác Đoàn và phong trào thanh niên qua chuyển đổi số.</p>
         </div>
@@ -147,7 +168,7 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
         <div className={styles.authCard}>
           <div className={styles.authCopy}>
             <h1>Đăng nhập</h1>
-            <p>Sử dụng tài khoản sinh viên/cán bộ để tiếp tục.</p>
+            <p>Sử dụng tài khoản sinh viên để tiếp tục.</p>
           </div>
 
           <form className={styles.loginForm} onSubmit={handleSubmit}>
@@ -167,7 +188,7 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
             <div className={styles.field}>
               <div className={styles.authFormRow}>
                 <span className={styles.fieldLabel}>Mật khẩu</span>
-                <button type="button" className={styles.forgotLink}>
+                <button type="button" className={styles.forgotLink} onClick={handleForgotPassword}>
                   Quên mật khẩu?
                 </button>
               </div>

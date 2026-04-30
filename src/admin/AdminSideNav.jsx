@@ -11,6 +11,7 @@ import {
 } from '@phosphor-icons/react'
 import { formatUnitType } from '../utils/unitUtils'
 import { MANAGE_ADMIN_PANELS, PATHS, USER_ROLES } from '../utils/routes'
+import { getRoleLabelVi } from '../utils/roleLabelUtils'
 import { buildAdminPath, buildStaffPath } from './adminPaths'
 import styles from './adminShell.module.css'
 
@@ -22,13 +23,6 @@ function unitTypePrefixLabel(type) {
     return ''
   }
   return formatUnitType(type.trim().toUpperCase())
-}
-
-function manageRoleOptionLabel(role) {
-  if (role === USER_ROLES.admin) return 'Quản trị'
-  if (role === USER_ROLES.manager) return 'Thành viên'
-  if (role === USER_ROLES.staff) return 'Quản lý đơn vị'
-  return role || ''
 }
 
 function unitLogoSrc(unitId, unitLogoById, manageableUnits, unitRecord) {
@@ -112,13 +106,7 @@ export default function AdminSideNav({
                 </span>
               </strong>
               <span>
-                {selectedUnitRole === USER_ROLES.staff
-                  ? 'Quản lý đơn vị'
-                  : selectedUnitRole === USER_ROLES.manager
-                    ? 'Văn phòng Đoàn'
-                    : selectedUnitRole === USER_ROLES.admin
-                      ? 'Quản trị viên'
-                      : 'Vui lòng chọn đơn vị'}
+                {selectedUnitRole ? getRoleLabelVi(selectedUnitRole) : 'Vui lòng chọn đơn vị'}
               </span>
             </div>
           </span>
@@ -169,7 +157,7 @@ export default function AdminSideNav({
                           {unitItem?.name || optionItem.unitId}
                         </span>
                       </strong>
-                      <span>{manageRoleOptionLabel(optionItem.role)}</span>
+                      <span>{getRoleLabelVi(optionItem.role)}</span>
                     </div>
                   </button>
                 )

@@ -8,9 +8,11 @@ import {
   removeAssignment,
 } from '../../service/rbacService'
 import { getSemesters } from '../../service/semesterService'
-import { getManagedUnits, getUnits, getUnitById } from '../../service/unitService'
+import { getManagedUnits, getUnitById } from '../../service/unitService'
 
 import { formatDateTime, getValidationMessage } from '../../utils/userUtils'
+import { getRoleLabelVi } from '../../utils/roleLabelUtils'
+import { getDisplayUnitName } from '../../utils/unitLabelUtils'
 import styles from './adminUsers.module.css'
 import SemesterSelector from '../../components/semesters/SemesterSelector'
 import { useCurrentSemester } from '../../hooks/useCurrentSemester'
@@ -22,20 +24,23 @@ const INITIAL_ASSIGN_FORM = {
   semester_id: '',
 }
 
+function getDisplayRoleLabel(roleCode) {
+  return getRoleLabelVi(String(roleCode || 'USER').trim().toLowerCase())
+}
+
+const OFFICE_UNIT_LABEL = 'Văn Phòng đoàn'
+
 function UserRoleManagementSection({ 
   userId, 
   accessToken, 
-  initialAssignments, 
-  catalogData, 
-  unitNameMap,
   onError, 
   onRoleChanged 
 }) {
 
-  const [roles, setRoles] = useState(catalogData?.roles || [])
-  const [units, setUnits] = useState(catalogData?.units || [])
-  const [semesters, setSemesters] = useState(catalogData?.semesters || [])
-  const [assignments, setAssignments] = useState(initialAssignments || [])
+  const [roles, setRoles] = useState([])
+  const [units, setUnits] = useState([])
+  const [semesters, setSemesters] = useState([])
+  const [assignments, setAssignments] = useState([])
   const [globalSemester] = useCurrentSemester()
   const [form, setForm] = useState(INITIAL_ASSIGN_FORM)
   const [isLoading, setIsLoading] = useState(true)
@@ -73,7 +78,7 @@ function UserRoleManagementSection({
     () => {
       const seenRoleCodes = new Set()
       return roles
-        .map((roleItem) => ({ value: roleItem.id, label: roleItem.code }))
+        .map((roleItem) => ({ value: roleItem.id, label: getDisplayRoleLabel(roleItem.code) }))
         .filter((roleOption) => {
           if (seenRoleCodes.has(roleOption.label)) {
             return false
@@ -84,9 +89,36 @@ function UserRoleManagementSection({
     },
     [roles],
   )
+  const selectedRoleCode = useMemo(() => {
+    const selectedRole = roles.find((roleItem) => roleItem.id === form.role_id)
+    return String(selectedRole?.code || '').trim().toUpperCase()
+  }, [roles, form.role_id])
+
+  const isOfficeOnlyRole = selectedRoleCode === 'ADMIN' || selectedRoleCode === 'MANAGER'
+  const isNonOfficeRole = selectedRoleCode === 'STAFF' || selectedRoleCode === 'USER'
+
   const unitOptions = useMemo(
-    () => visibleUnits.map((unitItem) => ({ value: unitItem.id, label: unitItem.name || unitItem.id })),
-    [visibleUnits],
+    () => {
+      const mappedUnits = units.map((unitItem) => {
+        const label = getDisplayUnitName(unitItem.name) || unitItem.id
+        return {
+          value: unitItem.id,
+          label,
+          isOfficeUnit: label === OFFICE_UNIT_LABEL,
+        }
+      })
+
+      if (isOfficeOnlyRole) {
+        return mappedUnits.filter((item) => item.isOfficeUnit).map(({ value, label }) => ({ value, label }))
+      }
+
+      if (isNonOfficeRole) {
+        return mappedUnits.filter((item) => !item.isOfficeUnit).map(({ value, label }) => ({ value, label }))
+      }
+
+      return mappedUnits.map(({ value, label }) => ({ value, label }))
+    },
+    [units, isOfficeOnlyRole, isNonOfficeRole],
   )
   const semesterOptions = useMemo(
     () =>
@@ -104,12 +136,11 @@ function UserRoleManagementSection({
     
     const targetId = String(id || '')
     
-    // Ưu tiên tìm trong map truyền từ ngoài vào (vì nó ổn định hơn)
-    if (unitNameMap && unitNameMap[targetId]) return unitNameMap[targetId]
-    
     // Sau đó mới tìm trong state local
     const localUnit = units.find(u => String(u.id) === targetId)
-    if (localUnit && localUnit.name && localUnit.name !== localUnit.id) return localUnit.name
+    if (localUnit && localUnit.name && localUnit.name !== localUnit.id) {
+      return getDisplayUnitName(localUnit.name)
+    }
     
     return targetId || 'N/A'
   }
@@ -126,24 +157,12 @@ function UserRoleManagementSection({
 
 
   useEffect(() => {
-    if (catalogData) {
-      setRoles(catalogData.roles)
-      setUnits(catalogData.units)
-      setSemesters(catalogData.semesters)
-      setIsLoading(false)
-    } else {
-      loadCatalogData()
-    }
-  }, [catalogData, userId, accessToken])
+    loadCatalogData()
+  }, [userId, accessToken])
 
   useEffect(() => {
-    if (initialAssignments && initialAssignments.length > 0) {
-      setAssignments(initialAssignments)
-      setIsLoading(false)
-    } else {
-      loadAssignments()
-    }
-  }, [initialAssignments, userId, accessToken, globalSemester?.id])
+    loadAssignments()
+  }, [userId, accessToken, globalSemester?.id])
 
 
   useEffect(() => {
@@ -156,7 +175,7 @@ function UserRoleManagementSection({
       setIsResolvingNames(true)
       try {
         const missingUnitIds = [...new Set(assignments.map(a => a.unit_id))]
-          .filter(id => id && !units.some(u => u.id === id && u.name !== u.id) && (!unitNameMap || !unitNameMap[id]))
+          .filter(id => id && !units.some(u => u.id === id && u.name !== u.id))
         
         if (missingUnitIds.length > 0) {
           const newUnits = await Promise.all(
@@ -205,6 +224,26 @@ function UserRoleManagementSection({
   }, [assignments, accessToken])
 
 
+
+  async function loadCatalogData() {
+    setIsLoading(true)
+
+    try {
+      const nextRoles = await getRoles(accessToken)
+      setRoles(nextRoles)
+
+      const unitResponse = await getManagedUnits({ skip: 0, limit: 100 }, accessToken)
+      setUnits(unitResponse.items || [])
+
+      const semesterResponse = await getSemesters({ skip: 0, limit: 100 }, accessToken)
+      setSemesters(semesterResponse.items || [])
+    } catch (error) {
+      console.error('Failed to load permission catalog data:', error)
+      onError?.(error, 'Không thể tải danh mục phân quyền.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   async function loadAssignments() {
     setIsLoading(true)
@@ -291,7 +330,7 @@ function UserRoleManagementSection({
       <ConfirmDialog
         isOpen={Boolean(assignmentToRemove)}
         title="Gỡ quyền"
-        message={`Bạn có chắc muốn gỡ phân quyền "${assignmentToRemove?.role_code || ''}" không?`}
+        message={`Bạn có chắc muốn gỡ phân quyền "${getDisplayRoleLabel(assignmentToRemove?.role_code)}" không?`}
         confirmLabel="Gỡ quyền"
         danger
         isSubmitting={isSubmitting}
@@ -318,7 +357,7 @@ function UserRoleManagementSection({
             className={styles.formSelect}
             value={form.role_id || undefined}
             placeholder="Chọn vai trò"
-            onChange={(val) => setForm((f) => ({ ...f, role_id: val }))}
+            onChange={(val) => setForm((f) => ({ ...f, role_id: val, unit_id: '' }))}
             options={roleOptions}
             showSearch
             optionFilterProp="label"
@@ -378,7 +417,7 @@ function UserRoleManagementSection({
               {visibleAssignments.map((assignmentItem) => (
                 <tr key={assignmentItem.id}>
                   <td>
-                    <span className="user-role-badge">{assignmentItem.role_code || 'USER'}</span>
+                    <span className="user-role-badge">{getDisplayRoleLabel(assignmentItem.role_code)}</span>
                   </td>
                   <td>
                     {getUnitDisplayName(assignmentItem.unit_id, assignmentItem.role_code)}

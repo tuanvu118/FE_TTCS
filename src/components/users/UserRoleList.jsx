@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getUnitDetail } from '../../service/unitService'
+import { getRoleLabelVi } from '../../utils/roleLabelUtils'
+import { getDisplayUnitName } from '../../utils/unitLabelUtils'
 import { isSystemUnit } from '../../utils/unitUtils'
 
 function UserRoleList({ roles, unitNameMap }) {
+  function getDisplayRole(roleCode) {
+    return getRoleLabelVi(String(roleCode || '').trim().toLowerCase()) || roleCode
+  }
+
   const [unitNameById, setUnitNameById] = useState(unitNameMap || {})
 
   const [hiddenUnitIds, setHiddenUnitIds] = useState(new Set())
@@ -96,7 +102,7 @@ function UserRoleList({ roles, unitNameMap }) {
             {roleItem.roles.length ? (
               roleItem.roles.map((roleCode) => (
                 <span key={`${roleItem.unit_id}-${roleCode}`} className="user-role-badge">
-                  {roleCode}
+                  {getDisplayRole(roleCode)}
                 </span>
               ))
             ) : (
@@ -104,7 +110,7 @@ function UserRoleList({ roles, unitNameMap }) {
             )}
           </div>
           <span className="user-role-unit">
-            - {unitNameById[roleItem.unit_id] || roleItem.unit_id || 'Chưa có đơn vị'}
+            - {getDisplayUnitName(unitNameById[roleItem.unit_id]) || roleItem.unit_id || 'Chưa có đơn vị'}
           </span>
         </div>
       ))}

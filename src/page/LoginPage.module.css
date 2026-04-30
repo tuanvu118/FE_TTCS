@@ -16,6 +16,29 @@
   background: #0c1f45;
 }
 
+.bannerIllustrations {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.bannerIllustrationPrimary {
+  position: absolute;
+  width: min(50%, 420px);
+  left: 6%;
+  bottom: 3%;
+  opacity: 0.88;
+}
+
+.bannerIllustrationSecondary {
+  position: absolute;
+  width: min(46%, 380px);
+  right: 6%;
+  top: 8%;
+  opacity: 0.74;
+}
+
 .bannerImg {
   position: absolute;
   inset: 0;
@@ -32,6 +55,20 @@
   color: white;
   padding: 3rem;
   max-width: 600px;
+}
+
+.bannerLogos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.bannerLogo {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
 }
 
 .bannerContent h2 {
