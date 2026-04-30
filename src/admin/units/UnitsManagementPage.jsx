@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CaretLeft, CaretRight, Eye, Funnel, MagnifyingGlass, Pencil, Plus, Trash } from '@phosphor-icons/react'
+import { CaretLeft, CaretRight, Eye, Funnel, MagnifyingGlass, Plus, Trash } from '@phosphor-icons/react'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import NotificationPopup from '../../components/NotificationPopup'
 import UnitFormModal from '../../components/units/UnitFormModal'
@@ -10,7 +10,6 @@ import {
   deleteUnit,
   getManagedUnits,
   getUnitMembers,
-  updateUnit,
 } from '../../service/unitService'
 import { UNIT_TYPES, USER_ROLES } from '../../utils/routes'
 import { isSystemUnit } from '../../utils/unitUtils'
@@ -42,7 +41,6 @@ export default function UnitsManagementPage({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notice, setNotice] = useState(null)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [editingUnit, setEditingUnit] = useState(null)
   const [deletingUnit, setDeletingUnit] = useState(null)
 
   const isAdmin = role === USER_ROLES.admin
@@ -188,23 +186,6 @@ export default function UnitsManagementPage({
     }
   }
 
-  async function handleEditUnit(form) {
-    if (!editingUnit?.id) {
-      return
-    }
-
-    setIsSubmitting(true)
-    try {
-      await updateUnit(editingUnit.id, form, accessToken)
-      setEditingUnit(null)
-      await loadUnits(query)
-    } catch (error) {
-      handleApiError(error, getValidationMessage(error, 'Cập nhật đơn vị thất bại.'))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   async function handleDeleteUnit() {
     if (!deletingUnit?.id) {
       return
@@ -273,17 +254,6 @@ export default function UnitsManagementPage({
         isSubmitting={isSubmitting}
         onClose={() => setIsCreateOpen(false)}
         onSubmit={handleCreateUnit}
-      />
-
-      <UnitFormModal
-        isOpen={Boolean(editingUnit)}
-        mode="edit"
-        title="Cập nhật đơn vị"
-        submitLabel="Lưu thay đổi"
-        initialValues={editingUnit}
-        isSubmitting={isSubmitting}
-        onClose={() => setEditingUnit(null)}
-        onSubmit={handleEditUnit}
       />
 
       <ConfirmDialog
@@ -371,13 +341,6 @@ export default function UnitsManagementPage({
                 </button>
                 {isAdmin && (
                   <>
-                    <button
-                      className={`${styles.actionBtn} ${styles.editBtn}`}
-                      onClick={() => setEditingUnit(unit)}
-                      title="Chỉnh sửa"
-                    >
-                      <Pencil size={18} />
-                    </button>
                     <button
                       className={`${styles.actionBtn} ${styles.deleteBtn}`}
                       onClick={() => setDeletingUnit(unit)}
