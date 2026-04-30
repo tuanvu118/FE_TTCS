@@ -254,3 +254,219 @@
   color: #64748b;
   font-weight: 600;
 }
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 0.95rem 0.85rem;
+    gap: 0.72rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+    padding: 0.75rem 0 0.55rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.45rem;
+    line-height: 1.25;
+  }
+
+  .filterBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.56rem;
+    padding: 0.52rem 0.7rem;
+  }
+
+  .filterGroup {
+    flex-wrap: wrap;
+    gap: 0.56rem;
+  }
+
+  .filterSelect {
+    flex: 1 1 calc(50% - 0.56rem);
+    min-width: 170px;
+    height: 34px;
+    padding: 0 0.62rem;
+  }
+
+  .filterSelect select,
+  .filterSelect input {
+    min-width: 0;
+    width: 100%;
+    font-size: 0.78rem;
+  }
+
+  .tableHeader,
+  .eventRow {
+    grid-template-columns: 1.8fr 1fr 1fr 90px 100px;
+    padding-left: 0.72rem;
+    padding-right: 0.72rem;
+  }
+
+  .tableHeader span:nth-child(3),
+  .eventRow > div:nth-child(3) {
+    display: none;
+  }
+
+  .eventInfo strong {
+    font-size: 0.88rem;
+    line-height: 1.25;
+  }
+
+  .categoryCell,
+  .semesterCell,
+  .locationCell {
+    font-size: 0.74rem;
+  }
+
+  .typeBadge {
+    font-size: 0.66rem;
+    padding: 0.2rem 0.44rem;
+  }
+
+  .pointCell {
+    font-size: 0.9rem;
+  }
+
+  .actionBtn {
+    font-size: 0.7rem;
+    padding: 0.28rem 0.55rem;
+  }
+
+  .tableFooter {
+    padding: 0.66rem 0.82rem;
+    gap: 0.56rem;
+  }
+
+  .paginationInfo {
+    font-size: 0.76rem;
+  }
+
+  .pageButton {
+    font-size: 0.72rem;
+    padding: 0.35rem 0.48rem;
+  }
+}
+
+@media (max-width: 780px) {
+  .container,
+  .filterBar,
+  .tableWrapper {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .container {
+    padding: 0 0.45rem 0.62rem;
+    gap: 0.52rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1rem;
+  }
+
+  .filterBar {
+    padding: 0.44rem 0.5rem;
+    gap: 0.44rem;
+  }
+
+  .filterGroup {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0.44rem;
+  }
+
+  .filterSelect {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+    height: 32px;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
+  .eventRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.3rem 0.42rem;
+    padding: 0.5rem;
+    align-items: start;
+  }
+
+  .eventRow > div:nth-child(2) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .eventRow > div:nth-child(4) {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .eventRow > div:nth-child(5) {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .eventRow > div:last-child {
+    grid-column: 2;
+    grid-row: 2 / span 2;
+    justify-content: flex-end;
+  }
+
+  .eventInfo strong {
+    font-size: 0.74rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .typeBadge {
+    font-size: 0.58rem;
+    padding: 0.14rem 0.3rem;
+  }
+
+  .pointCell {
+    font-size: 0.74rem;
+    text-align: right;
+  }
+
+  .actionBtn {
+    font-size: 0.62rem;
+    padding: 0.22rem 0.34rem;
+    gap: 0.16rem;
+  }
+
+  .tableFooter {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.36rem;
+    padding: 0.5rem;
+  }
+
+  .paginationInfo {
+    width: 100%;
+    text-align: center;
+    font-size: 0.68rem;
+  }
+
+  .pageButton {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.64rem;
+    padding: 0.3rem 0.32rem;
+  }
+
+  .emptyState {
+    padding: 1.25rem 0.7rem;
+    font-size: 0.74rem;
+  }
+}

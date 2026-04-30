@@ -436,6 +436,11 @@
     min-width: 180px;
   }
 
+  .filterBar > span {
+    width: 100%;
+    font-size: 0.8rem !important;
+  }
+
   .tableHeader, .reportRow {
     grid-template-columns: 2fr 1fr 1.2fr 1fr;
     padding-left: 1rem;
@@ -448,6 +453,12 @@
   .reportIden {
     gap: 0.75rem;
     min-width: 0;
+  }
+
+  .docIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
   }
 
   .reportIden strong {
@@ -491,6 +502,7 @@
   .filterBar {
     grid-template-columns: 1fr;
     align-items: stretch;
+    padding: 0.46rem 0.52rem;
   }
 
   .filterGroup {
@@ -504,6 +516,8 @@
     width: 100%;
     min-width: 0;
     flex: 1 1 auto;
+    height: 34px;
+    padding: 0 0.56rem;
   }
 
   .filterSelect select {
@@ -511,6 +525,136 @@
     min-width: 0;
     max-width: none !important;
     flex: 1 1 auto;
+    font-size: 0.76rem;
+  }
+
+  .filterBar > span {
+    font-size: 0.72rem !important;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
+  .reportRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.35rem 0.45rem;
+    padding: 0.55rem;
+    align-items: start;
+  }
+
+  .reportIden {
+    grid-column: 1;
+    grid-row: 1;
+    gap: 0.5rem;
+  }
+
+  .docIcon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .reportIden strong {
+    font-size: 0.76rem;
+    line-height: 1.2;
+  }
+
+  .activityCount {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 0.68rem;
+  }
+
+  .reportRow > div:nth-child(3) {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .reportRow > div:last-child {
+    grid-column: 2;
+    grid-row: 2;
+    justify-content: flex-end;
+  }
+
+  .statusPill {
+    font-size: 0.56rem;
+    padding: 0.16rem 0.36rem;
+  }
+
+  .actionBtn {
+    font-size: 0.62rem;
+    padding: 0.28rem 0.38rem;
+    gap: 0.22rem;
+  }
+
+  .tableFooter {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.42rem;
+    padding: 0.55rem;
+  }
+
+  .paginationInfo {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.72rem;
+  }
+
+  .pageButton {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.7rem;
+    padding: 0.34rem 0.38rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .container {
+    padding: 0 0.3rem 0.52rem;
+  }
+
+  .titleArea h1 {
+    font-size: 0.92rem;
+  }
+
+  .filterSelect {
+    height: 32px;
+    padding: 0 0.48rem;
+  }
+
+  .filterSelect select,
+  .filterBar > span {
+    font-size: 0.66rem !important;
+  }
+
+  .reportRow {
+    padding: 0.48rem;
+    gap: 0.28rem 0.34rem;
+  }
+
+  .docIcon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .reportIden strong {
+    font-size: 0.7rem;
+  }
+
+  .activityCount {
+    font-size: 0.62rem;
+  }
+
+  .statusPill {
+    font-size: 0.5rem;
+    padding: 0.14rem 0.28rem;
+  }
+
+  .actionBtn {
+    font-size: 0.56rem;
+    padding: 0.24rem 0.3rem;
   }
 }
 
@@ -818,5 +962,140 @@
   .pageButton {
     font-size: 0.66rem;
     padding: 0.33rem 0.36rem;
+  }
+}
+
+/* Final override for StaffReportsPanel on very small screens */
+@media (max-width: 780px) {
+  .container,
+  .filterBar,
+  .tableWrapper {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .container {
+    padding: 0 0.42rem 0.55rem;
+    gap: 0.45rem;
+  }
+
+  .titleArea h1 {
+    font-size: 0.98rem;
+    line-height: 1.2;
+  }
+
+  .filterBar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.42rem;
+    padding: 0.42rem 0.46rem;
+  }
+
+  .filterGroup {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0.42rem;
+  }
+
+  .filterSelect {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 32px;
+    padding: 0 0.5rem;
+    gap: 0.28rem;
+    box-sizing: border-box;
+    flex: 1 1 auto;
+  }
+
+  .filterSelect select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100% !important;
+    font-size: 0.72rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .filterBar > span {
+    width: 100%;
+    font-size: 0.68rem !important;
+    line-height: 1.2;
+  }
+
+  .reportRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.3rem 0.4rem;
+    padding: 0.48rem;
+    align-items: start;
+  }
+
+  .reportIden {
+    min-width: 0;
+    gap: 0.42rem;
+  }
+
+  .reportIden strong {
+    font-size: 0.7rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .reportIden p {
+    margin: 0 !important;
+    font-size: 0.6rem !important;
+    line-height: 1.15 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .docIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+  }
+
+  .activityCount {
+    font-size: 0.62rem;
+  }
+
+  .statusPill {
+    font-size: 0.5rem;
+    padding: 0.12rem 0.28rem;
+  }
+
+  .actionBtn {
+    font-size: 0.56rem;
+    padding: 0.24rem 0.3rem;
+    gap: 0.18rem;
+    border-radius: 6px;
+  }
+
+  .tableFooter {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.36rem;
+    padding: 0.48rem;
+  }
+
+  .paginationInfo {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.68rem;
+  }
+
+  .pageButton {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.64rem;
+    padding: 0.3rem 0.32rem;
+    gap: 0.16rem;
   }
 }

@@ -410,3 +410,334 @@
   color: #1e293b;
   transform: scale(1.1);
 }
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 0.9rem 0.65rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.45rem;
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .tabs {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    flex: 1 1 0;
+    justify-content: center;
+    min-width: 140px;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.8rem;
+  }
+
+  .workspaceContent {
+    padding: 0.9rem;
+    min-height: 0;
+  }
+
+  .overviewHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+    padding-bottom: 1rem;
+  }
+
+  .overviewIdentity {
+    gap: 0.9rem;
+  }
+
+  .overviewTitle {
+    font-size: 1.1rem;
+  }
+
+  .overviewQuickStats {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .statItem {
+    font-size: 0.74rem;
+    padding: 0.28rem 0.52rem;
+  }
+
+  .editUnitBtn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.78rem;
+    padding: 0.52rem 0.7rem;
+  }
+
+  .overviewSection {
+    padding: 0.95rem;
+  }
+
+  .sectionTitle {
+    font-size: 0.88rem;
+  }
+
+  .introductionContent {
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+
+  .filterBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .filterGroup {
+    width: 100%;
+  }
+
+  .filterSelect {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .filterSelect input {
+    width: 100%;
+    min-width: 0;
+    font-size: 0.8rem;
+  }
+
+  .filterBar > div:last-child {
+    width: 100%;
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem !important;
+  }
+
+  .tableWrapper {
+    overflow-x: hidden;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.62rem;
+    font-size: 0.8rem;
+  }
+
+  .table th:nth-child(3),
+  .table td:nth-child(3),
+  .table th:nth-child(4),
+  .table td:nth-child(4) {
+    display: none;
+  }
+
+  .userCell {
+    gap: 0.55rem;
+  }
+
+  .actionBtn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 780px) {
+  .container {
+    padding: 0 0.45rem 0.55rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.04rem;
+  }
+
+  .tabs {
+    padding: 0.18rem;
+    gap: 0.18rem;
+  }
+
+  .tab {
+    min-width: 0;
+    font-size: 0.74rem;
+    padding: 0.42rem 0.5rem;
+    gap: 0.32rem;
+  }
+
+  .workspaceContent {
+    padding: 0.6rem;
+    border-radius: 12px;
+  }
+
+  .overviewIdentity {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.62rem;
+  }
+
+  .overviewLogoBox {
+    padding: 5px;
+    border-radius: 12px;
+  }
+
+  .overviewTitle {
+    font-size: 0.94rem;
+    margin: 0.12rem 0 0.35rem;
+  }
+
+  .statItem {
+    font-size: 0.68rem;
+    padding: 0.24rem 0.4rem;
+  }
+
+  .overviewQuickStats {
+    gap: 0.35rem;
+  }
+
+  .filterBar {
+    gap: 0.45rem;
+  }
+
+  .filterSelect {
+    height: 34px;
+    padding: 0 0.56rem;
+    gap: 0.3rem;
+  }
+
+  .filterSelect input {
+    font-size: 0.74rem;
+  }
+
+  .filterBar > div:last-child {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .filterBar > div:last-child > span {
+    font-size: 0.72rem !important;
+    width: 100%;
+  }
+
+  .createBtn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.74rem;
+    padding: 0.48rem 0.58rem;
+  }
+
+  .table {
+    table-layout: fixed;
+  }
+
+  .table th:nth-child(2),
+  .table td:nth-child(2) {
+    display: none;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.44rem 0.45rem;
+    font-size: 0.72rem;
+  }
+
+  .userCell {
+    gap: 0.4rem;
+    min-width: 0;
+  }
+
+  .userCell strong {
+    display: block;
+    font-size: 0.74rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .userCell small {
+    display: block;
+    font-size: 0.64rem;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+  }
+
+  .actionBtn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+  }
+}
+
+@media (max-width: 360px) {
+  .container {
+    padding: 0 0.3rem 0.5rem;
+  }
+
+  .titleArea h1 {
+    font-size: 0.92rem;
+  }
+
+  .tabs {
+    border-radius: 10px;
+  }
+
+  .tab {
+    font-size: 0.66rem;
+    padding: 0.36rem 0.32rem;
+    gap: 0.2rem;
+  }
+
+  .tab svg {
+    display: none;
+  }
+
+  .workspaceContent {
+    padding: 0.48rem;
+  }
+
+  .overviewTitle {
+    font-size: 0.84rem;
+  }
+
+  .statItem {
+    font-size: 0.62rem;
+    padding: 0.2rem 0.3rem;
+  }
+
+  .filterSelect input {
+    font-size: 0.68rem;
+  }
+
+  .filterBar > div:last-child > span {
+    font-size: 0.66rem !important;
+  }
+
+  .createBtn {
+    font-size: 0.68rem;
+    padding: 0.42rem 0.45rem;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.66rem;
+    padding: 0.36rem 0.34rem;
+  }
+
+  .userCell strong {
+    font-size: 0.66rem;
+  }
+
+  .userCell small {
+    font-size: 0.58rem;
+  }
+}
