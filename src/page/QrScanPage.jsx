@@ -11,6 +11,8 @@ function QrScanPage() {
   const [accessReady, setAccessReady] = useState(false)
   const [checkingAccess, setCheckingAccess] = useState(true)
   const [gateMessage, setGateMessage] = useState('')
+  const [isGateModalOpen, setIsGateModalOpen] = useState(true)
+  const [isGateModalDismissed, setIsGateModalDismissed] = useState(false)
   const [qrValue, setQrValue] = useState('')
   const [validFrom, setValidFrom] = useState('')
   const [validUntil, setValidUntil] = useState('')
@@ -218,6 +220,17 @@ function QrScanPage() {
   }, [])
 
   useEffect(() => {
+    if (!accessReady) {
+      if (isGateModalDismissed) {
+        return
+      }
+      setIsGateModalOpen(true)
+      return
+    }
+    setIsGateModalDismissed(false)
+  }, [accessReady, isGateModalDismissed])
+
+  useEffect(() => {
     return () => {
       stopCamera()
     }
@@ -303,10 +316,13 @@ function QrScanPage() {
     return (
       <>
         <DownloadModal
-          open
-          onClose={() => {}}
+          open={isGateModalOpen}
+          onClose={() => {
+            setIsGateModalOpen(false)
+            setIsGateModalDismissed(true)
+          }}
           noticeMessage={checkingAccess ? 'Đang kiểm tra điều kiện truy cập tính năng quét QR…' : gateMessage}
-          closable={false}
+          closable
           maskClosable={false}
         />
         <section className="page-card" style={{ display: 'grid', gap: 12 }}>

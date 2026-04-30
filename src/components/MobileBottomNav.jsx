@@ -1,40 +1,75 @@
-import { House, QrCode, UserCircle } from '@phosphor-icons/react'
+import { HouseSimple, QrCode, User, CalendarDots, ClockCounterClockwise } from '@phosphor-icons/react'
 import { PATHS } from '../utils/routes'
+import styles from './MobileBottomNav.module.css'
 
-const ICON_SIZE = 22
-const CENTER_ICON_SIZE = 26
+const ICON_SIZE = 25
+const CENTER_ICON_SIZE = 36
 
-export default function MobileBottomNav({ currentPath, isAuthenticated, navigate }) {
+function isHistoryTab(search = '') {
+  return new URLSearchParams(search).get('tab') === 'history'
+}
+
+export default function MobileBottomNav({ currentPath, currentSearch, isAuthenticated, navigate }) {
   const profileTarget = isAuthenticated ? PATHS.profile : PATHS.login
-  const profileActive = isAuthenticated ? currentPath === PATHS.profile : currentPath === PATHS.login
+  const historyActive = isAuthenticated && currentPath === PATHS.profile && isHistoryTab(currentSearch)
+  const profileActive = isAuthenticated
+    ? currentPath === PATHS.profile && !historyActive
+    : currentPath === PATHS.login
+  const historyTarget = isAuthenticated ? `${PATHS.profile}?tab=history` : PATHS.login
 
   return (
-    <nav className="mobile-bottom-nav" aria-label="Điều hướng nhanh trên di động">
+    <nav className={styles.nav} aria-label="Điều hướng nhanh trên di động">
       <button
         type="button"
-        className={currentPath === PATHS.home ? 'mobile-bottom-nav__item active' : 'mobile-bottom-nav__item'}
+        className={currentPath === PATHS.home ? `${styles.item} ${styles.active}` : styles.item}
         onClick={() => navigate(PATHS.home)}
       >
-        <House size={ICON_SIZE} weight="duotone" aria-hidden />
-        <span>Home</span>
+        <HouseSimple size={ICON_SIZE} weight={currentPath === PATHS.home ? 'fill' : 'regular'} aria-hidden />
+        <span>Trang chủ</span>
       </button>
 
       <button
         type="button"
-        className={currentPath === PATHS.qrScan ? 'mobile-bottom-nav__item mobile-bottom-nav__item--center active' : 'mobile-bottom-nav__item mobile-bottom-nav__item--center'}
-        onClick={() => navigate(PATHS.qrScan)}
+        className={currentPath === PATHS.event ? `${styles.item} ${styles.active}` : styles.item}
+        onClick={() => navigate(PATHS.event)}
       >
-        <QrCode size={CENTER_ICON_SIZE} weight="fill" aria-hidden />
-        <span>Quét QR</span>
+        <CalendarDots size={ICON_SIZE} weight={currentPath === PATHS.event ? 'fill' : 'regular'} aria-hidden />
+        <span>Sự kiện</span>
       </button>
 
       <button
         type="button"
-        className={profileActive ? 'mobile-bottom-nav__item active' : 'mobile-bottom-nav__item'}
+        className={styles.centerSlot}
+        aria-hidden="true"
+        tabIndex={-1}
+      >
+      </button>
+
+      <button
+        type="button"
+        className={historyActive ? `${styles.item} ${styles.active}` : styles.item}
+        onClick={() => navigate(historyTarget)}
+      >
+        <ClockCounterClockwise size={ICON_SIZE} weight={historyActive ? 'fill' : 'regular'} aria-hidden />
+        <span>Lịch sử</span>
+      </button>
+
+      <button
+        type="button"
+        className={profileActive ? `${styles.item} ${styles.active}` : styles.item}
         onClick={() => navigate(profileTarget)}
       >
-        <UserCircle size={ICON_SIZE} weight="duotone" aria-hidden />
-        <span>Profile</span>
+        <User size={ICON_SIZE} weight={profileActive ? 'fill' : 'regular'} aria-hidden />
+        <span>Cá nhân</span>
+      </button>
+
+      <button
+        type="button"
+        className={currentPath === PATHS.qrScan ? `${styles.fab} ${styles.activeFab}` : styles.fab}
+        onClick={() => navigate(PATHS.qrScan)}
+        aria-label="Quét QR"
+      >
+        <QrCode size={CENTER_ICON_SIZE} weight={currentPath === PATHS.qrScan ? 'fill' : 'regular'} aria-hidden />
       </button>
     </nav>
   )

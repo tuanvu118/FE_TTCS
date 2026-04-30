@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button, Modal, message } from 'antd'
+import { CloseOutlined } from '@ant-design/icons'
 import styles from './DownloadModal.module.css'
 import {
   getPwaInstallEventName,
@@ -135,6 +136,10 @@ export default function DownloadModal({
   const installSupported = isInstallAvailable && !isInstalled
   const canInstall = allPermissionsGranted && !isInstalled
 
+  function handleClose() {
+    onClose?.()
+  }
+
   async function requestNotificationPermission() {
     try {
       const result = await Notification.requestPermission()
@@ -196,10 +201,11 @@ export default function DownloadModal({
     <Modal
       title="Tải ứng dụng"
       open={open}
-      onCancel={onClose}
+      onCancel={handleClose}
       footer={null}
       destroyOnClose
       closable={closable}
+      closeIcon={<CloseOutlined />}
       maskClosable={maskClosable}
     >
       <div className={styles.content}>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import NotificationPopup from '../components/NotificationPopup'
 import UserAvatar from '../components/users/UserAvatar'
 import UserFormModal from '../components/users/UserFormModal'
@@ -12,6 +13,13 @@ import { formatDateOfBirth, getValidationMessage } from '../utils/userUtils'
 import DownloadModal from './DownloadModal'
 import '../style/ProfileStats.css'
 
+const PROFILE_TABS = ['info', 'history']
+
+function getTabFromSearch(search) {
+  const tab = new URLSearchParams(search).get('tab')
+  return PROFILE_TABS.includes(tab) ? tab : 'info'
+}
+
 function ProfilePage({
   accessToken,
   onProfileUpdated,
@@ -19,10 +27,11 @@ function ProfilePage({
   navigate,
   dashboardPath,
 }) {
+  const location = useLocation()
   const [profile, setProfile] = useState(null)
   const [stats, setStats] = useState(null)
   const [currentSemester] = useCurrentSemester()
-  const [activeTab, setActiveTab] = useState('info') // 'info' | 'history'
+  const [activeTab, setActiveTab] = useState(() => getTabFromSearch(location.search)) // 'info' | 'history'
   const [isLoading, setIsLoading] = useState(true)
   const [isStatsLoading, setIsStatsLoading] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -39,6 +48,10 @@ function ProfilePage({
       loadStats()
     }
   }, [accessToken, currentSemester?.id])
+
+  useEffect(() => {
+    setActiveTab(getTabFromSearch(location.search))
+  }, [location.search])
 
   async function loadInitialData() {
     setIsLoading(true)

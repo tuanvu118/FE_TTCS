@@ -162,6 +162,7 @@ function App() {
       {!isAdminLayout ? (
         <MobileBottomNav
           currentPath={pathname}
+          currentSearch={search}
           isAuthenticated={isAuthenticated}
           navigate={navigate}
         />
