@@ -4,7 +4,8 @@ import { Spin } from 'antd'
 import { getStoredCurrentSemester } from '../../utils/currentSemesterStorage'
 import { getMyUnitEventById } from '../../service/taskService'
 import DetailHTTT from './DetailHTTT'
-import DetailHTSK from './DetailHTSK'
+import DetailHTSKManual from './DetailHTSKManual'
+import DetailHTSKStudentRegistration from './DetailHTSKStudentRegistration'
 import styles from './detailCommon.module.css'
 
 export default function Detail() {
@@ -86,8 +87,11 @@ export default function Detail() {
   }
 
   if (data?.type === 'HTSK') {
+    const HtskDetailComponent = data?.is_student_registration
+      ? DetailHTSKStudentRegistration
+      : DetailHTSKManual
     return (
-      <DetailHTSK
+      <HtskDetailComponent
         data={data}
         unitId={unitId}
         taskId={taskId}
@@ -97,8 +101,11 @@ export default function Detail() {
     )
   }
 
+  const FallbackHtskDetailComponent = data?.is_student_registration
+    ? DetailHTSKStudentRegistration
+    : DetailHTSKManual
   return (
-    <DetailHTSK
+    <FallbackHtskDetailComponent
       data={data}
       unitId={unitId}
       taskId={taskId}

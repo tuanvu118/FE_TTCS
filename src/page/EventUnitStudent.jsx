@@ -11,7 +11,10 @@ import '../style/EventUnitStudent.css'
 
 function formatDateTime(value) {
   if (!value) return '—'
-  const d = new Date(value)
+  const raw = String(value).trim()
+  // Backend trả mốc UTC không kèm timezone, thêm Z để parse đúng UTC.
+  // toLocaleString('vi-VN') sẽ tự hiển thị theo local timezone (UTC+7).
+  const d = /z$/i.test(raw) ? new Date(raw) : new Date(`${raw}Z`)
   if (Number.isNaN(d.getTime())) return '—'
   return d.toLocaleString('vi-VN', {
     day: '2-digit',
@@ -29,6 +32,7 @@ export default function EventUnitStudent({ unitId, eventId }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [registering, setRegistering] = useState(false)
+  const [expandDescription, setExpandDescription] = useState(false)
 
   async function loadOverview() {
     setLoading(true)
@@ -70,6 +74,10 @@ export default function EventUnitStudent({ unitId, eventId }) {
     }
   }, [eventId, unitId])
 
+  useEffect(() => {
+    setExpandDescription(false)
+  }, [data?.description])
+
   if (loading) {
     return (
       <div className="event-unit-student-page">
@@ -99,6 +107,12 @@ export default function EventUnitStudent({ unitId, eventId }) {
   const canRegister = Boolean(data?.can_register)
   const remaining = Number(data?.slot_remaining ?? 0)
   const canCancelRegistration = isRegistered && regOpen
+  const descriptionText = data?.description?.trim() || 'Không có mô tả.'
+  const DESCRIPTION_LIMIT = 320
+  const isDescriptionLong = descriptionText.length > DESCRIPTION_LIMIT
+  const shortDescription = isDescriptionLong
+    ? `${descriptionText.slice(0, DESCRIPTION_LIMIT).trimEnd()}...`
+    : descriptionText
 
   const handleRegister = async () => {
     if (!canRegister || isRegistered) return
@@ -141,13 +155,15 @@ export default function EventUnitStudent({ unitId, eventId }) {
   return (
     <div className="event-unit-student-page">
       <section className="eus-hero">
-        <button className="eus-back" onClick={() => navigate(-1)}>
-          <ArrowLeft size={18} />
-          Quay lại
-        </button>
-        <span className="eus-tag">ĐĂNG KÍ THAM GIA SỰ KIỆN THEO ĐƠN VỊ</span>
+        <div className="eus-topline">
+          <button className="eus-back" onClick={() => navigate(-1)}>
+            <ArrowLeft size={18} />
+            Quay lại
+          </button>
+          <span className="eus-tag">ĐĂNG KÍ THAM GIA SỰ KIỆN THEO ĐƠN VỊ</span>
+        </div>
         <h1>{data.title || 'Chi tiết sự kiện'}</h1>
-        <p>{data.unit_name || '—'}</p>
+        <p className="eus-unit-name">{data.unit_name || '—'}</p>
       </section>
 
       <main className="eus-grid">
@@ -167,7 +183,16 @@ export default function EventUnitStudent({ unitId, eventId }) {
           </div>
           <div className="eus-desc">
             <h3>Mô tả</h3>
-            <p>{data.description || 'Không có mô tả.'}</p>
+            <p>{expandDescription ? descriptionText : shortDescription}</p>
+            {isDescriptionLong && (
+              <button
+                type="button"
+                className="eus-link-btn"
+                onClick={() => setExpandDescription((prev) => !prev)}
+              >
+                {expandDescription ? 'Thu gọn' : 'Xem thêm'}
+              </button>
+            )}
           </div>
         </section>
 
@@ -175,13 +200,13 @@ export default function EventUnitStudent({ unitId, eventId }) {
           <h2>Trạng thái của bạn</h2>
           <div className={`eus-status ${isRegistered ? 'ok' : 'idle'}`}>
             <CheckCircle size={20} weight="fill" />
-            <span>{isRegistered ? 'Bạn đã đăng ký vào danh sách.' : 'Bạn chưa đăng ký vào danh sách.'}</span>
+            <span>{isRegistered ? 'Đã đăng ký' : 'Chưa đăng ký'}</span>
           </div>
 
           <div className="eus-note">
-            <p><b>Trạng thái nộp danh sách:</b> {data.submission_status || '—'}</p>
+            {/* <p><b>Trạng thái nộp danh sách:</b> {data.submission_status || '—'}</p> */}
             <p><b>Mở đăng ký:</b> {regOpen ? 'Đang mở' : 'Đã đóng'}</p>
-            <p><b>Có thể đăng ký:</b> {canRegister ? 'Có' : 'Không'}</p>
+            {/* <p><b>Có thể đăng ký:</b> {canRegister ? 'Có' : 'Không'}</p> */}
           </div>
           {isRegistered ? (
             <button

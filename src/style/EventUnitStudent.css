@@ -14,24 +14,48 @@
   padding: 1.25rem 1.5rem;
 }
 
+.eus-topline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
 .eus-back {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  border: none;
-  background: none;
+  border: 1px solid #dbe3f0;
+  background: #f8fafc;
   color: #334155;
   font-weight: 700;
+  font-size: 0.88rem;
+  line-height: 1;
+  padding: 0.48rem 0.72rem;
+  border-radius: 9px;
   cursor: pointer;
-  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.eus-back:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 .eus-tag {
-  display: inline-block;
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0.38rem 0.78rem;
+  border-radius: 999px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  font-size: 0.72rem;
   font-weight: 800;
   color: #1d4ed8;
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.03em;
 }
 
 .eus-hero h1 {
@@ -42,6 +66,19 @@
 .eus-hero p {
   margin: 0;
   color: #64748b;
+}
+
+.eus-unit-name {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.35rem !important;
+  padding: 0.38rem 0.78rem;
+  border-radius: 999px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #1e40af !important;
+  font-size: 0.86rem;
+  font-weight: 700;
 }
 
 .eus-grid {
@@ -96,6 +133,19 @@
   margin: 0;
   color: #334155;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.eus-link-btn {
+  margin-top: 0.45rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #1d4ed8;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .eus-status {
@@ -149,8 +199,93 @@
   cursor: pointer;
 }
 
+.eus-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 @media (max-width: 900px) {
+  .event-unit-student-page {
+    padding: 1rem;
+  }
+
+  .eus-hero {
+    padding: 1rem 1rem 1.1rem;
+  }
+
+  .eus-hero h1 {
+    font-size: 1.25rem;
+    line-height: 1.35;
+  }
+
+  .eus-card {
+    padding: 1rem;
+  }
+
   .eus-grid {
     grid-template-columns: 1fr;
+  }
+
+  .eus-row {
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.65rem 0;
+  }
+
+  .eus-row strong {
+    text-align: left;
+  }
+}
+
+@media (max-width: 640px) {
+  .event-unit-student-page {
+    padding: 0.75rem;
+  }
+
+  .eus-hero {
+    border-radius: 10px;
+    padding: 0.85rem 0.85rem 1rem;
+  }
+
+  .eus-topline {
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  .eus-back,
+  .eus-tag {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .eus-back {
+    padding: 0.62rem 0.8rem;
+  }
+
+  .eus-tag {
+    min-height: 36px;
+    text-align: center;
+    line-height: 1.25;
+  }
+
+  .eus-unit-name {
+    margin-top: 0.5rem !important;
+    font-size: 0.82rem;
+  }
+
+  .eus-card {
+    border-radius: 10px;
+    padding: 0.9rem;
+  }
+
+  .eus-card h2 {
+    font-size: 0.98rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .eus-btn {
+    width: 100%;
+    padding: 0.68rem 0.9rem;
+    font-weight: 700;
   }
 }
