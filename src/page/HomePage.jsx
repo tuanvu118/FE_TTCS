@@ -191,7 +191,7 @@ export default function HomePage() {
         <div className="home-hero-content">
           <span className="home-hero-badge">SỰ KIỆN NỔI BẬT</span>
           <h1 className="home-hero-title">
-            {featuredEvent?.title || 'Chào mừng đến với Cổng thông tin Sinh viên v14'}
+            {featuredEvent?.title || 'Chào mừng đến với Cổng thông tin Sinh viên v15'}
           </h1>
           <div className="home-hero-btns">
             {featuredEvent && (
@@ -293,9 +293,13 @@ export default function HomePage() {
                         {UNIT_ICONS[idx % UNIT_ICONS.length]}
                       </span>
                     </div>
-                    <h4 className="home-clb-name">{unit.name}</h4>
+                    <h4 className="home-clb-name" title={unit.name}>
+                      {unit.name}
+                    </h4>
                     {unit.introduction && (
-                      <p className="home-clb-intro">"{stripHtml(unit.introduction).substring(0, 45)}..."</p>
+                      <p className="home-clb-intro" title={stripHtml(unit.introduction)}>
+                        {unit.introduction}
+                      </p>
                     )}
                   </Link>
                 )) : (

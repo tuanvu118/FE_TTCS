@@ -350,12 +350,15 @@
 /* ── CLB (Premium Scrolling) ── */
 .home-clb-scroll {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.25rem;
-  overflow-x: auto;
+  overflow-x: visible;
   padding: 0.25rem 0 1.25rem;
+  min-width: 0;
 }
 
 .home-clb-card {
+  flex: 0 0 220px;
   min-width: 220px;
   background: white;
   border: 1px solid #e2e8f0;
@@ -399,6 +402,13 @@
   font-weight: 800;
   color: #0f172a;
   margin: 0 0 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+  min-height: calc(1.35em * 2);
 }
 
 .home-clb-intro {
@@ -406,6 +416,12 @@
   color: #64748b;
   line-height: 1.4;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  min-height: calc(1.4em * 3);
 }
 
 /* ── NEWS LIST ── */
@@ -425,7 +441,7 @@
   text-decoration: none;
   color: inherit;
   transition: all 0.2s;
-  min-width: 0;
+  max-width: 80vw;
 }
 
 .home-news-row:hover {
@@ -625,6 +641,31 @@
   .home-hero-title { font-size: 2.5rem; }
   .home-events-grid { grid-template-columns: 1fr; }
 
+  .home-clb-scroll {
+    gap: 0.9rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .home-clb-card {
+    flex-basis: 180px;
+    min-width: 180px;
+    padding: 1rem 0.85rem;
+  }
+
+  .home-clb-icon {
+    width: 54px;
+    height: 54px;
+    margin-bottom: 0.65rem;
+  }
+
+  .home-clb-name {
+    font-size: 0.92rem;
+  }
+
+  .home-clb-intro {
+    font-size: 0.74rem;
+  }
+
   .home-news-row {
     gap: 0.85rem;
     padding: 0.75rem;
@@ -642,5 +683,182 @@
 
   .home-news-desc {
     font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-section-header {
+    padding: 0.45rem 0.85rem;
+    border-left-width: 4px;
+  }
+
+  .home-section-title {
+    font-size: 1.05rem;
+    line-height: 1.3;
+  }
+
+  .home-news-list {
+    gap: 0.75rem;
+  }
+
+  .home-news-row {
+    gap: 0.65rem;
+    padding: 0.65rem;
+    align-items: flex-start;
+  }
+
+  .home-news-img {
+    width: 72px;
+    height: 56px;
+    border-radius: 7px;
+  }
+
+  .home-news-cat {
+    font-size: 8px;
+  }
+
+  .home-news-title {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .home-news-desc {
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+
+  .home-news-time {
+    font-size: 9px;
+  }
+
+  .home-clb-card {
+    flex-basis: 160px;
+    min-width: 160px;
+    padding: 0.85rem 0.7rem;
+  }
+
+  .home-clb-icon {
+    width: 46px;
+    height: 46px;
+  }
+
+  .home-clb-name {
+    font-size: 0.85rem;
+  }
+
+  .home-clb-intro {
+    font-size: 0.7rem;
+    -webkit-line-clamp: 2;
+    min-height: calc(1.4em * 2);
+  }
+}
+
+@media (max-width: 360px) {
+  .home-news-row {
+    padding: 0.55rem;
+    gap: 0.55rem;
+  }
+
+  .home-news-img {
+    width: 64px;
+    height: 50px;
+  }
+
+  .home-news-title {
+    font-size: 0.85rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .home-news-desc {
+    font-size: 0.72rem;
+    -webkit-line-clamp: 1;
+  }
+
+  .home-clb-card {
+    flex-basis: 138px;
+    min-width: 138px;
+    padding: 0.75rem 0.6rem;
+  }
+
+  .home-clb-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 0.5rem;
+  }
+
+  .home-clb-name {
+    font-size: 0.8rem;
+    min-height: auto;
+  }
+
+  .home-clb-intro {
+    font-size: 0.68rem;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 300px) {
+  .home-section-header {
+    padding: 0.4rem 0.65rem;
+  }
+
+  .home-section-title {
+    font-size: 0.95rem;
+  }
+
+  .home-news-row {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.5rem;
+    gap: 0.45rem;
+  }
+
+  .home-news-img {
+    width: 100%;
+    height: 116px;
+    border-radius: 6px;
+  }
+
+  .home-news-body {
+    gap: 0.2rem;
+  }
+
+  .home-news-title {
+    font-size: 0.8rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .home-news-desc {
+    font-size: 0.7rem;
+    -webkit-line-clamp: 1;
+  }
+
+  .home-clb-scroll {
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+    gap: 0.55rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .home-clb-card {
+    min-width: 0;
+    width: 100%;
+    flex-basis: auto;
+    padding: 0.7rem 0.55rem;
+  }
+
+  .home-clb-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .home-clb-name {
+    font-size: 0.76rem;
+  }
+
+  .home-clb-intro {
+    font-size: 0.64rem;
+    -webkit-line-clamp: 2;
   }
 }
