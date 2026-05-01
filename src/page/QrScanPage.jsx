@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Typography, message } from 'antd'
+import { Button, Typography, message } from 'antd'
 import { getCurrentCoordinates } from '../utils/geolocation'
 import { scanAttendanceQr } from '../service/apiStudentEvent'
 import { LOCATION_STORAGE_KEY } from '../service/locationHeartbeatService'
@@ -181,6 +181,12 @@ function QrScanPage() {
       setScanError(error?.message || 'Không thể mở camera để quét QR.')
       stopCamera()
     }
+  }
+
+  async function handleRetryCamera() {
+    stopCamera()
+    setScanError('')
+    await startCameraScan()
   }
 
   async function handleDetectedQr(rawValue) {
@@ -426,6 +432,30 @@ function QrScanPage() {
         {submitting ? <Text type="secondary">Đang gửi điểm danh...</Text> : null}
         {!cameraActive && !submitting ? <Text type="secondary">Đang khởi động camera...</Text> : null}
         {scanError ? <Text type="danger">{scanError}</Text> : null}
+        {scanError && !submitting ? (
+          <div
+            style={{
+              display: 'flex',
+              gap: 10,
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              marginTop: 2,
+            }}
+          >
+            <Button
+              type="primary"
+              onClick={() => void handleRetryCamera()}
+              style={{
+                borderRadius: 10,
+                fontWeight: 600,
+                minWidth: 164,
+                height: 40,
+              }}
+            >
+              Mở lại camera
+            </Button>
+          </div>
+        ) : null}
       </div>
     </section>
   )
