@@ -96,9 +96,9 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, navigate }) {
               <QrCode size={navIconSize} weight="regular" aria-hidden />
             </button>
 
-            <button type="button" className="topnav-icon-button" aria-label="Thông báo">
+            {/* <button type="button" className="topnav-icon-button" aria-label="Thông báo">
               <BellIcon />
-            </button>
+            </button> */}
 
             {dashboardPath && (
               <button
