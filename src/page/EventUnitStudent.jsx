@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, CalendarBlank, CheckCircle, Clock, MapPin, Users, Warning } from '@phosphor-icons/react'
-import { useNavigate } from 'react-router-dom'
+import { CalendarBlank, CheckCircle, Clock, MapPin, Users, Warning } from '@phosphor-icons/react'
 import { Modal, message } from 'antd'
 import {
   cancelStudentHtskEventRegistration,
@@ -39,7 +38,6 @@ function parseUtcDateMs(value) {
 }
 
 export default function EventUnitStudent({ unitId, eventId }) {
-  const navigate = useNavigate()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -116,9 +114,9 @@ export default function EventUnitStudent({ unitId, eventId }) {
         <div className="eus-state">
           <Warning size={44} color="#ef4444" />
           <p>{error || 'Không tìm thấy thông tin sự kiện.'}</p>
-          <button className="eus-btn" onClick={() => navigate(-1)}>
+          {/* <button className="eus-btn" onClick={() => navigate(-1)}>
             Quay lại
-          </button>
+          </button> */}
         </div>
       </div>
     )
@@ -191,10 +189,10 @@ export default function EventUnitStudent({ unitId, eventId }) {
     <div className="event-unit-student-page">
       <section className="eus-hero">
         <div className="eus-topline">
-          <button className="eus-back" onClick={() => navigate(-1)}>
+          {/* <button className="eus-back" onClick={() => navigate(-1)}>
             <ArrowLeft size={18} />
             Quay lại
-          </button>
+          </button> */}
           <span className="eus-tag">ĐĂNG KÍ THAM GIA SỰ KIỆN THEO ĐƠN VỊ</span>
         </div>
         <h1>{data.title || 'Chi tiết sự kiện'}</h1>
