@@ -1,20 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { 
-  Plus, 
-  Trash, 
-  PencilSimple,
-  Checks,
-  CaretLeft,
   Paperclip,
-  SealCheck,
-  WarningOctagon,
-  Article,
-  UserGear,
-  DownloadSimple,
-  Globe,
-  UsersThree,
-  Clock
 } from '@phosphor-icons/react'
 import styles from './reportDetail.module.css'
 import { apiRequest } from '../../service/apiClient'
@@ -285,7 +272,7 @@ export default function ReportDetailView({
       <div className={styles.pageHeader}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
           <button className={styles.backBtn} onClick={handleBack}>
-            <CaretLeft size={20} weight="bold" /> Quay lại
+            Quay lại
           </button>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -310,7 +297,7 @@ export default function ReportDetailView({
              className={`${styles.actionBtn} ${styles.export}`}
              onClick={handleExport}
            >
-             <DownloadSimple size={18} weight="bold" /> Xuất báo cáo chi tiết
+             Xuất báo cáo chi tiết
            </button>
 
            {isManager && isPendingApproval && (
@@ -319,24 +306,23 @@ export default function ReportDetailView({
                   className={`${styles.actionBtn} ${styles.reject}`}
                   onClick={() => { setShowApproveModal(true); setReviewNote('') }}
                 >
-                  <WarningOctagon size={18} /> Yêu cầu chỉnh sửa
+                  Yêu cầu chỉnh sửa
                 </button>
                 <button 
                   className={`${styles.actionBtn} ${styles.approve}`}
                   onClick={handleApproveReport}
                 >
-                  <SealCheck size={18} weight="fill" /> Phê duyệt
+                  Phê duyệt
                 </button>
              </div>
            )}
            {!isManager && report.status === 'YEU_CAU_NOP_LAI' && (
              <button className={styles.submitBtn} onClick={handleFinalSubmit}>
-               Nộp lại báo cáo <Checks size={18} weight="bold" />
+               Nộp lại báo cáo
              </button>
            )}
            {!isManager && report.status === 'CHUA_NOP' && (
              <div className={styles.autoSubmitNotice}>
-               <Clock size={16} weight="bold" /> 
                Tự động nộp vào ngày 20 hàng tháng
              </div>
            )}
@@ -345,35 +331,30 @@ export default function ReportDetailView({
 
       <div className={styles.statsCardGrid}>
         <div className={styles.miniStat}>
-          <div className={styles.statIconBox}><Article size={18} weight="fill" color="#2563eb" /></div>
           <div>
             <div className={styles.miniLabel}>Tổng HĐ</div>
             <div className={styles.miniValue}>{report.internal_events.length + (report.unit_events?.length || 0)}</div>
           </div>
         </div>
         <div className={styles.miniStat}>
-          <div className={styles.statIconBox}><UserGear size={18} weight="fill" color="#f59e0b" /></div>
           <div>
             <div className={styles.miniLabel}>Được giao</div>
             <div className={styles.miniValue}>{report.unit_events?.length || 0}</div>
           </div>
         </div>
         <div className={styles.miniStat}>
-          <div className={styles.statIconBox}><UsersThree size={18} weight="fill" color="#10b981" /></div>
           <div>
             <div className={styles.miniLabel}>Nội bộ</div>
             <div className={styles.miniValue}>{report.internal_events.length}</div>
           </div>
         </div>
         <div className={styles.miniStat}>
-          <div className={styles.statIconBox}><SealCheck size={18} weight="fill" color="#8b5cf6" /></div>
           <div>
             <div className={styles.miniLabel}>Tổng điểm</div>
             <div className={styles.miniValue}>{totalPoints}</div>
           </div>
         </div>
         <div className={styles.miniStat}>
-          <div className={styles.statIconBox}><Globe size={18} weight="fill" color="#6366f1" /></div>
           <div>
             <div className={styles.miniLabel}>Trạng thái</div>
             <div className={`${styles.badge} ${styles['s_' + report.status.toLowerCase()]}`}>
@@ -388,7 +369,6 @@ export default function ReportDetailView({
           <div className={`${styles.sectionCard} ${styles.noteCard}`} style={{ borderLeft: '4px solid #ef4444' }}>
               <div className={styles.sectionHeader} style={{ background: '#fef2f2' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <WarningOctagon size={22} weight="fill" color="#ef4444" />
                   <h3 style={{ color: '#991b1b' }}>Phản hồi từ cấp quản lý</h3>
                 </div>
               </div>
@@ -402,7 +382,6 @@ export default function ReportDetailView({
         <div className={styles.sectionCard}>
           <div className={styles.sectionHeader}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <UserGear size={22} weight="bold" color="#2563eb" />
               <h3>1. Sự kiện được phân công cho đơn vị</h3>
             </div>
           </div>
@@ -449,12 +428,11 @@ export default function ReportDetailView({
         <div className={styles.sectionCard}>
           <div className={styles.sectionHeader}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <Article size={22} weight="bold" color="#059669" />
               <h3>2. Hoạt động nội bộ chuyên môn (Tự quản)</h3>
             </div>
             {!isLocked && !isManager && (
               <button className={styles.addBtn} onClick={() => handleOpenModal()}>
-                <Plus size={16} weight="bold" /> Thêm hoạt động
+                Thêm hoạt động
               </button>
             )}
           </div>
@@ -482,7 +460,7 @@ export default function ReportDetailView({
                       <td>
                         {ev.evidence_url ? (
                             <a href={ev.evidence_url} target="_blank" rel="noreferrer" className={styles.evidenceLink}>
-                              <Paperclip size={20} /> Xem minh chứng
+                               Xem minh chứng
                             </a>
                         ) : (
                             <span style={{ color: '#cbd5e1', fontSize: '0.9rem' }}>Chưa đính kèm</span>
@@ -491,8 +469,8 @@ export default function ReportDetailView({
                       {!isLocked && !isManager && (
                           <td>
                               <div className={styles.rowActions}>
-                                  <button className={styles.editBtn} title="Chỉnh sửa" onClick={() => handleOpenModal(ev)}><PencilSimple size={18} /></button>
-                                  <button className={styles.delBtn} title="Xóa" onClick={() => handleDelete(ev.id)}><Trash size={18} /></button>
+                                  <button className={styles.editBtn} title="Chỉnh sửa" onClick={() => handleOpenModal(ev)}>Sửa</button>
+                                  <button className={styles.delBtn} title="Xóa" onClick={() => handleDelete(ev.id)}>Xóa</button>
                               </div>
                           </td>
                       )}

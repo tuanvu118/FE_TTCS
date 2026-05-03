@@ -248,3 +248,10 @@ export async function getMyStats(authToken, semesterId = null) {
     authToken,
   })
 }
+
+export async function getUserPointsSummary(userId, authToken) {
+  return apiRequest(`/users/${userId}/points-summary`, {
+    method: 'GET',
+    authToken,
+  })
+}

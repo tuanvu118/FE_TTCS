@@ -1,4 +1,3 @@
-import { X } from '@phosphor-icons/react'
 import styles from '../reportDetail.module.css'
 
 export default function StatusReviewModal({ 
@@ -16,8 +15,8 @@ export default function StatusReviewModal({
       <div className={`${styles.modal} ${styles.compactModal}`}>
         <div className={styles.modalHeader}>
           <h3 style={{ margin: 0, fontWeight: 800 }}>Yêu cầu chỉnh sửa</h3>
-          <button onClick={onClose} className={styles.closeBtn}>
-            <X size={24} />
+          <button onClick={onClose} className={styles.closeBtn} style={{ fontSize: '1.2rem', fontWeight: 800 }}>
+            ✕
           </button>
         </div>
         <div className={styles.formBody}>

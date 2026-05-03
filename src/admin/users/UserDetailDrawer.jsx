@@ -5,6 +5,7 @@ import { USER_ROLES } from '../../utils/routes'
 import { formatDateOfBirth } from '../../utils/userUtils'
 import styles from './adminUsers.module.css'
 import UserRoleManagementSection from './UserRoleManagementSection'
+import UserPointsSummarySection from './UserPointsSummarySection'
 
 function UserDetailDrawer({
   isOpen,
@@ -61,7 +62,7 @@ function UserDetailDrawer({
                 </div>
               </div>
               <div className={styles.skeletonGrid}>
-                {[1, 2, 3, 4].map(i => (
+                {[1, 2, 3, 4, 5].map(i => (
                   <div key={i} className={styles.skeletonField}>
                     <div className={styles.skeletonLabel} />
                     <div className={styles.skeletonValue} />
@@ -113,12 +114,18 @@ function UserDetailDrawer({
                 <span>Trạng thái</span>
                 <strong>{user.is_active ? 'Đang hoạt động' : 'Ngưng hoạt động'}</strong>
               </div>
+              {/* Điểm rèn luyện summary section - Now part of the grid */}
+              <UserPointsSummarySection 
+                key={user.id}
+                userId={user.id} 
+                accessToken={accessToken} 
+                onApiError={onApiError} 
+              />
             </div>
 
             <div className={styles.roleSection}>
               <h4>Quyền đơn vị</h4>
               <UserRoleList roles={user.roles} unitNameMap={unitNames} />
-
             </div>
 
             {isAdmin && user.id && (

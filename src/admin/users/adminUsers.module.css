@@ -358,7 +358,7 @@
 
 .detailGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 1rem;
   background: #f8fafc;
   padding: 1rem 1.25rem;
@@ -1098,3 +1098,98 @@
     font-size: 0.94rem;
   }
 }
+
+.pointsSummarySection {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+}
+
+.pointsSummaryHeader {
+  background: #f8fafc;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pointsSummaryHeader h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pointsSummaryHeader h4::before {
+  content: '';
+  width: 4px;
+  height: 1rem;
+  background: #10b981;
+  border-radius: 2px;
+}
+
+.pointsSummaryTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pointsSummaryTable th {
+  background: #fcfcfd;
+  padding: 0.75rem 1.25rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.pointsSummaryTable td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.pointsSummaryTable tr:last-child td {
+  border-bottom: none;
+}
+
+.pointsSummaryTotal {
+  background: #f8fafc;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pointsSummaryTotal span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.pointsSummaryTotal strong {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0c1f45;
+}
+
+.emptyPointsSummary {
+  padding: 2rem;
+  text-align: center;
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.9rem;
+}
