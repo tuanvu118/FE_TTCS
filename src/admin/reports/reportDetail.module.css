@@ -81,7 +81,6 @@
 .backBtn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   background: transparent;
   border: 0;
   color: #64748b;
@@ -105,7 +104,6 @@
 .actionBtn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-weight: 700;
@@ -149,7 +147,6 @@
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
   cursor: pointer;
   box-shadow: 0 8px 16px rgba(37, 99, 235, 0.15);
   transition: all 0.2s;
@@ -234,12 +231,12 @@
 .miniStat {
   flex: 1;
   background: white;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.25rem;
   border-radius: 14px;
   border: 1px solid #f1f5f9;
   display: flex;
-  align-items: center;
-  gap: 0.85rem;
+  flex-direction: column;
+  justify-content: center;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
   transition: all 0.3s ease;
 }
@@ -247,15 +244,6 @@
 .miniStat:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-}
-
-.statIconBox {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: #f8fafc;
-  display: grid;
-  place-items: center;
 }
 
 .miniLabel { font-size: 0.65rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
@@ -296,7 +284,6 @@
   font-size: 0.85rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -348,7 +335,6 @@
   font-size: 0.85rem;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
 }
 
 .evidenceLink:hover { text-decoration: underline; }

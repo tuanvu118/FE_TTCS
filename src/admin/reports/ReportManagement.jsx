@@ -1,18 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
-  FileArrowDown, 
   Eye, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  ChartBar, 
-  Funnel,
-  Calendar,
-  FileText,
-  Export,
-  CaretLeft,
-  CaretRight
 } from '@phosphor-icons/react'
 import { getAllReports, exportSummaryExcel } from '../../service/reportService'
 import { getUnitById, getManagedUnits } from '../../service/unitService'
@@ -187,34 +176,30 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
           onClick={handleExportSummary}
           disabled={reportsData.total === 0}
         >
-          <Export size={20} weight="bold" /> Xuất tổng hợp
+          Xuất tổng hợp
         </button>
       </div>
 
       <div className={styles.statsGrid}>
         <div className={`${styles.statCard} ${styles.total}`}>
-          <div className={styles.statIcon}><ChartBar size={28} weight="fill" /></div>
           <div className={styles.statInfo}>
              <h3>{stats.total}</h3>
              <span>Tổng báo cáo</span>
           </div>
         </div>
         <div className={`${styles.statCard} ${styles.pending}`}>
-          <div className={styles.statIcon}><Clock size={28} weight="fill" /></div>
           <div className={styles.statInfo}>
              <h3>{stats.pending}</h3>
              <span>Chờ duyệt</span>
           </div>
         </div>
         <div className={`${styles.statCard} ${styles.success}`}>
-          <div className={styles.statIcon}><CheckCircle size={28} weight="fill" /></div>
           <div className={styles.statInfo}>
              <h3>{stats.approved}</h3>
              <span>Đã duyệt</span>
           </div>
         </div>
         <div className={`${styles.statCard} ${styles.danger}`}>
-          <div className={styles.statIcon}><XCircle size={28} weight="fill" /></div>
           <div className={styles.statInfo}>
              <h3>{stats.rejected}</h3>
              <span>Cần nộp lại</span>
@@ -225,7 +210,6 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
       <div className={styles.filterBar}>
         <div className={styles.filterGroup}>
           <div className={styles.filterSelect}>
-            <Funnel size={16} />
             <select 
               value={filterStatus} 
               onChange={(e) => setFilterStatus(e.target.value)}
@@ -238,7 +222,6 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
           </div>
           
           <div className={styles.filterSelect}>
-             <Calendar size={16} />
              <select 
                value={filterMonth} 
                onChange={(e) => setFilterMonth(e.target.value)}
@@ -251,7 +234,6 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
           </div>
 
           <div className={styles.filterSelect}>
-            <Calendar size={16} />
             <select 
               value={filterYear} 
               onChange={(e) => setFilterYear(e.target.value)}
@@ -263,7 +245,6 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
           </div>
 
           <div className={styles.filterSelect}>
-            <FileText size={16} />
             <select 
               value={filterUnitId} 
               onChange={(e) => setFilterUnitId(e.target.value)}
@@ -296,7 +277,6 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
           filteredReports.map((report) => (
             <div key={report.id} className={styles.reportRow}>
               <div className={styles.reportIden}>
-                <div className={styles.docIcon}><FileText size={22} weight="fill" /></div>
                 <div>
                   <strong>{unitNames[report.unit_id] || 'N/A'}</strong>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Tháng {report.month} / {report.year}</p>
@@ -313,7 +293,7 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
               </div>
               <div>
                  <button className={styles.actionBtn} onClick={() => handleViewDetail(report)}>
-                   Chi tiết <Eye size={18} />
+                   Chi tiết
                  </button>
               </div>
             </div>
@@ -330,7 +310,7 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
             disabled={!canGoPrevious || isLoading}
             onClick={() => setCurrentPage(prev => prev - 1)}
           >
-            <CaretLeft size={16} weight="bold" /> Trước
+            Trước
           </button>
           <div className={styles.paginationInfo}>
             Trang <strong>{currentPage}</strong> / <strong>{totalPages}</strong>
@@ -340,7 +320,7 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
             disabled={!canGoNext || isLoading}
             onClick={() => setCurrentPage(prev => prev + 1)}
           >
-            Sau <CaretRight size={16} weight="bold" />
+            Sau
           </button>
         </div>
       </div>

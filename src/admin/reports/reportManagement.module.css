@@ -42,7 +42,6 @@
 .exportBtn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   padding: 0.56rem 1rem;
   background: linear-gradient(135deg, #107c41 0%, #21a366 100%);
   border: none;
@@ -78,12 +77,12 @@
 
 .statCard {
   background: white;
-  padding: 0.58rem 0.85rem;
+  padding: 0.75rem 1rem;
   border-radius: 14px;
   border: 1px solid rgba(226, 232, 240, 0.8);
   display: flex;
-  align-items: center;
-  gap: 0.66rem;
+  flex-direction: column;
+  justify-content: center;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -100,14 +99,6 @@
   transform: translateY(-2px);
 }
 
-.statIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-}
-
 .statInfo h3 {
   margin: 0;
   font-size: 1.05rem;
@@ -122,16 +113,9 @@
 }
 
 /* Stat Variants */
-.totalIcon { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #2563eb; }
 .statCard.total::before { background: #2563eb; }
-
-.pending .statIcon { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); color: #f97316; }
 .statCard.pending::before { background: #f97316; }
-
-.success .statIcon { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); color: #10b981; }
 .statCard.success::before { background: #10b981; }
-
-.danger .statIcon { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); color: #ef4444; }
 .statCard.danger::before { background: #ef4444; }
 
 /** Filter Bar */
@@ -161,7 +145,6 @@
   border-radius: 6px;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
   color: #475569;
   transition: all 0.2s;
   height: 34px;
@@ -233,18 +216,7 @@
 
 .reportIden {
   display: flex;
-  align-items: center;
-  gap: 0.62rem;
-}
-
-.docIcon {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: #eff6ff;
-  color: #2563eb;
-  display: grid;
-  place-items: center;
+  flex-direction: column;
 }
 
 .reportIden strong {
@@ -283,7 +255,7 @@
 
 .actionBtn {
   border: 0;
-  padding: 0.42rem 0.58rem;
+  padding: 0.42rem 0.8rem;
   background: #f1f5f9;
   color: #475569;
   border-radius: 8px;
@@ -291,7 +263,6 @@
   font-size: 0.74rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   cursor: pointer;
   transition: all 0.2s;
   width: fit-content;
