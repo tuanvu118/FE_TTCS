@@ -6,6 +6,7 @@ import {
   getStudentHtskOverview,
   registerStudentHtskEvent,
 } from '../service/UnitHTSKService'
+import { useRouter } from '../hooks/useRouter'
 import '../style/EventUnitStudent.css'
 
 function formatDateTime(value) {
@@ -38,6 +39,7 @@ function parseUtcDateMs(value) {
 }
 
 export default function EventUnitStudent({ unitId, eventId }) {
+  const { navigate } = useRouter()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -122,11 +124,20 @@ export default function EventUnitStudent({ unitId, eventId }) {
     )
   }
 
-  const isRegistered = Boolean(data?.my_registration?.is_registered)
+  const myReg = data?.my_registration || {}
+  const isRegistered = Boolean(myReg.is_registered)
+  const pageUnitId = data?.unit_id != null ? String(data.unit_id) : String(unitId || '')
+  const registeredUnitId =
+    myReg.unit_id != null && String(myReg.unit_id).trim() !== ''
+      ? String(myReg.unit_id)
+      : ''
+  const registeredElsewhere =
+    isRegistered && Boolean(registeredUnitId) && registeredUnitId !== pageUnitId
+  const registeredHere = isRegistered && !registeredElsewhere
   const regOpen = Boolean(data?.is_registration_open)
   const canRegister = Boolean(data?.can_register)
   const remaining = Number(data?.slot_remaining ?? 0)
-  const canCancelRegistration = isRegistered && regOpen
+  const canCancelRegistration = registeredHere && regOpen
   const descriptionText = data?.description?.trim() || 'Không có mô tả.'
   const DESCRIPTION_LIMIT = 320
   const isDescriptionLong = descriptionText.length > DESCRIPTION_LIMIT
@@ -148,7 +159,7 @@ export default function EventUnitStudent({ unitId, eventId }) {
   const countdownSeconds = Math.floor((remainingMs % (60 * 1000)) / 1000)
 
   const handleRegister = async () => {
-    if (!canRegister || isRegistered) return
+    if (!canRegister || isRegistered || registeredElsewhere) return
     setRegistering(true)
     try {
       await registerStudentHtskEvent(eventId, unitId)
@@ -159,6 +170,11 @@ export default function EventUnitStudent({ unitId, eventId }) {
     } finally {
       setRegistering(false)
     }
+  }
+
+  const handleGoToRegisteredUnit = () => {
+    if (!registeredUnitId || !eventId) return
+    navigate(`/events/u/${registeredUnitId}/${eventId}`)
   }
 
   const handleCancelRegistration = () => {
@@ -265,15 +281,30 @@ export default function EventUnitStudent({ unitId, eventId }) {
           <h2>Trạng thái của bạn</h2>
           <div className={`eus-status ${isRegistered ? 'ok' : 'idle'}`}>
             <CheckCircle size={20} weight="fill" />
-            <span>{isRegistered ? 'Đã đăng ký' : 'Chưa đăng ký'}</span>
+            <span>
+              {registeredElsewhere
+                ? `Đã đăng ký tại ${myReg.unit_name?.trim() || 'đơn vị khác'}`
+                : isRegistered
+                  ? 'Đã đăng ký tại đơn vị này'
+                  : 'Chưa đăng ký'}
+            </span>
           </div>
 
           <div className="eus-note">
             {/* <p><b>Trạng thái nộp danh sách:</b> {data.submission_status || '—'}</p> */}
             <p><b>Mở đăng ký:</b> {regOpen ? 'Đang mở' : 'Đã đóng'}</p>
+            {registeredElsewhere && (
+              <p className="eus-note-muted">
+                Bạn không thể đăng ký thêm tại đơn vị này.
+              </p>
+            )}
             {/* <p><b>Có thể đăng ký:</b> {canRegister ? 'Có' : 'Không'}</p> */}
           </div>
-          {isRegistered ? (
+          {registeredElsewhere ? (
+            <button type="button" className="eus-btn" onClick={handleGoToRegisteredUnit}>
+              Xem đăng ký
+            </button>
+          ) : isRegistered ? (
             <button
               className="eus-btn"
               onClick={handleCancelRegistration}

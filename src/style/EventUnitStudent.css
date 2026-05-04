@@ -248,6 +248,13 @@
   margin: 0 0 0.45rem;
 }
 
+.eus-note-muted {
+  margin-top: 0.35rem !important;
+  color: var(--ds-text-secondary, #64748b);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
 .eus-state {
   max-width: 640px;
   margin: 4rem auto;
@@ -314,9 +321,16 @@
   }
 }
 
+@media (max-width: 768px) {
+  .event-unit-student-page {
+    /* Tránh nội dung cuối trang chìm dưới MobileBottomNav (fixed, ~54px + khoảng đệm FAB) */
+    padding-bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @media (max-width: 640px) {
   .event-unit-student-page {
-    padding: 0.5rem 0.5rem 0.75rem;
+    padding: 0.5rem 0.5rem calc(5.25rem + env(safe-area-inset-bottom, 0px));
   }
 
   .eus-hero {
